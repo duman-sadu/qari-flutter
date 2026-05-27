@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <!-- Surah name — top left -->
+    <TextView
+        android:id="@+id/widget_surah_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:textColor="#FFFFFFBB"
+        android:textSize="10sp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <!-- Goal — top right -->
+    <TextView
+        android:id="@+id/widget_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:textColor="#C9A457"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <!-- Arabic ayah — center -->
+    <TextView
+        android:id="@+id/widget_ayah_arabic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="بِسْمِ اللّهِ الرَّحْمٰنِ الرَّحِيْمِ"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <!-- Verse info — bottom left -->
+    <TextView
+        android:id="@+id/widget_verse_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:textColor="#FFFFFF77"
+        android:textSize="9sp" />
+
+    <!-- Brand — bottom right -->
+    <TextView
+        android:id="@+id/widget_brand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="Qari"
+        android:textColor="#C9A457"
+        android:textSize="9sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
