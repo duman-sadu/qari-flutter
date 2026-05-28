@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_colors.dart';
 import '../services/notification_service.dart';
 
-// Product IDs — create matching Consumable products in Google Play Console
+// Product IDs — must match exactly in Google Play Console AND App Store Connect
 const _kProductIds = <String>{
   'qari_support_tier1',
   'qari_support_tier2',
@@ -74,6 +74,11 @@ class _SupportSheetState extends State<SupportSheet> {
               ? 'БаракаллахуфикА! Аллах принял твоё пожертвование 🤲'
               : 'БаракаллаhУ фик! Аллах садақаңды қабыл алсын 🤲');
         }
+      } else if (p.status == PurchaseStatus.pending) {
+        // iOS: waiting for parental approval or Ask to Buy
+        if (mounted) setState(() => _feedback = widget.isRu
+            ? 'Ожидание подтверждения...'
+            : 'Растау күтілуде...');
       } else if (p.status == PurchaseStatus.error) {
         _iap.completePurchase(p);
         if (mounted) setState(() => _feedback = null);
