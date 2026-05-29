@@ -13,6 +13,8 @@ workflows:
         bundle_identifier: kz.dudi.qari
       vars:
         BUNDLE_ID: kz.dudi.qari
+        APP_STORE_CONNECT_KEY_IDENTIFIER: KNL8ZCF4W9
+        APP_STORE_CONNECT_ISSUER_ID: efb2f4c8-a708-489a-a88b-496602d985c4
     scripts:
       - name: Decode GoogleService-Info.plist
         script: |
