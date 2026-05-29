@@ -3,6 +3,8 @@ workflows:
     name: iOS App Store
     max_build_duration: 60
     environment:
+      groups:
+        - ios
       flutter: stable
       xcode: latest
       cocoapods: default
