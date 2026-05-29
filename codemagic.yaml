@@ -35,7 +35,7 @@ workflows:
 
       - name: Upload to TestFlight
         script: |
-          echo "$APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY" | base64 --decode > /tmp/auth_key.p8
+          echo "$APP_STORE_CONNECT_PUBLISHER_PRIVATE_KEY" | base64 --decode | tr -d '\r' > /tmp/auth_key.p8
           app-store-connect publish \
             --path "$(find build/ios/ipa -name '*.ipa')" \
             --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
