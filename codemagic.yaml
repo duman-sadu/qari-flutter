@@ -12,6 +12,10 @@ workflows:
       vars:
         BUNDLE_ID: kz.dudi.qari
     scripts:
+      - name: Decode GoogleService-Info.plist
+        script: |
+          echo $GOOGLE_SERVICE_INFO_PLIST | base64 --decode > ios/Runner/GoogleService-Info.plist
+
       - name: Flutter pub get
         script: flutter pub get
 
