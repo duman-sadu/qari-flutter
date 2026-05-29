@@ -9,8 +9,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: kz.dudi.qari
-        certificate: Qari Distribution
-        provisioning_profile: Qari App Store
       vars:
         BUNDLE_ID: kz.dudi.qari
     scripts:
