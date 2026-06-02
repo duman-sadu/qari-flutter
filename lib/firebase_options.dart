@@ -60,20 +60,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBdJtJCM3Ry54cdJ8taDvRgKqVXJLLzmLs',
-    appId: '1:302075601219:ios:6a28b081d039c8909acff6',
+    appId: '1:302075601219:ios:714ca3184ee2cfcb9acff6',
     messagingSenderId: '302075601219',
     projectId: 'qari-d7040',
     storageBucket: 'qari-d7040.firebasestorage.app',
-    iosBundleId: 'com.example.qariFlutter',
+    iosBundleId: 'kz.dudi.qari',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBdJtJCM3Ry54cdJ8taDvRgKqVXJLLzmLs',
-    appId: '1:302075601219:ios:6a28b081d039c8909acff6',
+    appId: '1:302075601219:ios:714ca3184ee2cfcb9acff6',
     messagingSenderId: '302075601219',
     projectId: 'qari-d7040',
     storageBucket: 'qari-d7040.firebasestorage.app',
-    iosBundleId: 'com.example.qariFlutter',
+    iosBundleId: 'kz.dudi.qari',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
