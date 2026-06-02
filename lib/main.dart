@@ -44,16 +44,18 @@ void main() async {
   final themeProvider = ThemeProvider();
   final goalProvider = GoalProvider();
   final languageProvider = LanguageProvider();
-  audioHandler = await AudioService.init<QariAudioHandler>(
-    builder: () => QariAudioHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'kz.qari.audio',
-      androidNotificationChannelName: 'Qari',
-      androidNotificationIcon: 'drawable/reminder',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-    ),
-  );
+  try {
+    audioHandler = await AudioService.init<QariAudioHandler>(
+      builder: () => QariAudioHandler(),
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'kz.qari.audio',
+        androidNotificationChannelName: 'Qari',
+        androidNotificationIcon: 'drawable/reminder',
+        androidNotificationOngoing: true,
+        androidStopForegroundOnPause: true,
+      ),
+    );
+  } catch (_) {}
 
   await Future.wait([
     planProvider.loadProgress(),
@@ -61,7 +63,7 @@ void main() async {
     themeProvider.load(),
     goalProvider.load(),
     languageProvider.load(),
-    initQuranOfflineData(),
+    initQuranOfflineData().catchError((_) {}),
   ]);
 
   // Уведомления — каждый шаг изолирован, одна ошибка не блокирует остальное
