@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,12 +30,18 @@ import 'screens/surah_select_screen.dart';
 import 'screens/groups_screen.dart';
 import 'screens/friends_screen.dart';
 
-void main() async {
+void main() {
+  runZonedGuarded(_appMain, (e, st) {});
+}
+
+Future<void> _appMain() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (_) {}
 
   final prefs = await SharedPreferences.getInstance();
   final isOnboarded = prefs.getString('studyMode') != null;
