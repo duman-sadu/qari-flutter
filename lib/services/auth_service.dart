@@ -6,6 +6,7 @@ class AuthService {
   static Future<({User? user, String? error})> signInWithGoogle() async {
     try {
       final googleUser = await GoogleSignIn(
+        clientId: '302075601219-p3fi529p33nn157e5kq7p8kf01q46q2o.apps.googleusercontent.com',
         serverClientId: '302075601219-24iu1qmgbj6fuo3k8t1qn0bemhjvs1eu.apps.googleusercontent.com',
       ).signIn();
       if (googleUser == null) {
