@@ -8,6 +8,7 @@ import 'package:audio_service/audio_service.dart';
 
 import 'firebase_options.dart';
 import 'services/audio_handler.dart';
+import 'services/fcm_service.dart';
 
 import 'providers/plan_provider.dart';
 import 'providers/onboarding_provider.dart';
@@ -148,6 +149,11 @@ Future<void> _appMain() async {
     } catch (_) {}
   };
 
+  // FCM — initialize after Firebase is ready
+  try {
+    await FcmService.initialize();
+  } catch (_) {}
+
   // Auth listener — skip the initial emission (already loaded above),
   // only reload when the user actually signs in or out.
   bool authListenerReady = false;
@@ -159,6 +165,7 @@ Future<void> _appMain() async {
     if (user != null) {
       await planProvider.loadProgress();
       await onboardingProvider.loadFromFirestore();
+      try { await FcmService.initialize(); } catch (_) {}
     }
   });
 

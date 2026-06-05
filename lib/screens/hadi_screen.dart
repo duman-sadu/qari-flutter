@@ -9,6 +9,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../providers/language_provider.dart';
 import '../providers/plan_provider.dart';
 import '../providers/onboarding_provider.dart';
+import '../services/api_service.dart';
 import '../services/challenge_service.dart';
 import '../services/friend_service.dart';
 import '../services/hadi_service.dart';
@@ -2526,6 +2527,14 @@ class _HadiScreenState extends State<HadiScreen>
         targetUid: friend?.uid,
         targetName: friend?.name,
       );
+      if (friend != null) {
+        ApiService.sendChallengeNotification(
+          targetUid: friend.uid,
+          senderName: name.isEmpty ? 'Қолданушы' : name,
+          challengeId: id,
+          isRu: _s.isRu,
+        );
+      }
       if (!mounted) return;
       setState(() {
         _challengeId = id;

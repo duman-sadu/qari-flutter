@@ -352,6 +352,38 @@ class ApiService {
     } catch (_) {}
   }
 
+  // ── Push notifications ────────────────────────────────────────────────────
+
+  static Future<void> saveFcmToken(String token) async {
+    try {
+      await http.patch(
+        Uri.parse('$_kBase/users/me'),
+        headers: await _headers(),
+        body: jsonEncode({'fcmToken': token}),
+      );
+    } catch (_) {}
+  }
+
+  static Future<void> sendChallengeNotification({
+    required String targetUid,
+    required String senderName,
+    required String challengeId,
+    required bool isRu,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('$_kBase/notify/challenge'),
+        headers: await _headers(),
+        body: jsonEncode({
+          'targetUid': targetUid,
+          'senderName': senderName,
+          'challengeId': challengeId,
+          'isRu': isRu,
+        }),
+      );
+    } catch (_) {}
+  }
+
   // ── Friends ───────────────────────────────────────────────────────────────
 
   static Future<List<dynamic>> getFriends() async {
