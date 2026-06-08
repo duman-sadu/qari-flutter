@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../theme/app_colors.dart';
 import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
@@ -14,6 +15,21 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _googleLoading = false;
+  bool _appleLoading = false;
+
+  Future<void> _signInWithApple() async {
+    setState(() => _appleLoading = true);
+    final result = await AuthService.signInWithApple();
+    if (!mounted) return;
+    setState(() => _appleLoading = false);
+    if (result.user != null) {
+      Navigator.pushReplacementNamed(context, '/learning');
+    } else if (result.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.error!)),
+      );
+    }
+  }
 
   Future<void> _signInWithGoogle() async {
     setState(() => _googleLoading = true);
@@ -195,7 +211,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () => Navigator.pushNamed(
-                              context, '/intro'),
+                              context, '/onboarding'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: c.primary,
                             foregroundColor: Colors.white,
@@ -212,6 +228,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               letterSpacing: 0.3,
                             ),
                           ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Apple button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: SignInWithAppleButton(
+                          onPressed: _appleLoading ? () {} : _signInWithApple,
+                          style: SignInWithAppleButtonStyle.black,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16)),
                         ),
                       ),
 
