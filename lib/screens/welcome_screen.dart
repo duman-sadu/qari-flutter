@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../theme/app_colors.dart';
 import '../services/auth_service.dart';
@@ -23,7 +24,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!mounted) return;
     setState(() => _appleLoading = false);
     if (result.user != null) {
-      Navigator.pushReplacementNamed(context, '/learning');
+      final prefs = await SharedPreferences.getInstance();
+      final isOnboarded = prefs.getString('studyMode') != null;
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+          context, isOnboarded ? '/learning' : '/onboarding');
     } else if (result.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result.error!)),
