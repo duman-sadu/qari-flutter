@@ -64,8 +64,12 @@ class AuthService {
         nonce: nonce,
       );
 
+      if (appleCredential.identityToken == null) {
+        return (user: null, error: 'Apple sign in failed. Please try again.');
+      }
+
       final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
+        idToken: appleCredential.identityToken!,
         rawNonce: rawNonce,
       );
 
