@@ -30,8 +30,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       Navigator.pushReplacementNamed(
           context, isOnboarded ? '/learning' : '/onboarding');
     } else if (result.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.error!)),
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Sign in with Apple'),
+          content: Text(result.error!),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
     }
   }
