@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _loadingGoogle = false;
   bool _googleConnected = false;
   String _studyMode = 'Жаттау';
+
+  @override
+  void initState() {
+    super.initState();
+    _prefillFromFirebase();
+  }
+
+  void _prefillFromFirebase() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final name = user.displayName ?? '';
+    if (name.isNotEmpty) {
+      final parts = name.trim().split(' ');
+      _firstNameController.text = parts.first;
+      if (parts.length > 1) {
+        _lastNameController.text = parts.sublist(1).join(' ');
+      }
+    }
+  }
 
   final List<int> _knownSurahs = [];
 
