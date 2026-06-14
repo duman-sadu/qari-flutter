@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'api_service.dart';
 
 class AuthService {
@@ -39,18 +43,35 @@ class AuthService {
 
   static Future<({User? user, String? error})> signInWithApple() async {
     try {
-      final appleProvider = AppleAuthProvider()
-        ..addScope('email')
-        ..addScope('fullName');
+      // Native Sign in with Apple flow: get the Apple credential with a nonce,
+      // then exchange it for a Firebase credential.
+      final rawNonce = _generateNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode,
+      );
 
       final result =
-          await FirebaseAuth.instance.signInWithProvider(appleProvider);
+          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
       ApiService.loginToBackend();
       return (user: result.user, error: null);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-cancelled' || e.code == 'canceled') {
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
         return (user: null, error: null);
       }
+      return (user: null, error: e.message);
+    } on FirebaseAuthException catch (e) {
       return (user: null, error: e.message ?? e.code);
     } catch (e) {
       final msg = e.toString();
@@ -59,6 +80,16 @@ class AuthService {
       }
       return (user: null, error: msg);
     }
+  }
+
+  static String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   static Future<void> logout() async {
