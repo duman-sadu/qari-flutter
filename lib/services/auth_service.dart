@@ -43,11 +43,26 @@ class AuthService {
 
   static Future<({User? user, String? error})> signInWithApple() async {
     try {
-      final oauthCredential = await _appleCredential();
+      final apple = await _appleCredential();
       final result =
-          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+          await FirebaseAuth.instance.signInWithCredential(apple.credential);
+      final user = result.user;
+
+      // Apple returns the full name only on the very first authorization, so
+      // capture it into the Firebase displayName when it isn't set yet.
+      if (user != null) {
+        final name = [apple.givenName, apple.familyName]
+            .whereType<String>()
+            .where((p) => p.isNotEmpty)
+            .join(' ');
+        if (name.isNotEmpty &&
+            (user.displayName == null || user.displayName!.isEmpty)) {
+          await user.updateDisplayName(name);
+        }
+      }
+
       ApiService.loginToBackend();
-      return (user: result.user, error: null);
+      return (user: user, error: null);
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
         return (user: null, error: null);
@@ -65,8 +80,10 @@ class AuthService {
   }
 
   // Native Sign in with Apple: returns a Firebase credential built from the
-  // Apple ID credential with a nonce. Used for both sign-in and re-auth.
-  static Future<OAuthCredential> _appleCredential() async {
+  // Apple ID credential with a nonce, plus the name Apple provides on first
+  // sign-in. Used for both sign-in and re-auth.
+  static Future<({OAuthCredential credential, String? givenName, String? familyName})>
+      _appleCredential() async {
     final rawNonce = _generateNonce();
     final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
 
@@ -78,10 +95,15 @@ class AuthService {
       nonce: hashedNonce,
     );
 
-    return OAuthProvider('apple.com').credential(
+    final credential = OAuthProvider('apple.com').credential(
       idToken: appleCredential.identityToken,
       rawNonce: rawNonce,
       accessToken: appleCredential.authorizationCode,
+    );
+    return (
+      credential: credential,
+      givenName: appleCredential.givenName,
+      familyName: appleCredential.familyName,
     );
   }
 
@@ -140,7 +162,8 @@ class AuthService {
   static Future<void> _reauthenticate(User user) async {
     final providers = user.providerData.map((p) => p.providerId).toSet();
     if (providers.contains('apple.com')) {
-      await user.reauthenticateWithCredential(await _appleCredential());
+      await user.reauthenticateWithCredential(
+          (await _appleCredential()).credential);
     } else if (providers.contains('google.com')) {
       final cred = await _googleCredential();
       if (cred == null) throw FirebaseAuthException(code: 'user-cancelled');

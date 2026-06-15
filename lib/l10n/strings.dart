@@ -51,6 +51,7 @@ const Map<String, Map<String, String>> appStrings = {
                       'ru': 'Твой надёжный помощник\nна пути запоминания Корана'},
   'register':        {'kz': 'Тіркелу',           'ru': 'Регистрация'},
   'signInGoogle':    {'kz': 'Google арқылы кіру', 'ru': 'Войти через Google'},
+  'signInApple':     {'kz': 'Apple арқылы кіру',  'ru': 'Войти через Apple'},
 
   // ── MENU DRAWER ──────────────────────────────────────────────────────────
   'myProfile':       {'kz': 'Менің профилім',    'ru': 'Мой профиль'},

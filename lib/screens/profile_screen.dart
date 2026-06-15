@@ -297,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 10),
 
-                    // ── Google account ──────────────────────────────────
+                    // ── Apple account ──────────────────────────────────
                     StreamBuilder<User?>(
                       stream: FirebaseAuth.instance.authStateChanges(),
                       builder: (context, snap) {
@@ -317,15 +317,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   width: 36,
                                   height: 36,
                                   decoration: BoxDecoration(
-                                    color: c.blueTint,
+                                    color: c.surfaceAlt,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Center(
-                                    child: Text('G',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.blue)),
+                                  child: Center(
+                                    child: Icon(Icons.apple,
+                                        size: 20, color: c.text),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -335,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        user.displayName ?? 'Google',
+                                        user.displayName ?? 'Apple',
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
@@ -400,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // Not signed in
                         return GestureDetector(
                           onTap: () async {
-                            final result = await AuthService.signInWithGoogle();
+                            final result = await AuthService.signInWithApple();
                             if (!context.mounted) return;
                             if (result.error != null) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -422,25 +419,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   width: 36,
                                   height: 36,
                                   decoration: BoxDecoration(
-                                    color: c.blueTint,
+                                    color: c.surfaceAlt,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Center(
-                                    child: Text('G',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.blue)),
+                                  child: Center(
+                                    child: Icon(Icons.apple,
+                                        size: 20, color: c.text),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    s.tr('signInGoogle'),
+                                    s.tr('signInApple'),
                                     style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color: c.blue),
+                                        color: c.text),
                                   ),
                                 ),
                                 Icon(Icons.chevron_right,
