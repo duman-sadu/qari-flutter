@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -349,6 +350,7 @@ class _UnavailableHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final store = Platform.isIOS ? 'App Store' : 'Google Play';
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -358,8 +360,8 @@ class _UnavailableHint extends StatelessWidget {
       ),
       child: Text(
         isRu
-            ? 'Оплата временно недоступна.\nПожалуйста, убедитесь, что App Store / Google Play работает на вашем устройстве.'
-            : 'Төлем уақытша қолжетімсіз.\nApp Store / Google Play құрылғыда жұмыс істейтінін тексеріңіз.',
+            ? 'Оплата временно недоступна.\nПожалуйста, убедитесь, что $store работает на вашем устройстве.'
+            : 'Төлем уақытша қолжетімсіз.\n$store құрылғыда жұмыс істейтінін тексеріңіз.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 13, color: c.subtext, height: 1.5),
       ),

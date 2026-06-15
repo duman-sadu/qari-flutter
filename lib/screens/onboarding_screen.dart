@@ -284,12 +284,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     'ан-Нас (Люди)',
   ];
 
-  bool get _isValid =>
-      _firstNameController.text.trim().isNotEmpty &&
-      _lastNameController.text.trim().isNotEmpty &&
-      _ageController.text.trim().isNotEmpty &&
-      _gender != null;
-
   Future<void> _googleLogin() async {
     setState(() => _loadingGoogle = true);
     final result = await AuthService.signInWithGoogle();
@@ -306,8 +300,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _continue() async {
-    if (!_isValid) return;
-
     final onboarding = context.read<OnboardingProvider>();
     final plan = context.read<PlanProvider>();
 
@@ -315,7 +307,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       first: _firstNameController.text.trim(),
       last: _lastNameController.text.trim(),
       middle: '',
-      g: _gender!,
+      g: _gender ?? '',
       a: _ageController.text.trim(),
       tajweed: _tajweed,
       known: _knownSurahs,
@@ -620,21 +612,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 22),
 
                     // Last name
-                    _label(s.tr('lastName')),
+                    _label('${s.tr('lastName')} · ${s.tr('optional')}'),
                     const SizedBox(height: 8),
                     _input(_lastNameController, s.tr('lastNameHint')),
 
                     const SizedBox(height: 16),
 
                     // First name
-                    _label(s.tr('firstName')),
+                    _label('${s.tr('firstName')} · ${s.tr('optional')}'),
                     const SizedBox(height: 8),
                     _input(_firstNameController, s.tr('firstNameHint')),
 
                     const SizedBox(height: 16),
 
                     // Age
-                    _label(s.tr('age')),
+                    _label('${s.tr('age')} · ${s.tr('optional')}'),
                     const SizedBox(height: 8),
                     _input(
                       _ageController,
@@ -646,7 +638,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 16),
 
                     // Gender
-                    _label(s.tr('genderLabel')),
+                    _label('${s.tr('genderLabel')} · ${s.tr('optional')}'),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -749,26 +741,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (!_isValid) {
-                            final msg = _firstNameController.text.trim().isEmpty
-                                ? _s.tr('enterFirstName')
-                                : _lastNameController.text.trim().isEmpty
-                                    ? _s.tr('enterLastName')
-                                    : _ageController.text.trim().isEmpty
-                                        ? _s.tr('enterAge')
-                                        : _s.tr('selectGender');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(msg),
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                            return;
-                          }
-                          _continue();
-                        },
+                        onPressed: _continue,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _c.primary,
                           elevation: 0,

@@ -38,6 +38,16 @@ class ApiService {
 
   // ── Users / Profile ───────────────────────────────────────────────────────
 
+  /// Permanently deletes the user's account and data on the backend.
+  static Future<void> deleteMyAccount() async {
+    try {
+      await http.delete(
+        Uri.parse('$_kBase/users/me'),
+        headers: await _headers(),
+      );
+    } catch (_) {}
+  }
+
   static Future<Map<String, dynamic>?> getMe() async {
     try {
       final r = await http.get(Uri.parse('$_kBase/users/me'), headers: await _headers());

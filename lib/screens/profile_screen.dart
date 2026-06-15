@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/onboarding_provider.dart';
 import '../providers/plan_provider.dart';
 import '../providers/language_provider.dart';
@@ -745,6 +746,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ],
+
+                    const SizedBox(height: 14),
+                    _buildDeleteAccountButton(context, c),
                   ],
                 ),
               ),
@@ -787,6 +791,88 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     if (ok == true) await onConfirm();
+  }
+
+  // ── Account deletion ──────────────────────────────────────────────────────
+
+  Widget _buildDeleteAccountButton(BuildContext context, AppColors c) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return const SizedBox.shrink();
+    }
+    return GestureDetector(
+      onTap: () => _confirmDeleteAccount(context, c),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              _s.tr('deleteAccount'),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteAccount(BuildContext context, AppColors c) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(_s.tr('deleteAccountConfirmTitle'),
+            style: TextStyle(color: c.text, fontSize: 16)),
+        content: Text(_s.tr('deleteAccountConfirmBody'),
+            style: TextStyle(color: c.subtext, fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(_s.tr('no'), style: TextStyle(color: c.subtext)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(_s.tr('deleteAccountBtn'),
+                style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final result = await AuthService.deleteAccount();
+    if (!context.mounted) return;
+    Navigator.pop(context); // dismiss loading spinner
+
+    if (result.ok) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (!context.mounted) return;
+      Navigator.pushNamedAndRemoveUntil(context, '/welcome', (_) => false);
+    } else if (result.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_s.tr('deleteAccountError'))),
+      );
+    }
   }
 
   // ── Juz read history card ─────────────────────────────────────────────────
