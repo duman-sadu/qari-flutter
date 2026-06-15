@@ -57,7 +57,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
   Future<void> _signIn() async {
     setState(() => _signingIn = true);
-    final result = await AuthService.signInWithGoogle();
+    final result = await AuthService.signInWithApple();
     if (!mounted) return;
     setState(() => _signingIn = false);
     if (result.error != null) {
@@ -254,10 +254,10 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text('🔵',
-                                      style: TextStyle(fontSize: 18)),
+                                  const Icon(Icons.apple,
+                                      size: 20, color: Colors.white),
                                   const SizedBox(width: 10),
-                                  Text(_s.tr('signInGoogle'),
+                                  Text(_s.tr('signInApple'),
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),

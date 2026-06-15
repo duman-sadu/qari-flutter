@@ -15,7 +15,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool _googleLoading = false;
   bool _appleLoading = false;
 
   Future<void> _signInWithApple() async {
@@ -42,20 +41,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ],
         ),
-      );
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    setState(() => _googleLoading = true);
-    final result = await AuthService.signInWithGoogle();
-    if (!mounted) return;
-    setState(() => _googleLoading = false);
-    if (result.user != null) {
-      Navigator.pushReplacementNamed(context, '/learning');
-    } else if (result.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.error!)),
       );
     }
   }
@@ -257,50 +242,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           style: SignInWithAppleButtonStyle.black,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(16)),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Google button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: OutlinedButton(
-                          onPressed: _googleLoading ? null : _signInWithGoogle,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: c.primary,
-                            backgroundColor: c.card,
-                            side: BorderSide(color: c.border, width: 1.5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: _googleLoading
-                              ? SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation(c.primary),
-                                  ),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('🔵',
-                                        style: TextStyle(fontSize: 18)),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      s.tr('signInGoogle'),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: c.text,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                         ),
                       ),
                     ],

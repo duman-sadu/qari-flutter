@@ -25,8 +25,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   String? _gender;
   bool _tajweed = false;
-  bool _loadingGoogle = false;
-  bool _googleConnected = false;
+  bool _loadingApple = false;
+  bool _appleConnected = false;
   String _studyMode = 'Жаттау';
 
   @override
@@ -284,19 +284,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     'ан-Нас (Люди)',
   ];
 
-  Future<void> _googleLogin() async {
-    setState(() => _loadingGoogle = true);
-    final result = await AuthService.signInWithGoogle();
+  Future<void> _appleLogin() async {
+    setState(() => _loadingApple = true);
+    final result = await AuthService.signInWithApple();
     final user = result.user;
     if (user != null) {
       setState(() {
-        _googleConnected = true;
+        _appleConnected = true;
         final parts = (user.displayName ?? '').split(' ');
         if (parts.isNotEmpty) _firstNameController.text = parts.first;
         if (parts.length > 1) _lastNameController.text = parts.sublist(1).join(' ');
       });
+    } else if (result.error != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.error!)),
+      );
     }
-    setState(() => _loadingGoogle = false);
+    if (mounted) setState(() => _loadingApple = false);
   }
 
   Future<void> _continue() async {
@@ -557,24 +561,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Google connect
+                    // Apple connect
                     GestureDetector(
-                      onTap: _loadingGoogle ? null : _googleLogin,
+                      onTap: _loadingApple ? null : _appleLogin,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         decoration: BoxDecoration(
-                          color: _googleConnected
+                          color: _appleConnected
                               ? _c.greenTint
                               : _c.card,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: _googleConnected ? _c.green : _c.border,
+                            color: _appleConnected ? _c.green : _c.border,
                             width: 1.5,
                           ),
                         ),
                         child: Center(
-                          child: _loadingGoogle
+                          child: _loadingApple
                               ? SizedBox(
                                   width: 22,
                                   height: 22,
@@ -586,19 +590,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      _googleConnected ? '✅' : '🔵',
-                                      style: const TextStyle(fontSize: 18),
+                                    Icon(
+                                      _appleConnected
+                                          ? Icons.check_circle
+                                          : Icons.apple,
+                                      size: 20,
+                                      color: _appleConnected
+                                          ? _c.green
+                                          : _c.text,
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      _googleConnected
+                                      _appleConnected
                                           ? s.tr('googleConnected')
-                                          : s.tr('signInGoogle'),
+                                          : s.tr('signInApple'),
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color: _googleConnected
+                                        color: _appleConnected
                                             ? _c.green
                                             : _c.text,
                                       ),
