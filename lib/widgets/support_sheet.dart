@@ -3,8 +3,14 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_colors.dart';
 import '../services/notification_service.dart';
+
+// Legal links required for auto-renewable subscriptions (App Store / Play)
+const _kPrivacyPolicyUrl = 'https://duman-sadu.github.io/qari-privacy/';
+const _kTermsOfUseUrl =
+    'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 // Product IDs — must match exactly in Google Play Console AND App Store Connect
 const _kSubscriptionId = 'qari_sponsor_monthly';
@@ -216,7 +222,54 @@ class _SupportSheetState extends State<SupportSheet> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: c.subtext, height: 1.6),
           ),
+          const SizedBox(height: 16),
+          Text(
+            widget.isRu
+                ? 'Подписка «Стать спонсором» продлевается автоматически каждый месяц по цене, указанной выше, пока вы её не отмените.'
+                : '«Демеуші болу» жазылымы сіз болдырмағанша, жоғарыда көрсетілген баға бойынша ай сайын автоматты түрде ұзартылады.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 11, color: c.subtext, height: 1.5),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _LegalLink(
+                label: widget.isRu ? 'Политика конфиденциальности' : 'Құпиялылық саясаты',
+                url: _kPrivacyPolicyUrl,
+                c: c,
+              ),
+              Text('  ·  ', style: TextStyle(fontSize: 12, color: c.subtext)),
+              _LegalLink(
+                label: widget.isRu ? 'Условия использования' : 'Пайдалану шарттары',
+                url: _kTermsOfUseUrl,
+                c: c,
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _LegalLink extends StatelessWidget {
+  final String label;
+  final String url;
+  final AppColors c;
+  const _LegalLink({required this.label, required this.url, required this.c});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: c.subtext,
+          decoration: TextDecoration.underline,
+        ),
       ),
     );
   }
