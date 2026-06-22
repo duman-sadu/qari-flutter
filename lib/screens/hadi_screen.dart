@@ -1331,7 +1331,9 @@ correctRu: 'Буква с удвоением'
 
 class HadiScreen extends StatefulWidget {
   final String? initialQuery;
-  const HadiScreen({super.key, this.initialQuery});
+  // When opened from a challenge push: the quiz tab opens and joins this battle.
+  final String? initialChallengeId;
+  const HadiScreen({super.key, this.initialQuery, this.initialChallengeId});
 
   @override
   State<HadiScreen> createState() => _HadiScreenState();
@@ -1406,6 +1408,14 @@ class _HadiScreenState extends State<HadiScreen>
       if (mounted) _addGreeting();
       _subscribePendingChallenges();
     });
+    final challengeId = widget.initialChallengeId;
+    if (challengeId != null && challengeId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _tabCtrl.animateTo(1); // Квиз tab
+        _joinChallenge(challengeId);
+      });
+    }
   }
 
   void _subscribePendingChallenges() {

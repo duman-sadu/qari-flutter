@@ -30,6 +30,7 @@ import 'screens/profile_screen.dart';
 import 'screens/surah_select_screen.dart';
 import 'screens/groups_screen.dart';
 import 'screens/friends_screen.dart';
+import 'screens/hadi_screen.dart';
 import 'widgets/support_sheet.dart';
 
 /// Global navigator key — lets us open UI (e.g. the support sheet) from
@@ -50,6 +51,17 @@ void _openSupportSheet() {
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (_) => SupportSheet(isRu: isRu),
+  );
+}
+
+/// Opens the quiz battle for [challengeId] — invoked when a challenge push is tapped.
+void _openChallenge(String challengeId) {
+  final ctx = navigatorKey.currentContext;
+  if (ctx == null) return;
+  Navigator.of(ctx).push(
+    MaterialPageRoute(
+      builder: (_) => HadiScreen(initialChallengeId: challengeId),
+    ),
   );
 }
 
@@ -94,6 +106,7 @@ Future<void> _appMain() async {
 
   // Уведомления — каждый шаг изолирован, одна ошибка не блокирует остальное
   NotificationService.onSupportTap = _openSupportSheet;
+  FcmService.onChallengeTap = _openChallenge;
   try {
     await NotificationService.initialize();
   } catch (_) {}
@@ -203,10 +216,11 @@ Future<void> _appMain() async {
     ),
   );
 
-  // If the app was cold-started by tapping the support reminder, open the
-  // support sheet once the first frame (and navigator) is ready.
+  // If the app was cold-started by tapping a notification, open the relevant
+  // screen once the first frame (and navigator) is ready.
   WidgetsBinding.instance.addPostFrameCallback((_) {
     NotificationService.flushPendingSupportTap();
+    FcmService.flushPendingChallenge();
   });
 }
 
