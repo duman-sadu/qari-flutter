@@ -1489,27 +1489,48 @@ class _LearningScreenState extends State<LearningScreen>
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: _c.border),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                          fontSize: arabicFontSize, height: 1.6, color: _c.text),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _s.tr('bismiTranslation'),
-                        style: TextStyle(
-                            fontSize: bodyFontSize,
-                            height: 1.3,
-                            color: _c.subtext),
-                      ),
-                    ),
-                  ],
+                child: Builder(
+                  builder: (_) {
+                    // Preview the ayah the user is currently on, so the chosen
+                    // font sizes are shown on the real text (falls back to the
+                    // Basmala when no ayah is loaded yet).
+                    final current = ayah ??
+                        (_surahAyahs.isNotEmpty ? _surahAyahs.first : null);
+                    final previewArabic =
+                        (current?['arabic'] as String?)?.trim();
+                    final previewTr =
+                        (current?['translation'] as String?)?.trim();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          (previewArabic?.isNotEmpty ?? false)
+                              ? previewArabic!
+                              : 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+                          textAlign: TextAlign.right,
+                          textDirection: TextDirection.rtl,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: arabicFontSize, height: 1.6, color: _c.text),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            (previewTr?.isNotEmpty ?? false)
+                                ? previewTr!
+                                : _s.tr('bismiTranslation'),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: bodyFontSize,
+                                height: 1.3,
+                                color: _c.subtext),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               // Arabic slider

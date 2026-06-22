@@ -15,8 +15,15 @@ class NotificationService {
   static const _morningId = 1;
   static const _fridayId  = 2;
   static const _supportId = 3;
+  static const _supportPayload = 'support';
   static const _mainChannel =
       MethodChannel('com.example.qari_flutter/overlay');
+
+  /// Invoked when the user taps the weekly support reminder. Set from main.
+  static void Function()? onSupportTap;
+  // Captured when the app is cold-started by tapping the support reminder,
+  // then fired by [flushPendingSupportTap] once the UI is ready.
+  static bool _pendingSupportTap = false;
 
   static Uint8List? _dudiBytes;
 
@@ -80,8 +87,17 @@ class NotificationService {
     );
     await _plugin.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
-      onDidReceiveNotificationResponse: (_) {},
+      onDidReceiveNotificationResponse: _onResponse,
     );
+
+    // Cold start: app was launched by tapping the support reminder.
+    try {
+      final launch = await _plugin.getNotificationAppLaunchDetails();
+      if (launch?.didNotificationLaunchApp == true &&
+          launch?.notificationResponse?.payload == _supportPayload) {
+        _pendingSupportTap = true;
+      }
+    } catch (_) {}
 
     const channel = AndroidNotificationChannel(
       _channelId,
@@ -103,6 +119,18 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>();
     await iosImpl?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  static void _onResponse(NotificationResponse r) {
+    if (r.payload == _supportPayload) onSupportTap?.call();
+  }
+
+  /// Fires a support tap captured during cold start, once the UI is ready.
+  static void flushPendingSupportTap() {
+    if (_pendingSupportTap) {
+      _pendingSupportTap = false;
+      onSupportTap?.call();
+    }
   }
 
   /// Shows a notification immediately (no AlarmManager needed).
@@ -188,6 +216,7 @@ class NotificationService {
     required String body,
     required tz.TZDateTime at,
     DateTimeComponents? repeat,
+    String? payload,
   }) async {
     final details = await _details();
     try {
@@ -197,6 +226,7 @@ class NotificationService {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: repeat,
+        payload: payload,
       );
       return;
     } catch (_) {}
@@ -207,6 +237,7 @@ class NotificationService {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: repeat,
+        payload: payload,
       );
     } catch (_) {}
   }
@@ -287,6 +318,7 @@ class NotificationService {
           : _supportMessageKz(),
       at: at,
       repeat: DateTimeComponents.dayOfWeekAndTime,
+      payload: _supportPayload,
     );
   }
 

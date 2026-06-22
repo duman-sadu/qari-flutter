@@ -30,9 +30,27 @@ import 'screens/profile_screen.dart';
 import 'screens/surah_select_screen.dart';
 import 'screens/groups_screen.dart';
 import 'screens/friends_screen.dart';
+import 'widgets/support_sheet.dart';
+
+/// Global navigator key — lets us open UI (e.g. the support sheet) from
+/// outside the widget tree, such as a notification tap.
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runZonedGuarded(_appMain, (e, st) {});
+}
+
+/// Opens the "Support Qari" sheet — invoked when the support reminder is tapped.
+void _openSupportSheet() {
+  final ctx = navigatorKey.currentContext;
+  if (ctx == null) return;
+  final isRu = ctx.read<LanguageProvider>().isRu;
+  showModalBottomSheet(
+    context: ctx,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) => SupportSheet(isRu: isRu),
+  );
 }
 
 Future<void> _appMain() async {
@@ -75,6 +93,7 @@ Future<void> _appMain() async {
   ]);
 
   // Уведомления — каждый шаг изолирован, одна ошибка не блокирует остальное
+  NotificationService.onSupportTap = _openSupportSheet;
   try {
     await NotificationService.initialize();
   } catch (_) {}
@@ -183,6 +202,12 @@ Future<void> _appMain() async {
       ),
     ),
   );
+
+  // If the app was cold-started by tapping the support reminder, open the
+  // support sheet once the first frame (and navigator) is ready.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    NotificationService.flushPendingSupportTap();
+  });
 }
 
 ThemeData _buildTheme(AppColors c, Brightness brightness) => ThemeData(
@@ -210,6 +235,7 @@ class QariApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Qari',
       theme:     _buildTheme(AppColors.light, Brightness.light),
