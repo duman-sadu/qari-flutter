@@ -2,7 +2,7 @@ name: qari_flutter
 description: "Qari — Quran memorization and reading app with daily reminders and AI assistant."
 publish_to: 'none'
 
-version: 1.1.1+29
+version: 1.1.1+30
 
 environment:
   sdk: ^3.11.4
@@ -48,4 +48,5 @@ flutter:
   assets:
     - assets/hadi/
     - assets/intro/
+    - assets/icon/logo_mark.png
     - assets/quran_data.json

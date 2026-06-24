@@ -131,8 +131,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               ),
                             ],
                           ),
-                          child: const Center(
-                            child: Text('📖', style: TextStyle(fontSize: 46)),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/icon/logo_mark.png',
+                              width: 78,
+                              height: 78,
+                            ),
                           ),
                         ),
 
