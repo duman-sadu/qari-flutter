@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,6 +15,7 @@ import 'providers/plan_provider.dart';
 import 'providers/onboarding_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/goal_provider.dart';
+import 'providers/ramadan_provider.dart';
 import 'providers/language_provider.dart';
 import 'models/goal.dart';
 import 'services/notification_service.dart';
@@ -54,6 +56,11 @@ void _openSupportSheet() {
   );
 }
 
+/// Opens the learning screen — invoked when a белсенді ayah reminder is tapped.
+void _openLearning() {
+  navigatorKey.currentState?.pushNamedAndRemoveUntil('/learning', (_) => false);
+}
+
 /// Opens the quiz battle for [challengeId] — invoked when a challenge push is tapped.
 void _openChallenge(String challengeId) {
   final ctx = navigatorKey.currentContext;
@@ -81,6 +88,7 @@ Future<void> _appMain() async {
   final onboardingProvider = OnboardingProvider();
   final themeProvider = ThemeProvider();
   final goalProvider = GoalProvider();
+  final ramadanProvider = RamadanProvider();
   final languageProvider = LanguageProvider();
   try {
     audioHandler = await AudioService.init<QariAudioHandler>(
@@ -100,12 +108,15 @@ Future<void> _appMain() async {
     onboardingProvider.loadLocal(),
     themeProvider.load(),
     goalProvider.load(),
+    ramadanProvider.load(),
     languageProvider.load(),
     initQuranOfflineData().catchError((_) {}),
   ]);
 
   // Уведомления — каждый шаг изолирован, одна ошибка не блокирует остальное
   NotificationService.onSupportTap = _openSupportSheet;
+  NotificationService.onBelsendiTap = _openLearning;
+  NotificationService.onRamadanTap = _openLearning;
   FcmService.onChallengeTap = _openChallenge;
   try {
     await NotificationService.initialize();
@@ -141,6 +152,20 @@ Future<void> _appMain() async {
     } else {
       await NotificationService.scheduleSupportReminder(isRu: isRu);
     }
+
+    // белсенді (iOS): refresh the daily ayah reminders so their text reflects
+    // the user's current ayah on every launch.
+    if (Platform.isIOS && (prefs.getBool('activeMemorization') ?? false)) {
+      final pos = planProvider.currentPosition;
+      await NotificationService.scheduleActiveMemorization(
+        chapter: pos['chapter']!,
+        verse: pos['verse']!,
+        isRu: isRu,
+      );
+    }
+
+    // Ramadan хатм: refresh the per-day reminders on launch (no-op if not joined).
+    await ramadanProvider.refreshNotifications(isRu: isRu);
 
     // Goal notifications — one per remaining day, stops at deadline
     for (final g in goalProvider.goals) {
@@ -208,6 +233,7 @@ Future<void> _appMain() async {
         ChangeNotifierProvider.value(value: onboardingProvider),
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: goalProvider),
+        ChangeNotifierProvider.value(value: ramadanProvider),
         ChangeNotifierProvider.value(value: languageProvider),
       ],
       child: QariApp(
@@ -220,6 +246,8 @@ Future<void> _appMain() async {
   // screen once the first frame (and navigator) is ready.
   WidgetsBinding.instance.addPostFrameCallback((_) {
     NotificationService.flushPendingSupportTap();
+    NotificationService.flushPendingBelsendiTap();
+    NotificationService.flushPendingRamadanTap();
     FcmService.flushPendingChallenge();
   });
 }

@@ -525,8 +525,6 @@ void showKhatamDialog(BuildContext context, int number) {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('🎉', style: TextStyle(fontSize: 48)),
-          const SizedBox(height: 12),
           Text(
             'Хатым бітті!',
             textAlign: TextAlign.center,

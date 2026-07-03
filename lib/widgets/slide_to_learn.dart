@@ -131,7 +131,7 @@ class _SlideToLearnState extends State<SlideToLearn> {
               Opacity(
                 opacity: ((_progress - 0.5) * 2).clamp(0.0, 1.0),
                 child: Text(
-                  '🎉  ${widget.completedLabel}',
+                  widget.completedLabel,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

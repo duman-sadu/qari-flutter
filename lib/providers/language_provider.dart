@@ -227,6 +227,32 @@ class LanguageProvider extends ChangeNotifier {
   String membersTitle(int n) =>
       isRu ? 'Участники ($n)' : 'Мүшелер ($n)';
 
+  // ── Ramadan хатм challenge ──────────────────────────────────────────────
+  String get ramadanTitle => isRu ? '🌙 Рамадан хатм' : '🌙 Рамазан хатым';
+  String get ramadanSubtitle => isRu
+      ? 'Прочитай весь Коран за Рамадан — 1 джуз в день'
+      : 'Рамазанда Құранды толық оқы — күніне 1 жүз';
+  String ramadanCountdown(int days) => isRu
+      ? 'До Рамадана $days дн.'
+      : 'Рамазанға дейін $days күн';
+  String ramadanDayLabel(int day) =>
+      isRu ? 'День $day из 30' : '$day-күн / 30';
+  String ramadanJuzProgress(int done) =>
+      isRu ? '$done/30 джуз' : '$done/30 жүз';
+  String ramadanBehind(int need) => isRu
+      ? 'Отставание: нужно ещё $need джуз сегодня'
+      : 'Артта қалдыңыз: бүгін тағы $need жүз керек';
+  String get ramadanOnTrack => isRu ? 'Ты в графике 👍' : 'Кестедесің 👍';
+  String get ramadanJoin => isRu ? 'Участвовать' : 'Қатысу';
+  String get ramadanJoined => isRu ? 'Вы участвуете ✓' : 'Қатысудасыз ✓';
+  String get ramadanMarkBtn => isRu ? 'Джуз прочитан ✓' : 'Жүзді оқыдым ✓';
+  String get ramadanMarkedToday =>
+      isRu ? 'Сегодня отмечено ✓' : 'Бүгін белгіленді ✓';
+  String get ramadanDone => isRu
+      ? 'Хатм завершён! Барака Аллаху фик'
+      : 'Хатым аяқталды! Барака Аллаһу фик';
+  String get ramadanLeave => isRu ? 'Покинуть' : 'Шығу';
+
   String juzDone(int juz) => isRu ? '$juz-джуз ✓' : '$juz-жүз ✓';
 
   String juzInProgress(int juz) =>

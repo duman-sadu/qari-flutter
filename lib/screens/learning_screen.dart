@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,7 @@ import '../services/quran_api.dart';
 import '../widgets/tajweed_text.dart';
 import '../widgets/slide_to_learn.dart';
 import '../widgets/menu_drawer.dart';
+import '../services/notification_service.dart';
 import '../data/surah_info.dart';
 import '../data/sajda_verses.dart';
 import '../theme/app_colors.dart';
@@ -436,6 +438,13 @@ class _LearningScreenState extends State<LearningScreen>
   }
 
   Future<void> _toggleActiveMemorization(bool value) async {
+    // iOS forbids the lock-screen overlay used on Android, so белсенді instead
+    // schedules 3 daily reminders with the user's current ayah.
+    if (Platform.isIOS) {
+      await _setMemorizationIOS(value);
+      return;
+    }
+
     if (value) {
       bool hasOverlay = true;
       try {
@@ -453,6 +462,27 @@ class _LearningScreenState extends State<LearningScreen>
     }
 
     await _doSetMemorization(value);
+  }
+
+  Future<void> _setMemorizationIOS(bool value) async {
+    // Read context-bound values up front — they can't be used after an await.
+    final pos = context.read<PlanProvider>().currentPosition;
+    final isRu = _s.isRu;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('activeMemorization', value);
+    if (mounted) setState(() => activeMemorization = value);
+
+    if (value) {
+      await NotificationService.scheduleActiveMemorization(
+        chapter: pos['chapter']!,
+        verse: pos['verse']!,
+        isRu: isRu,
+      );
+      if (mounted) _showHintFor(const Duration(seconds: 4));
+    } else {
+      await NotificationService.cancelActiveMemorization();
+    }
   }
 
   Future<void> _doSetMemorization(bool value) async {
@@ -2527,7 +2557,7 @@ class _LearningScreenState extends State<LearningScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              s.tr('overlayHint'),
+                              s.tr(Platform.isIOS ? 'overlayHintIos' : 'overlayHint'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: _c.green,

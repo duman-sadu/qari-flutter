@@ -128,7 +128,7 @@ const Map<String, Map<String, String>> appStrings = {
   'tajweedIkhfa':    {'kz': 'Ихфа',              'ru': 'Ихфа'},
   'tajweedQalqala':  {'kz': 'Қалқала',           'ru': 'Калькаля'},
   'verseLoadError':  {'kz': 'Аят жүктелмей қалды', 'ru': 'Не удалось загрузить аят'},
-  'iMemorized':      {'kz': '🎉 Жаттадым!',      'ru': '🎉 Выучил!'},
+  'iMemorized':      {'kz': 'Жаттадым!',      'ru': 'Выучил!'},
   'pageRead':        {'kz': 'Бетті оқыдым!',     'ru': 'Страницу прочитал!'},
   'juzRead':         {'kz': 'Жүзді оқыдым!',     'ru': 'Джуз прочитал!'},
   'surahRead':       {'kz': 'Сүрені оқыдым!',    'ru': 'Суру прочитал!'},
@@ -162,6 +162,8 @@ const Map<String, Map<String, String>> appStrings = {
   'activeLabel':     {'kz': 'Белсенді',          'ru': 'Активно'},
   'overlayHint':     {'kz': 'Телефон ашылғанда аят экраны шығады',
                       'ru': 'При разблокировке показывается аят'},
+  'overlayHintIos':  {'kz': 'Күніне 3 рет аятпен еске салу келеді',
+                      'ru': 'Аят приходит в уведомлениях 3 раза в день'},
   'loading':         {'kz': 'Жүктелуде...',      'ru': 'Загрузка...'},
   'pronunciationLabel':{'kz': 'ОҚЫЛУЫ',         'ru': 'ПРОИЗНОШЕНИЕ'},
 

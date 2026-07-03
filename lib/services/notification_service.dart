@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
+import '../providers/plan_provider.dart' show surahNames, surahNamesRu;
 
 class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
@@ -16,14 +17,31 @@ class NotificationService {
   static const _fridayId  = 2;
   static const _supportId = 3;
   static const _supportPayload = 'support';
+  // Active memorization (белсенді) — 3 daily ayah reminders. iOS substitute for
+  // the Android lock-screen overlay, which iOS forbids.
+  static const _belsendiIds = [10, 11, 12];
+  static const _belsendiHours = [9, 14, 20];
+  static const _belsendiPayload = 'belsendi';
+  // Ramadan хатм — one reminder per Ramadan day to read the day's juz.
+  // Uses ID block 20..49 (30 days).
+  static const _ramadanBaseId = 20;
+  static const _ramadanPayload = 'ramadan';
   static const _mainChannel =
       MethodChannel('com.example.qari_flutter/overlay');
 
   /// Invoked when the user taps the weekly support reminder. Set from main.
   static void Function()? onSupportTap;
+  /// Invoked when the user taps a белсенді ayah reminder. Set from main.
+  static void Function()? onBelsendiTap;
+  /// Invoked when the user taps a Ramadan хатм reminder. Set from main.
+  static void Function()? onRamadanTap;
   // Captured when the app is cold-started by tapping the support reminder,
   // then fired by [flushPendingSupportTap] once the UI is ready.
   static bool _pendingSupportTap = false;
+  // Same, for белсенді reminders.
+  static bool _pendingBelsendiTap = false;
+  // Same, for Ramadan reminders.
+  static bool _pendingRamadanTap = false;
 
   static Uint8List? _dudiBytes;
 
@@ -93,9 +111,11 @@ class NotificationService {
     // Cold start: app was launched by tapping the support reminder.
     try {
       final launch = await _plugin.getNotificationAppLaunchDetails();
-      if (launch?.didNotificationLaunchApp == true &&
-          launch?.notificationResponse?.payload == _supportPayload) {
-        _pendingSupportTap = true;
+      if (launch?.didNotificationLaunchApp == true) {
+        final payload = launch?.notificationResponse?.payload;
+        if (payload == _supportPayload) _pendingSupportTap = true;
+        if (payload == _belsendiPayload) _pendingBelsendiTap = true;
+        if (payload == _ramadanPayload) _pendingRamadanTap = true;
       }
     } catch (_) {}
 
@@ -123,6 +143,8 @@ class NotificationService {
 
   static void _onResponse(NotificationResponse r) {
     if (r.payload == _supportPayload) onSupportTap?.call();
+    if (r.payload == _belsendiPayload) onBelsendiTap?.call();
+    if (r.payload == _ramadanPayload) onRamadanTap?.call();
   }
 
   /// Fires a support tap captured during cold start, once the UI is ready.
@@ -130,6 +152,89 @@ class NotificationService {
     if (_pendingSupportTap) {
       _pendingSupportTap = false;
       onSupportTap?.call();
+    }
+  }
+
+  /// Fires a белсенді tap captured during cold start, once the UI is ready.
+  static void flushPendingBelsendiTap() {
+    if (_pendingBelsendiTap) {
+      _pendingBelsendiTap = false;
+      onBelsendiTap?.call();
+    }
+  }
+
+  /// Schedules 3 daily reminders (09:00, 14:00, 20:00) showing the user's
+  /// current ayah. Tapping opens the learning screen. Used by белсенді mode.
+  static Future<void> scheduleActiveMemorization({
+    required int chapter,
+    required int verse,
+    required bool isRu,
+  }) async {
+    await cancelActiveMemorization();
+    final name = isRu ? surahNamesRu[chapter - 1] : surahNames[chapter - 1];
+    final label = isRu ? '$name, аят $verse' : '$name, $verse-аят';
+    final now = tz.TZDateTime.now(tz.local);
+    for (int i = 0; i < _belsendiIds.length; i++) {
+      var at = tz.TZDateTime(
+          tz.local, now.year, now.month, now.day, _belsendiHours[i], 0);
+      if (at.isBefore(now)) at = at.add(const Duration(days: 1));
+      await _schedule(
+        id: _belsendiIds[i],
+        title: isRu ? 'Время заучивания 📖' : 'Жаттау уақыты 📖',
+        body: isRu
+            ? 'Твой текущий аят: $label. Повтори его сейчас 🤲'
+            : 'Кезекті аятың: $label. Қазір қайтала 🤲',
+        at: at,
+        repeat: DateTimeComponents.time,
+        payload: _belsendiPayload,
+      );
+    }
+  }
+
+  static Future<void> cancelActiveMemorization() async {
+    for (final id in _belsendiIds) {
+      await _plugin.cancel(id);
+    }
+  }
+
+  /// Fires a Ramadan tap captured during cold start, once the UI is ready.
+  static void flushPendingRamadanTap() {
+    if (_pendingRamadanTap) {
+      _pendingRamadanTap = false;
+      onRamadanTap?.call();
+    }
+  }
+
+  /// Schedules one reminder per Ramadan day at [notifHour] telling the user to
+  /// read that day's juz. Past days are skipped. Tapping opens the app.
+  static Future<void> scheduleRamadan({
+    required DateTime start,
+    required int days,
+    required int notifHour,
+    required bool isRu,
+  }) async {
+    await cancelRamadan();
+    final now = tz.TZDateTime.now(tz.local);
+    for (int i = 0; i < days && i < 30; i++) {
+      final day = start.add(Duration(days: i));
+      final at = tz.TZDateTime(
+          tz.local, day.year, day.month, day.day, notifHour, 0);
+      if (at.isBefore(now)) continue;
+      await _schedule(
+        id: _ramadanBaseId + i,
+        title: isRu ? 'Рамадан хатм 🌙' : 'Рамазан хатым 🌙',
+        body: isRu
+            ? 'День ${i + 1}: прочитай сегодняшний джуз 📖'
+            : '${i + 1}-күн: бүгінгі жүзді оқы 📖',
+        at: at,
+        payload: _ramadanPayload,
+      );
+    }
+  }
+
+  static Future<void> cancelRamadan() async {
+    for (int i = 0; i < 30; i++) {
+      await _plugin.cancel(_ramadanBaseId + i);
     }
   }
 

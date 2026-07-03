@@ -718,8 +718,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🎉', style: TextStyle(fontSize: 48)),
-            const SizedBox(height: 12),
             Text(
               _s.tr('khatamDone'),
               textAlign: TextAlign.center,

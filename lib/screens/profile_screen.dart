@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import 'hadi_screen.dart';
 import 'stats_screen.dart';
 import '../providers/goal_provider.dart';
+import '../providers/ramadan_provider.dart';
 import '../models/goal.dart';
 import '../services/auth_service.dart';
 import '../services/group_service.dart';
@@ -101,6 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final o = context.watch<OnboardingProvider>();
     final plan = context.watch<PlanProvider>();
     final goalProvider = context.watch<GoalProvider>();
+    final ramadanProvider = context.watch<RamadanProvider>();
 
     final totalLearnedAll =
         plan.learnedHistory.fold(0, (acc, h) => acc + h.count);
@@ -675,6 +677,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 14),
                     _buildJuzReadCard(c),
 
+                    if (ramadanProvider.visible) ...[
+                      const SizedBox(height: 14),
+                      _buildRamadanCard(c, ramadanProvider),
+                    ],
+
                     const SizedBox(height: 14),
                     _buildGoalCard(context, c, goalProvider),
 
@@ -1016,6 +1023,139 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Notification fix card ────────────────────────────────────────────────
+
+  // ── Ramadan хатм card ────────────────────────────────────────────────────
+
+  Widget _buildRamadanCard(AppColors c, RamadanProvider r) {
+    const accent = Color(0xFF7E57C2); // Ramadan purple
+    final children = <Widget>[
+      Row(
+        children: [
+          Expanded(
+            child: Text(_s.ramadanTitle,
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w800, color: accent)),
+          ),
+          if (r.joined && !r.finished)
+            GestureDetector(
+              onTap: () => context.read<RamadanProvider>().leave(),
+              child: Text(_s.ramadanLeave,
+                  style: TextStyle(fontSize: 11, color: c.subtext)),
+            ),
+        ],
+      ),
+      const SizedBox(height: 8),
+    ];
+
+    if (r.finished) {
+      children.add(Text(_s.ramadanDone,
+          style: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w700, color: accent)));
+    } else if (r.isRunning) {
+      final need = (r.expectedJuz - r.juzCompleted).clamp(0, 30);
+      children.addAll([
+        Row(
+          children: [
+            Text(_s.ramadanJuzProgress(r.juzCompleted),
+                style: const TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w800, color: accent)),
+            const Spacer(),
+            Text(_s.ramadanDayLabel(r.dayOfRamadan),
+                style: TextStyle(fontSize: 12, color: c.subtext)),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: r.juzCompleted / RamadanProvider.totalDays,
+            minHeight: 6,
+            backgroundColor: accent.withValues(alpha: 0.15),
+            color: accent,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(r.onTrack ? _s.ramadanOnTrack : _s.ramadanBehind(need),
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: r.onTrack ? c.green : Colors.orange)),
+        const SizedBox(height: 10),
+        _ramadanButton(
+          accent,
+          label: r.markedToday ? _s.ramadanMarkedToday : _s.ramadanMarkBtn,
+          enabled: !r.markedToday,
+          onTap: () => context.read<RamadanProvider>().markJuzRead(),
+        ),
+      ]);
+    } else {
+      // Before Ramadan starts
+      children.addAll([
+        Text(_s.ramadanSubtitle,
+            style: TextStyle(fontSize: 12.5, color: c.text, height: 1.35)),
+        const SizedBox(height: 8),
+        Text(_s.ramadanCountdown(r.daysUntilStart),
+            style: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w700, color: accent)),
+        const SizedBox(height: 10),
+        if (!r.joined)
+          _ramadanButton(
+            accent,
+            label: _s.ramadanJoin,
+            enabled: true,
+            onTap: () => context.read<RamadanProvider>().join(isRu: _s.isRu),
+          )
+        else
+          Row(
+            children: [
+              Icon(Icons.check_circle, size: 16, color: c.green),
+              const SizedBox(width: 6),
+              Text(_s.ramadanJoined,
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: c.green)),
+            ],
+          ),
+      ]);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: accent.withValues(alpha: 0.30)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _ramadanButton(Color accent,
+      {required String label,
+      required bool enabled,
+      required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: enabled ? accent : accent.withValues(alpha: 0.25),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(label,
+            style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.white)),
+      ),
+    );
+  }
 
   // ── Goal card ────────────────────────────────────────────────────────────
 
