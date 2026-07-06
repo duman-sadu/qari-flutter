@@ -2894,6 +2894,8 @@ class _LearningScreenState extends State<LearningScreen>
                             isReadMode ? _readCompletedLabel : s.tr('iMemorized'),
                         isReadMode: isReadMode,
                         leftHanded: _leftHanded,
+                        // iOS can't minimize/close on "Ок" tap — show it dimmed.
+                        okEnabled: !Platform.isIOS,
                       ),
                     ),
                     if (!isReadMode && goalProvider.learnGoals.isNotEmpty)

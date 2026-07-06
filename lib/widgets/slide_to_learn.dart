@@ -8,6 +8,10 @@ class SlideToLearn extends StatefulWidget {
   final bool isReadMode;
   final bool leftHanded;
 
+  /// When false, the "Ок" tap does nothing and the idle button is dimmed
+  /// (e.g. on iOS, where tap-to-minimize isn't possible). Sliding is unaffected.
+  final bool okEnabled;
+
   const SlideToLearn({
     super.key,
     required this.onOk,
@@ -15,6 +19,7 @@ class SlideToLearn extends StatefulWidget {
     this.completedLabel = 'Жаттадым!',
     this.isReadMode = false,
     this.leftHanded = false,
+    this.okEnabled = true,
   });
 
   @override
@@ -68,10 +73,14 @@ class _SlideToLearnState extends State<SlideToLearn> {
     final borderColor = AppColors.of(context).border;
     final lh = widget.leftHanded;
     final thumbLeft = lh ? (4 + _maxSlide - _slideX) : (4 + _slideX);
+    // Dim the idle button when the "Ок" tap is disabled; it fades back to full
+    // as the user slides, so the "Жаттадым/Выучил" state looks unchanged.
+    final idleOpacity =
+        widget.okEnabled ? 1.0 : (0.5 + 0.5 * _progress);
 
     return Center(
       child: GestureDetector(
-        onTap: _triggered ? null : widget.onOk,
+        onTap: (_triggered || !widget.okEnabled) ? null : widget.onOk,
         onHorizontalDragUpdate: (details) {
           if (_triggered) return;
           setState(() {
@@ -87,7 +96,9 @@ class _SlideToLearnState extends State<SlideToLearn> {
             setState(() => _slideX = 0);
           }
         },
-        child: Container(
+        child: Opacity(
+          opacity: idleOpacity,
+          child: Container(
           width: _maxWidth,
           height: _height,
           decoration: BoxDecoration(
@@ -173,6 +184,7 @@ class _SlideToLearnState extends State<SlideToLearn> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );
