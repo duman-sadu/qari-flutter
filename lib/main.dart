@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -155,7 +156,7 @@ Future<void> _appMain() async {
 
     // белсенді (iOS): refresh the daily ayah reminders so their text reflects
     // the user's current ayah on every launch.
-    if (Platform.isIOS && (prefs.getBool('activeMemorization') ?? false)) {
+    if (!kIsWeb && Platform.isIOS && (prefs.getBool('activeMemorization') ?? false)) {
       final pos = planProvider.currentPosition;
       await NotificationService.scheduleActiveMemorization(
         chapter: pos['chapter']!,

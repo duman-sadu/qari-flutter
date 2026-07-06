@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -440,7 +441,7 @@ class _LearningScreenState extends State<LearningScreen>
   Future<void> _toggleActiveMemorization(bool value) async {
     // iOS forbids the lock-screen overlay used on Android, so белсенді instead
     // schedules 3 daily reminders with the user's current ayah.
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await _setMemorizationIOS(value);
       return;
     }
@@ -2892,10 +2893,11 @@ class _LearningScreenState extends State<LearningScreen>
                         onLearned: _nextAyah,
                         completedLabel:
                             isReadMode ? _readCompletedLabel : s.tr('iMemorized'),
+                        idleLabel: s.isRu ? 'Сдвиньте' : 'Жылжытыңыз',
                         isReadMode: isReadMode,
                         leftHanded: _leftHanded,
                         // iOS can't minimize/close on "Ок" tap — show it dimmed.
-                        okEnabled: !Platform.isIOS,
+                        okEnabled: kIsWeb || !Platform.isIOS,
                       ),
                     ),
                     if (!isReadMode && goalProvider.learnGoals.isNotEmpty)

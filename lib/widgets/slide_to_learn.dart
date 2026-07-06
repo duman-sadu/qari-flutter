@@ -5,6 +5,11 @@ class SlideToLearn extends StatefulWidget {
   final VoidCallback onOk;
   final Future<void> Function() onLearned;
   final String completedLabel;
+
+  /// Idle hint shown before sliding (e.g. "Сдвиньте"). An arrow is appended
+  /// automatically based on layout direction.
+  final String idleLabel;
+
   final bool isReadMode;
   final bool leftHanded;
 
@@ -17,6 +22,7 @@ class SlideToLearn extends StatefulWidget {
     required this.onOk,
     required this.onLearned,
     this.completedLabel = 'Жаттадым!',
+    this.idleLabel = 'Ок',
     this.isReadMode = false,
     this.leftHanded = false,
     this.okEnabled = true,
@@ -32,6 +38,12 @@ class _SlideToLearnState extends State<SlideToLearn> {
 
   static const double _height = 60;
   static const double _thumbSize = 52;
+
+  static const _idleStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: Color(0xFF6E6E73),
+  );
 
   Color get _activeColorMid =>
       widget.isReadMode ? const Color(0xFF1976D2) : const Color(0xFF2D7A55);
@@ -108,32 +120,25 @@ class _SlideToLearnState extends State<SlideToLearn> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // "Ок" label — fades out as progress grows
+              // Idle hint label — fades out as progress grows. Arrow points
+              // toward the slide direction (left for left-handed layout).
               Opacity(
                 opacity: (1 - (_progress * 2)).clamp(0.0, 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: lh
                       ? [
-                          const Text(
-                            '✅  Ок',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF6E6E73),
-                            ),
+                          Text(
+                            '←  ${widget.idleLabel}',
+                            style: _idleStyle,
                           ),
                           const SizedBox(width: _thumbSize + 16),
                         ]
                       : [
                           const SizedBox(width: _thumbSize + 16),
-                          const Text(
-                            '✅  Ок',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF6E6E73),
-                            ),
+                          Text(
+                            '${widget.idleLabel}  →',
+                            style: _idleStyle,
                           ),
                         ],
                 ),
