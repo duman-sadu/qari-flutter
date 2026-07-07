@@ -6,8 +6,8 @@ import '../theme/app_colors.dart';
 
 enum HadiState { calm, happy, motivate, reminder }
 
-String hadiMessage(HadiState state, {bool isRu = false}) {
-  if (isRu) {
+String hadiMessage(HadiState state, {String lang = 'kz'}) {
+  if (lang == 'ru') {
     switch (state) {
       case HadiState.calm:
         return 'Ассаляму алейкум! Проведём этот день с Кораном 📖';
@@ -17,6 +17,18 @@ String hadiMessage(HadiState state, {bool isRu = false}) {
         return 'Твоя серия продолжается! Молодец, не останавливайся 🔥';
       case HadiState.reminder:
         return 'Ты ещё не читал сегодня. Даже один аят — хорошо 🌙';
+    }
+  }
+  if (lang == 'en') {
+    switch (state) {
+      case HadiState.calm:
+        return 'Assalamu alaikum! Let\'s spend this day with the Quran 📖';
+      case HadiState.happy:
+        return 'MashaAllah! You completed today\'s goal 🌟';
+      case HadiState.motivate:
+        return 'Your streak continues! Well done, keep going 🔥';
+      case HadiState.reminder:
+        return 'You haven\'t read today yet. Even one ayah counts 🌙';
     }
   }
   switch (state) {
@@ -263,7 +275,7 @@ class _AnimatedMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
-    final isRu = context.watch<LanguageProvider>().isRu;
+    final lang = context.watch<LanguageProvider>().lang;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 400),
       transitionBuilder: (child, anim) => FadeTransition(
@@ -277,7 +289,7 @@ class _AnimatedMessage extends StatelessWidget {
         ),
       ),
       child: Text(
-        hadiMessage(state, isRu: isRu),
+        hadiMessage(state, lang: lang),
         key: ValueKey(state),
         style: TextStyle(fontSize: 13, height: 1.4, color: c.text),
       ),

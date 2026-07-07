@@ -731,7 +731,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         const SizedBox(width: 4),
                                       ],
                                       Text(
-                                        '${i + 1}. ${(_s.isRu ? surahNamesRu : surahNames)[i]}',
+                                        '${i + 1}. ${_s.surahNamesL10n[i]}',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: c.green,
@@ -1103,7 +1103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             accent,
             label: _s.ramadanJoin,
             enabled: true,
-            onTap: () => context.read<RamadanProvider>().join(isRu: _s.isRu),
+            onTap: () => context.read<RamadanProvider>().join(lang: _s.lang),
           )
         else
           Row(
@@ -1258,7 +1258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Text('📘', style: TextStyle(fontSize: 16)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text((_s.isRu ? surahNamesRu : surahNames)[idx],
+                  child: Text(_s.surahNamesL10n[idx],
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -1557,7 +1557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: Text(
                     d.surahIndex >= 0
-                        ? '${d.surahIndex + 1}. ${(_s.isRu ? surahNamesRu : surahNames)[d.surahIndex]}'
+                        ? '${d.surahIndex + 1}. ${_s.surahNamesL10n[d.surahIndex]}'
                         : _s.tr('surahSelectHint'),
                     style: TextStyle(
                         fontSize: 14,
@@ -1846,7 +1846,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text((_s.isRu ? surahNamesRu : surahNames)[i],
+                                child: Text(_s.surahNamesL10n[i],
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -2183,7 +2183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            (_s.isRu ? surahNamesRu : surahNames)[index],
+                            _s.surahNamesL10n[index],
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -2373,6 +2373,7 @@ class _LangPicker extends StatelessWidget {
   static const _langs = [
     ('kz', 'ҚАЗ', 'Қазақша'),
     ('ru', 'РУС', 'Русский'),
+    ('en', 'ENG', 'English'),
   ];
 
   @override

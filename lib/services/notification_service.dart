@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
-import '../providers/plan_provider.dart' show surahNames, surahNamesRu;
+import '../providers/plan_provider.dart'
+    show surahNames, surahNamesRu, surahNamesEn;
 
 class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
@@ -44,6 +45,23 @@ class NotificationService {
   static bool _pendingRamadanTap = false;
 
   static Uint8List? _dudiBytes;
+
+  /// Picks the message variant for [lang] ('kz' default).
+  static String _pick(String lang, String kz, String ru, String en) {
+    switch (lang) {
+      case 'ru': return ru;
+      case 'en': return en;
+      default:   return kz;
+    }
+  }
+
+  static List<String> _surahNamesFor(String lang) {
+    switch (lang) {
+      case 'ru': return surahNamesRu;
+      case 'en': return surahNamesEn;
+      default:   return surahNames;
+    }
+  }
 
   static Future<NotificationDetails> _details() async {
     _dudiBytes ??= await _loadAssetBytes('assets/hadi/reminder.png');
@@ -168,11 +186,12 @@ class NotificationService {
   static Future<void> scheduleActiveMemorization({
     required int chapter,
     required int verse,
-    required bool isRu,
+    String lang = 'kz',
   }) async {
     await cancelActiveMemorization();
-    final name = isRu ? surahNamesRu[chapter - 1] : surahNames[chapter - 1];
-    final label = isRu ? '$name, аят $verse' : '$name, $verse-аят';
+    final name = _surahNamesFor(lang)[chapter - 1];
+    final label = _pick(lang,
+        '$name, $verse-аят', '$name, аят $verse', '$name, ayah $verse');
     final now = tz.TZDateTime.now(tz.local);
     for (int i = 0; i < _belsendiIds.length; i++) {
       var at = tz.TZDateTime(
@@ -180,10 +199,12 @@ class NotificationService {
       if (at.isBefore(now)) at = at.add(const Duration(days: 1));
       await _schedule(
         id: _belsendiIds[i],
-        title: isRu ? 'Время заучивания 📖' : 'Жаттау уақыты 📖',
-        body: isRu
-            ? 'Твой текущий аят: $label. Повтори его сейчас 🤲'
-            : 'Кезекті аятың: $label. Қазір қайтала 🤲',
+        title: _pick(lang,
+            'Жаттау уақыты 📖', 'Время заучивания 📖', 'Time to memorize 📖'),
+        body: _pick(lang,
+            'Кезекті аятың: $label. Қазір қайтала 🤲',
+            'Твой текущий аят: $label. Повтори его сейчас 🤲',
+            'Your current ayah: $label. Review it now 🤲'),
         at: at,
         repeat: DateTimeComponents.time,
         payload: _belsendiPayload,
@@ -211,7 +232,7 @@ class NotificationService {
     required DateTime start,
     required int days,
     required int notifHour,
-    required bool isRu,
+    String lang = 'kz',
   }) async {
     await cancelRamadan();
     final now = tz.TZDateTime.now(tz.local);
@@ -222,10 +243,12 @@ class NotificationService {
       if (at.isBefore(now)) continue;
       await _schedule(
         id: _ramadanBaseId + i,
-        title: isRu ? 'Рамадан хатм 🌙' : 'Рамазан хатым 🌙',
-        body: isRu
-            ? 'День ${i + 1}: прочитай сегодняшний джуз 📖'
-            : '${i + 1}-күн: бүгінгі жүзді оқы 📖',
+        title: _pick(lang,
+            'Рамазан хатым 🌙', 'Рамадан хатм 🌙', 'Ramadan Khatam 🌙'),
+        body: _pick(lang,
+            '${i + 1}-күн: бүгінгі жүзді оқы 📖',
+            'День ${i + 1}: прочитай сегодняшний джуз 📖',
+            'Day ${i + 1}: read today\'s juz 📖'),
         at: at,
         payload: _ramadanPayload,
       );
@@ -245,42 +268,48 @@ class NotificationService {
 
   /// Schedules a test notification 1 minute from now via AlarmManager.
   /// If it arrives → AlarmManager works. If not → OEM kills it.
-  static Future<String> scheduleTestIn1Min({bool isRu = false}) async {
+  static Future<String> scheduleTestIn1Min({String lang = 'kz'}) async {
     final now = tz.TZDateTime.now(tz.local);
     final at = now.add(const Duration(minutes: 1));
     final details = await _details();
+    final hhmm = '${at.hour}:${at.minute.toString().padLeft(2, '0')}';
     try {
       await _plugin.zonedSchedule(
         998,
         'Dudi',
-        isRu ? 'AlarmManager работает! ✅' : 'AlarmManager жұмыс істейді! ✅',
+        _pick(lang,
+            'AlarmManager жұмыс істейді! ✅',
+            'AlarmManager работает! ✅',
+            'AlarmManager works! ✅'),
         at,
         details,
         androidScheduleMode: AndroidScheduleMode.alarmClock,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );
-      return isRu
-          ? 'Тест запланирован на ${at.hour}:${at.minute.toString().padLeft(2, '0')} — жди уведомление'
-          : 'Тест ${at.hour}:${at.minute.toString().padLeft(2, '0')}-де жоспарланды — күт';
+      return _pick(lang,
+          'Тест $hhmm-де жоспарланды — күт',
+          'Тест запланирован на $hhmm — жди уведомление',
+          'Test scheduled for $hhmm — wait for it');
     } catch (e) {
       // alarmClock failed (no SCHEDULE_EXACT_ALARM) — try inexact
       try {
         await _plugin.zonedSchedule(
           998,
           'Dudi',
-          isRu ? 'Inexact AlarmManager ✅' : 'Inexact AlarmManager ✅',
+          'Inexact AlarmManager ✅',
           at,
           details,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
         );
-        return isRu
-            ? 'Тест (inexact) на ${at.hour}:${at.minute.toString().padLeft(2, '0')}'
-            : 'Тест (inexact) ${at.hour}:${at.minute.toString().padLeft(2, '0')}-де';
+        return _pick(lang,
+            'Тест (inexact) $hhmm-де',
+            'Тест (inexact) на $hhmm',
+            'Test (inexact) at $hhmm');
       } catch (e2) {
-        return isRu ? 'Ошибка: $e2' : 'Қате: $e2';
+        return _pick(lang, 'Қате: $e2', 'Ошибка: $e2', 'Error: $e2');
       }
     }
   }
@@ -349,7 +378,7 @@ class NotificationService {
 
   /// Daily evening reminder at 20:00.
   static Future<void> scheduleReminder(int daysSince,
-      {bool isRu = false}) async {
+      {String lang = 'kz'}) async {
     await _plugin.cancel(_eveningId);
     final now = tz.TZDateTime.now(tz.local);
     var at = tz.TZDateTime(tz.local, now.year, now.month, now.day, 20, 0);
@@ -359,7 +388,7 @@ class NotificationService {
     await _schedule(
       id: _eveningId,
       title: 'Dudi',
-      body: _eveningMessage(daysSince, isRu: isRu),
+      body: _eveningMessage(daysSince, lang: lang),
       at: at,
       repeat: DateTimeComponents.time,
     );
@@ -367,7 +396,7 @@ class NotificationService {
 
   /// Daily morning motivational reminder at 08:00.
   static Future<void> scheduleMorningReminder(int daysSince,
-      {bool isRu = false}) async {
+      {String lang = 'kz'}) async {
     await _plugin.cancel(_morningId);
     final now = tz.TZDateTime.now(tz.local);
     var at = tz.TZDateTime(tz.local, now.year, now.month, now.day, 8, 0);
@@ -375,7 +404,7 @@ class NotificationService {
     await _schedule(
       id: _morningId,
       title: 'Dudi',
-      body: _morningMessage(daysSince, isRu: isRu),
+      body: _morningMessage(daysSince, lang: lang),
       at: at,
       repeat: DateTimeComponents.time,
     );
@@ -387,7 +416,7 @@ class NotificationService {
   }
 
   /// Weekly Friday greeting at 09:00 — congratulates with Juma and advises Surah Al-Kahf.
-  static Future<void> scheduleFridayReminder({bool isRu = false}) async {
+  static Future<void> scheduleFridayReminder({String lang = 'kz'}) async {
     await _plugin.cancel(_fridayId);
     final now = tz.TZDateTime.now(tz.local);
     var at = tz.TZDateTime(tz.local, now.year, now.month, now.day, 9, 0);
@@ -398,16 +427,17 @@ class NotificationService {
     await _schedule(
       id: _fridayId,
       title: 'Dudi — Жұма мүбәрак! 🌙',
-      body: isRu
-          ? 'Джума мубарак! Не забудь прочитать суру аль-Кахф сегодня — она защищает от Даджжала 📖'
-          : 'Жұма мүбәрак! Бүгін әл-Кәһф сүресін оқуды ұмытпа — ол Дажжалдан қорғайды 📖',
+      body: _pick(lang,
+          'Жұма мүбәрак! Бүгін әл-Кәһф сүресін оқуды ұмытпа — ол Дажжалдан қорғайды 📖',
+          'Джума мубарак! Не забудь прочитать суру аль-Кахф сегодня — она защищает от Даджжала 📖',
+          'Jumu\'ah Mubarak! Don\'t forget to read Surah Al-Kahf today — it protects from the Dajjal 📖'),
       at: at,
       repeat: DateTimeComponents.dayOfWeekAndTime,
     );
   }
 
   /// Weekly support reminder on Wednesdays at 19:00 for users who haven't donated.
-  static Future<void> scheduleSupportReminder({bool isRu = false}) async {
+  static Future<void> scheduleSupportReminder({String lang = 'kz'}) async {
     await _plugin.cancel(_supportId);
     final now = tz.TZDateTime.now(tz.local);
     var at = tz.TZDateTime(tz.local, now.year, now.month, now.day, 19, 0);
@@ -418,9 +448,7 @@ class NotificationService {
     await _schedule(
       id: _supportId,
       title: 'Dudi 🤲',
-      body: isRu
-          ? _supportMessageRu()
-          : _supportMessageKz(),
+      body: _supportMessage(lang),
       at: at,
       repeat: DateTimeComponents.dayOfWeekAndTime,
       payload: _supportPayload,
@@ -431,21 +459,30 @@ class NotificationService {
     await _plugin.cancel(_supportId);
   }
 
-  static String _supportMessageRu() {
-    final msgs = [
-      'Qari живёт благодаря вам. Поддержи проект — это садака для уммы! 🤲',
-      'Приложение бесплатное, но развивается с вашей помощью. Поддержи Qari 💚',
-      'Каждый аят, прочитанный через Qari — и вы часть этого. Поддержи нас 🤲',
-    ];
-    return msgs[DateTime.now().day % msgs.length];
-  }
-
-  static String _supportMessageKz() {
-    final msgs = [
-      'Qari сіздің арқаңызда өседі. Жобаны қолда — бұл үммет үшін садақа! 🤲',
-      'Қолданба тегін, бірақ сіздің қолдауыңызбен дамиды. Qari-ды қолда 💚',
-      'Qari арқылы оқыған әр аят — сіз де оның бір бөлігісіз. Бізді қолда 🤲',
-    ];
+  static String _supportMessage(String lang) {
+    final List<String> msgs;
+    switch (lang) {
+      case 'ru':
+        msgs = [
+          'Qari живёт благодаря вам. Поддержи проект — это садака для уммы! 🤲',
+          'Приложение бесплатное, но развивается с вашей помощью. Поддержи Qari 💚',
+          'Каждый аят, прочитанный через Qari — и вы часть этого. Поддержи нас 🤲',
+        ];
+        break;
+      case 'en':
+        msgs = [
+          'Qari lives thanks to you. Support the project — it\'s sadaqah for the ummah! 🤲',
+          'The app is free, but it grows with your help. Support Qari 💚',
+          'Every ayah read through Qari — you are part of it. Support us 🤲',
+        ];
+        break;
+      default:
+        msgs = [
+          'Qari сіздің арқаңызда өседі. Жобаны қолда — бұл үммет үшін садақа! 🤲',
+          'Қолданба тегін, бірақ сіздің қолдауыңызбен дамиды. Qari-ды қолда 💚',
+          'Qari арқылы оқыған әр аят — сіз де оның бір бөлігісіз. Бізді қолда 🤲',
+        ];
+    }
     return msgs[DateTime.now().day % msgs.length];
   }
 
@@ -458,7 +495,7 @@ class NotificationService {
     required int minute,
     required String deadline,
     required bool isLearn,
-    required bool isRu,
+    String lang = 'kz',
   }) async {
     await cancelGoalNotifications(baseId);
 
@@ -491,7 +528,7 @@ class NotificationService {
           id: baseId + i,
           title: title,
           body: _goalBody(
-              daysLeft: totalDays - i, isLearn: isLearn, isRu: isRu),
+              daysLeft: totalDays - i, isLearn: isLearn, lang: lang),
           at: at,
         );
       } catch (_) {}
@@ -524,10 +561,10 @@ class NotificationService {
   static String _goalBody({
     required int daysLeft,
     required bool isLearn,
-    required bool isRu,
+    required String lang,
   }) {
     final d = daysLeft;
-    if (isRu) {
+    if (lang == 'ru') {
       final String daysStr;
       if (d % 10 == 1 && d % 100 != 11) {
         daysStr = 'Остался $d день';
@@ -568,6 +605,40 @@ class NotificationService {
           : '$daysStr. Начни сейчас — маленький шаг ведёт к великой цели 📖';
     }
 
+    if (lang == 'en') {
+      final daysStr = d == 1 ? '1 day left' : '$d days left';
+      if (d == 1) {
+        return isLearn
+            ? 'Last day! Dudi believes in you — finish the surah 💪📘'
+            : 'Last day of your goal! Read today — you\'re almost there 🏁📖';
+      }
+      if (d <= 3) {
+        return isLearn
+            ? '$daysStr. Final stretch — don\'t stop! 🔥📘'
+            : '$daysStr until the goal ends. Dudi is with you — read! 🐪📖';
+      }
+      if (d <= 7) {
+        final msgs = isLearn ? [
+          '$daysStr — review it piece by piece every day 📘',
+          '$daysStr — Dudi reminds you: memorization takes consistency 🤲',
+          '$daysStr — split the surah into parts and learn one at a time 📘',
+        ] : [
+          '$daysStr — read at least a page a day 📖',
+          '$daysStr — Dudi is with you on your path 🐪',
+          '$daysStr — consistency matters more than quantity 🌿',
+        ];
+        return msgs[d % msgs.length];
+      }
+      if (d <= 14) {
+        return isLearn
+            ? '$daysStr. Learn 3–5 ayahs a day — you\'ll make it! 📘'
+            : '$daysStr. Read a page in the morning and evening 📖';
+      }
+      return isLearn
+          ? '$daysStr to finish the goal. Dudi is with you every step 🐪📘'
+          : '$daysStr. Start now — a small step leads to a great goal 📖';
+    }
+
     // Kazakh
     final daysStr = d == 1 ? '1 күн қалды' : '$d күн қалды';
     if (d == 1) {
@@ -602,8 +673,8 @@ class NotificationService {
         : '$daysStr. Қазір баста — кішкентай қадам ұлы мақсатқа жетелейді 📖';
   }
 
-  static String _eveningMessage(int days, {bool isRu = false}) {
-    if (isRu) {
+  static String _eveningMessage(int days, {String lang = 'kz'}) {
+    if (lang == 'ru') {
       if (days == 0) {
         final msgs = [
           'МашааАллах! Ты занимался сегодня. Так держать — постоянство любимо Аллахом 📖',
@@ -625,6 +696,29 @@ class NotificationService {
       if (days <= 7) return '$days дней без Корана. Вернись сегодня — Аллах принимает раскаяние 🤲';
       if (days <= 14) return 'Dudi ждёт тебя уже $days дней. Начни с Аль-Фатихи — 7 аятов, 1 минута 🌿';
       return 'Давно не виделись... Коран скучает. Бисмилла — и начни заново 🐪';
+    }
+    if (lang == 'en') {
+      if (days == 0) {
+        final msgs = [
+          'MashaAllah! You studied today. Keep it up — consistency is beloved to Allah 📖',
+          'Great day! May every ayah you read be a light in your heart 🌟',
+          'Well done! The Prophet ﷺ said: the best deeds are the most consistent 🤲',
+        ];
+        return msgs[days % msgs.length];
+      }
+      if (days == 1) {
+        final msgs = [
+          'Don\'t forget to read the Quran today — keep your streak! 🔥',
+          'One day — one ayah. A small step is better than stopping 📖',
+          'Dudi reminds you: today is your Quran day. Don\'t put it off 🐪',
+        ];
+        return msgs[DateTime.now().weekday % msgs.length];
+      }
+      if (days == 2) return '2 days have passed... Dudi misses you. One ayah and the streak resumes! 🐪';
+      if (days == 3) return '$days days without the Quran. Remember: "Read the Quran, for it will come as an intercessor" 🌙';
+      if (days <= 7) return '$days days without the Quran. Come back today — Allah accepts repentance 🤲';
+      if (days <= 14) return 'Dudi has been waiting for $days days. Start with Al-Fatihah — 7 ayahs, 1 minute 🌿';
+      return 'It\'s been a while... The Quran misses you. Bismillah — start again 🐪';
     }
     if (days == 0) {
       final msgs = [
@@ -649,11 +743,16 @@ class NotificationService {
     return 'Ұзақ болды... Құран сізді күтеді. Бисмилла — жаңадан бастайық 🐪';
   }
 
-  static String _morningMessage(int days, {bool isRu = false}) {
-    final tips = isRu ? _tipsRu : _tipsKz;
+  static String _morningMessage(int days, {String lang = 'kz'}) {
+    final List<String> tips;
+    switch (lang) {
+      case 'ru': tips = _tipsRu; break;
+      case 'en': tips = _tipsEn; break;
+      default:   tips = _tipsKz;
+    }
     final tip = tips[DateTime.now().day % tips.length];
 
-    if (isRu) {
+    if (lang == 'ru') {
       if (days == 0) {
         final msgs = [
           'Ассаляму алейкум! Продолжай свой путь с Кораном ☀️',
@@ -665,6 +764,19 @@ class NotificationService {
       if (days == 1) return 'Доброе утро! Поддержи серию — прочитай сегодня 🔥 $tip';
       if (days <= 3) return 'Доброе утро! $days день без Корана. Сегодня — отличный шанс вернуться 🌿';
       return 'Dudi желает доброго утра! Начни день с аята — и он будет благословенным 🌙';
+    }
+    if (lang == 'en') {
+      if (days == 0) {
+        final msgs = [
+          'Assalamu alaikum! Continue your journey with the Quran ☀️',
+          'Good morning! Yesterday was good — today will be even better 🌟',
+          'Start the day in the name of Allah! $tip',
+        ];
+        return msgs[DateTime.now().weekday % msgs.length];
+      }
+      if (days == 1) return 'Good morning! Keep the streak — read today 🔥 $tip';
+      if (days <= 3) return 'Good morning! $days days without the Quran. Today is a great chance to return 🌿';
+      return 'Dudi wishes you a good morning! Start the day with an ayah — it will be blessed 🌙';
     }
     if (days == 0) {
       final msgs = [
@@ -695,5 +807,14 @@ class NotificationService {
     'Совет: Сура Мульк заступается в могиле.',
     'Совет: Сура Ихлас равна трети Корана.',
     'Совет: Сура Кахф в пятницу — защита от Даджжала.',
+  ];
+
+  static const _tipsEn = [
+    'Tip: 5 minutes of Quran every day is 30 hours a year!',
+    'Tip: Reading Surah Ya-Sin on Friday morning is a sunnah.',
+    'Tip: Recite Ayat al-Kursi after every prayer.',
+    'Tip: Surah Al-Mulk intercedes in the grave.',
+    'Tip: Surah Al-Ikhlas equals a third of the Quran.',
+    'Tip: Surah Al-Kahf on Friday protects from the Dajjal.',
   ];
 }

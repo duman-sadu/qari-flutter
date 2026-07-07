@@ -71,7 +71,7 @@ class RamadanProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> join({required bool isRu}) async {
+  Future<void> join({required String lang}) async {
     joined = true;
     notifyListeners();
     await _save();
@@ -79,7 +79,7 @@ class RamadanProvider extends ChangeNotifier {
       start: startDate,
       days: totalDays,
       notifHour: notifHour,
-      isRu: isRu,
+      lang: lang,
     );
   }
 
@@ -92,13 +92,13 @@ class RamadanProvider extends ChangeNotifier {
 
   /// Re-schedules the daily reminders — call on launch so timezone/language
   /// changes are reflected. No-op if not joined.
-  Future<void> refreshNotifications({required bool isRu}) async {
+  Future<void> refreshNotifications({required String lang}) async {
     if (!joined) return;
     await NotificationService.scheduleRamadan(
       start: startDate,
       days: totalDays,
       notifHour: notifHour,
-      isRu: isRu,
+      lang: lang,
     );
   }
 

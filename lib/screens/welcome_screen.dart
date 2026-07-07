@@ -267,6 +267,7 @@ class _LangPicker extends StatelessWidget {
   static const _langs = [
     ('kz', 'ҚАЗ', 'Қазақша'),
     ('ru', 'РУС', 'Русский'),
+    ('en', 'ENG', 'English'),
   ];
 
   @override

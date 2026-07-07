@@ -21,9 +21,17 @@ const _kTierIds = <String>{
 };
 final _kAllProductIds = {..._kTierIds, _kSubscriptionId};
 
+String _pick(String lang, String kz, String ru, String en) {
+  switch (lang) {
+    case 'ru': return ru;
+    case 'en': return en;
+    default:   return kz;
+  }
+}
+
 class SupportSheet extends StatefulWidget {
-  final bool isRu;
-  const SupportSheet({super.key, required this.isRu});
+  final String lang;
+  const SupportSheet({super.key, required this.lang});
 
   @override
   State<SupportSheet> createState() => _SupportSheetState();
@@ -38,6 +46,8 @@ class _SupportSheetState extends State<SupportSheet> {
   bool _loading = true;
   bool _unavailable = false;
   String? _feedback;
+
+  String _tr(String kz, String ru, String en) => _pick(widget.lang, kz, ru, en);
 
   @override
   void initState() {
@@ -90,17 +100,20 @@ class _SupportSheetState extends State<SupportSheet> {
         final isSponsor = p.productID == _kSubscriptionId;
         if (mounted) {
           setState(() => _feedback = isSponsor
-              ? (widget.isRu
-                  ? 'МашааАллах! Вы стали спонсором Qari 👑\nАллах вознаградит вас!'
-                  : 'МашааАллах! Сіз Qari демеушісі болдыңыз 👑\nАллах сізді марапаттасын!')
-              : (widget.isRu
-                  ? 'БаракаллахуфикА! Аллах принял твоё пожертвование 🤲'
-                  : 'БаракаллаhУ фик! Аллах садақаңды қабыл алсын 🤲'));
+              ? _tr(
+                  'МашааАллах! Сіз Qari демеушісі болдыңыз 👑\nАллах сізді марапаттасын!',
+                  'МашааАллах! Вы стали спонсором Qari 👑\nАллах вознаградит вас!',
+                  'MashaAllah! You became a Qari sponsor 👑\nMay Allah reward you!')
+              : _tr(
+                  'БаракаллаhУ фик! Аллах садақаңды қабыл алсын 🤲',
+                  'БаракаллахуфикА! Аллах принял твоё пожертвование 🤲',
+                  'BarakAllahu fik! May Allah accept your donation 🤲'));
         }
       } else if (p.status == PurchaseStatus.pending) {
-        if (mounted) setState(() => _feedback = widget.isRu
-            ? 'Ожидание подтверждения...'
-            : 'Растау күтілуде...');
+        if (mounted) setState(() => _feedback = _tr(
+            'Растау күтілуде...',
+            'Ожидание подтверждения...',
+            'Waiting for confirmation...'));
       } else if (p.status == PurchaseStatus.error) {
         _iap.completePurchase(p);
         if (mounted) setState(() => _feedback = null);
@@ -144,14 +157,15 @@ class _SupportSheetState extends State<SupportSheet> {
           const Text('🤲', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 12),
           Text(
-            widget.isRu ? 'Поддержать Qari' : 'Qari қолдаңыз',
+            _tr('Qari қолдаңыз', 'Поддержать Qari', 'Support Qari'),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: c.text),
           ),
           const SizedBox(height: 10),
           Text(
-            widget.isRu
-                ? 'Это приложение создано с любовью и для блага уммы. Ваша поддержка помогает его развитию.'
-                : 'Бұл қолданба үмметтің игілігі үшін жасалды. Қолдауыңыз оны дамытуға көмектеседі.',
+            _tr(
+                'Бұл қолданба үмметтің игілігі үшін жасалды. Қолдауыңыз оны дамытуға көмектеседі.',
+                'Это приложение создано с любовью и для блага уммы. Ваша поддержка помогает его развитию.',
+                'This app was made with love for the good of the ummah. Your support helps it grow.'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: c.subtext, height: 1.5),
           ),
@@ -177,14 +191,14 @@ class _SupportSheetState extends State<SupportSheet> {
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
           ] else if (_unavailable) ...[
-            _UnavailableHint(isRu: widget.isRu, c: c),
+            _UnavailableHint(lang: widget.lang, c: c),
           ] else ...[
 
             // ── Sponsor subscription button ──────────────────────────
             if (_sponsorProduct != null) ...[
               _SponsorButton(
                 product: _sponsorProduct!,
-                isRu: widget.isRu,
+                lang: widget.lang,
                 onTap: () => _buySponsor(_sponsorProduct!),
               ),
               const SizedBox(height: 12),
@@ -194,7 +208,8 @@ class _SupportSheetState extends State<SupportSheet> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      widget.isRu ? 'или разовый донат' : 'немесе бір реттік донат',
+                      _tr('немесе бір реттік донат', 'или разовый донат',
+                          'or a one-time donation'),
                       style: TextStyle(fontSize: 11, color: c.subtext),
                     ),
                   ),
@@ -206,7 +221,7 @@ class _SupportSheetState extends State<SupportSheet> {
 
             // ── One-time tier buttons ────────────────────────────────
             if (_tiers.isEmpty)
-              _UnavailableHint(isRu: widget.isRu, c: c)
+              _UnavailableHint(lang: widget.lang, c: c)
             else
               ..._tiers.map((p) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -216,17 +231,19 @@ class _SupportSheetState extends State<SupportSheet> {
 
           const SizedBox(height: 20),
           Text(
-            widget.isRu
-                ? 'Спасибо за поддержку! Пусть Аллах вознаградит вас и примет ваше доброе дело 🤲'
-                : 'Алла разы болсын! Алла қабыл етсін 🤲',
+            _tr(
+                'Алла разы болсын! Алла қабыл етсін 🤲',
+                'Спасибо за поддержку! Пусть Аллах вознаградит вас и примет ваше доброе дело 🤲',
+                'Thank you for your support! May Allah reward you and accept your good deed 🤲'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: c.subtext, height: 1.6),
           ),
           const SizedBox(height: 16),
           Text(
-            widget.isRu
-                ? 'Подписка «Стать спонсором» продлевается автоматически каждый месяц по цене, указанной выше, пока вы её не отмените.'
-                : '«Демеуші болу» жазылымы сіз болдырмағанша, жоғарыда көрсетілген баға бойынша ай сайын автоматты түрде ұзартылады.',
+            _tr(
+                '«Демеуші болу» жазылымы сіз болдырмағанша, жоғарыда көрсетілген баға бойынша ай сайын автоматты түрде ұзартылады.',
+                'Подписка «Стать спонсором» продлевается автоматически каждый месяц по цене, указанной выше, пока вы её не отмените.',
+                'The "Become a sponsor" subscription renews automatically every month at the price shown above until you cancel it.'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: c.subtext, height: 1.5),
           ),
@@ -235,13 +252,15 @@ class _SupportSheetState extends State<SupportSheet> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _LegalLink(
-                label: widget.isRu ? 'Политика конфиденциальности' : 'Құпиялылық саясаты',
+                label: _tr('Құпиялылық саясаты', 'Политика конфиденциальности',
+                    'Privacy Policy'),
                 url: _kPrivacyPolicyUrl,
                 c: c,
               ),
               Text('  ·  ', style: TextStyle(fontSize: 12, color: c.subtext)),
               _LegalLink(
-                label: widget.isRu ? 'Условия использования' : 'Пайдалану шарттары',
+                label: _tr('Пайдалану шарттары', 'Условия использования',
+                    'Terms of Use'),
                 url: _kTermsOfUseUrl,
                 c: c,
               ),
@@ -277,9 +296,9 @@ class _LegalLink extends StatelessWidget {
 
 class _SponsorButton extends StatelessWidget {
   final ProductDetails product;
-  final bool isRu;
+  final String lang;
   final VoidCallback onTap;
-  const _SponsorButton({required this.product, required this.isRu, required this.onTap});
+  const _SponsorButton({required this.product, required this.lang, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -312,7 +331,8 @@ class _SponsorButton extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    isRu ? 'Стать спонсором' : 'Демеуші болу',
+                    _pick(lang, 'Демеуші болу', 'Стать спонсором',
+                        'Become a sponsor'),
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -330,7 +350,7 @@ class _SponsorButton extends StatelessWidget {
                           fontWeight: FontWeight.w900),
                     ),
                     Text(
-                      isRu ? 'в месяц' : 'айына',
+                      _pick(lang, 'айына', 'в месяц', 'per month'),
                       style: const TextStyle(
                           color: Colors.white70, fontSize: 11),
                     ),
@@ -340,9 +360,10 @@ class _SponsorButton extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              isRu
-                  ? 'Автооплата · Отмена в любое время'
-                  : 'Автотөлем · Кез келген уақытта болдырмауға болады',
+              _pick(lang,
+                  'Автотөлем · Кез келген уақытта болдырмауға болады',
+                  'Автооплата · Отмена в любое время',
+                  'Auto-renews · Cancel anytime'),
               style: const TextStyle(color: Colors.white60, fontSize: 11),
             ),
           ],
@@ -397,9 +418,9 @@ class _TierButton extends StatelessWidget {
 }
 
 class _UnavailableHint extends StatelessWidget {
-  final bool isRu;
+  final String lang;
   final AppColors c;
-  const _UnavailableHint({required this.isRu, required this.c});
+  const _UnavailableHint({required this.lang, required this.c});
 
   @override
   Widget build(BuildContext context) {
@@ -412,9 +433,10 @@ class _UnavailableHint extends StatelessWidget {
         border: Border.all(color: c.border),
       ),
       child: Text(
-        isRu
-            ? 'Оплата временно недоступна.\nПожалуйста, убедитесь, что $store работает на вашем устройстве.'
-            : 'Төлем уақытша қолжетімсіз.\n$store құрылғыда жұмыс істейтінін тексеріңіз.',
+        _pick(lang,
+            'Төлем уақытша қолжетімсіз.\n$store құрылғыда жұмыс істейтінін тексеріңіз.',
+            'Оплата временно недоступна.\nПожалуйста, убедитесь, что $store работает на вашем устройстве.',
+            'Payments are temporarily unavailable.\nPlease make sure $store works on your device.'),
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 13, color: c.subtext, height: 1.5),
       ),

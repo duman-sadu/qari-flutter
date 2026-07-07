@@ -417,7 +417,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                _s.isRu ? surahNamesRu[index] : surahNames[index],
+                                _s.surahNamesL10n[index],
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -904,6 +904,7 @@ class _LangPicker extends StatelessWidget {
   static const _langs = [
     ('kz', 'ҚАЗ', 'Қазақша'),
     ('ru', 'РУС', 'Русский'),
+    ('en', 'ENG', 'English'),
   ];
 
   @override

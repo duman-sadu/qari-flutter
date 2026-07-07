@@ -145,7 +145,8 @@ class _ListenScreenState extends State<ListenScreen>
     final gen = ++_playGeneration;
     try {
       // Capture all state inside try — context.read<>() can throw in release mode
-      final isRu = _s.isRu;
+      final surahName =
+          _s.surahNamesL10n[_surah - 1].replaceAll(' сүресі', '');
       final surah = _surah;
       final reciterIdx = _reciterIdx;
       final speed = _speed;
@@ -154,7 +155,7 @@ class _ListenScreenState extends State<ListenScreen>
       if (gen != _playGeneration) return;
 
       audioHandler.setMediaItem(
-        isRu ? surahNamesRu[surah - 1] : surahNames[surah - 1].replaceAll(' сүресі', ''),
+        surahName,
         reciters[reciterIdx].name,
       );
 
@@ -973,7 +974,7 @@ class _ListenScreenState extends State<ListenScreen>
                 final filtered = query.isEmpty
                     ? List.generate(114, (i) => i + 1)
                     : List.generate(114, (i) => i + 1).where((n) {
-                        final name = (isRu ? surahNamesRu : surahNames)[n - 1].toLowerCase();
+                        final name = _s.surahNamesL10n[n - 1].toLowerCase();
                         final meaning = isRu
                             ? surahMetaRu[n - 1].meaning.toLowerCase()
                             : surahMeta[n - 1].meaning.toLowerCase();
@@ -1048,7 +1049,7 @@ class _ListenScreenState extends State<ListenScreen>
                               query.isEmpty ? itemH : null,
                           itemBuilder: (_, i) {
                             final num = filtered[i];
-                            final name = (isRu ? surahNamesRu : surahNames)[num - 1];
+                            final name = _s.surahNamesL10n[num - 1];
                             final meaning = isRu
                                 ? surahMetaRu[num - 1].meaning
                                 : surahMeta[num - 1].meaning;

@@ -659,7 +659,8 @@ class _FriendCard extends StatelessWidget {
                       color: c.text)),
               const SizedBox(height: 4),
               Text(
-                s.isRu ? '#$rank в списке друзей' : '#$rank достар тізімінде',
+                s.pick('#$rank достар тізімінде', '#$rank в списке друзей',
+                    '#$rank among friends'),
                 style: TextStyle(fontSize: 12, color: c.subtext),
               ),
               const SizedBox(height: 20),
@@ -668,19 +669,19 @@ class _FriendCard extends StatelessWidget {
               // Stats rows
               _FriendDetailRow(
                 icon: '🔥',
-                label: s.isRu ? 'Серия' : 'Жалғасу',
+                label: s.pick('Жалғасу', 'Серия', 'Streak'),
                 value: s.streakDays(friend.streak),
                 c: c,
               ),
               _FriendDetailRow(
                 icon: '📖',
-                label: s.isRu ? 'Выучено аятов' : 'Үйренген аяттар',
+                label: s.pick('Үйренген аяттар', 'Выучено аятов', 'Ayahs memorized'),
                 value: s.learnedAyahs(friend.learnedCount),
                 c: c,
               ),
               _FriendDetailRow(
                 icon: '🕐',
-                label: s.isRu ? 'Последняя активность' : 'Соңғы белсенділік',
+                label: s.pick('Соңғы белсенділік', 'Последняя активность', 'Last activity'),
                 value: lastActiveLabel,
                 c: c,
               ),

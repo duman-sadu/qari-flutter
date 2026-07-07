@@ -158,7 +158,7 @@ class _LearningScreenState extends State<LearningScreen>
 
   void _showHadithWelcome() {
     final c = _c;
-    final isRu = _s.isRu;
+    final s = _s;
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -182,17 +182,19 @@ class _LearningScreenState extends State<LearningScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                isRu
-                    ? '«Самое любимое дело перед Аллахом — то, что совершается непрерывно, пусть даже и малое.»'
-                    : '«Аллаға ең сүйікті амал — аз болса да, тұрақты жасалған амал.»',
+                s.pick(
+                    '«Аллаға ең сүйікті амал — аз болса да, тұрақты жасалған амал.»',
+                    '«Самое любимое дело перед Аллахом — то, что совершается непрерывно, пусть даже и малое.»',
+                    '"The most beloved deeds to Allah are those done consistently, even if small."'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: c.text, height: 1.6),
               ),
               const SizedBox(height: 10),
               Text(
-                isRu
-                    ? 'Хадис: Сахих аль-Бухари и Сахих Муслим.'
-                    : 'Хадис: Сахих әл-Бухари және Сахих Муслим.',
+                s.pick(
+                    'Хадис: Сахих әл-Бухари және Сахих Муслим.',
+                    'Хадис: Сахих аль-Бухари и Сахих Муслим.',
+                    'Hadith: Sahih al-Bukhari and Sahih Muslim.'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: c.subtext, fontStyle: FontStyle.italic),
               ),
@@ -208,7 +210,7 @@ class _LearningScreenState extends State<LearningScreen>
                     padding: const EdgeInsets.symmetric(vertical: 13),
                   ),
                   child: Text(
-                    isRu ? 'Начать' : 'Бастау',
+                    s.pick('Бастау', 'Начать', 'Start'),
                     style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -468,7 +470,7 @@ class _LearningScreenState extends State<LearningScreen>
   Future<void> _setMemorizationIOS(bool value) async {
     // Read context-bound values up front — they can't be used after an await.
     final pos = context.read<PlanProvider>().currentPosition;
-    final isRu = _s.isRu;
+    final lang = _s.lang;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('activeMemorization', value);
@@ -478,7 +480,7 @@ class _LearningScreenState extends State<LearningScreen>
       await NotificationService.scheduleActiveMemorization(
         chapter: pos['chapter']!,
         verse: pos['verse']!,
-        isRu: isRu,
+        lang: lang,
       );
       if (mounted) _showHintFor(const Duration(seconds: 4));
     } else {
@@ -589,6 +591,56 @@ class _LearningScreenState extends State<LearningScreen>
         fetchTajweed: wantTajweed);
     if (!mounted) return;
     setState(() { ayah = data; loading = false; });
+  }
+
+  /// English-only: pick which quran.com translation edition to show.
+  void _showEnTranslationPicker(StateSetter setModalState) {
+    final c = _c;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: c.card,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, 4),
+                child: Text('Quran translation',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              ),
+              ...LanguageProvider.enTranslations.map((t) {
+                final selected = _s.enTranslationChoice == t.$1;
+                return ListTile(
+                  dense: true,
+                  title: Text(t.$2,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: c.text,
+                          fontWeight:
+                              selected ? FontWeight.w700 : FontWeight.w500)),
+                  trailing: selected
+                      ? Icon(Icons.check_circle, color: c.green, size: 20)
+                      : null,
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    await context
+                        .read<LanguageProvider>()
+                        .setEnTranslation(t.$1);
+                    setModalState(() {});
+                    _loadAyah();
+                  },
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _onSwipeForward() async {
@@ -811,7 +863,7 @@ class _LearningScreenState extends State<LearningScreen>
   void _showSurahCompletedSheet(int surahIdx, {bool goalCompleted = false}) {
     if (!mounted) return;
     final c = _c;
-    final name = (_s.isRu ? surahNamesRu : surahNames)[surahIdx];
+    final name = _s.surahNamesL10n[surahIdx];
     final total = ayahCounts[surahIdx];
 
     showModalBottomSheet(
@@ -1458,7 +1510,7 @@ class _LearningScreenState extends State<LearningScreen>
                   // Badges compact
                   _infoBadge(
                     icon: Icons.location_on_outlined,
-                    label: _s.isRu ? _s.placeRu(meta.place) : meta.place,
+                    label: _s.placeL10n(meta.place),
                     color: meta.place == 'Мекке'
                         ? _c.meccaFg
                         : _c.green,
@@ -1704,6 +1756,46 @@ class _LearningScreenState extends State<LearningScreen>
                   ),
                 ],
               ),
+              // English translation edition picker (English UI only)
+              if (_s.isEn) ...[
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => _showEnTranslationPicker(setModalState),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: _c.card,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: _c.border),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🌐', style: TextStyle(fontSize: 18)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Translation',
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: _c.text)),
+                              Text(_s.enTranslationLabel,
+                                  style: TextStyle(
+                                      fontSize: 11, color: _c.subtext)),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right,
+                            size: 18, color: _c.subtext),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               // Сүре таңдау
               GestureDetector(
@@ -1745,9 +1837,10 @@ class _LearningScreenState extends State<LearningScreen>
     );
   }
 
-  String get _sajdaQuery => _s.isRu
-      ? 'Что такое сажда тиляват, в каких аятах встречается и как совершается?'
-      : 'Тіләуат сәждесі дегеніміз не, қай аяттарда кездеседі және қалай жасалады?';
+  String get _sajdaQuery => _s.pick(
+      'Тіләуат сәждесі дегеніміз не, қай аяттарда кездеседі және қалай жасалады?',
+      'Что такое сажда тиляват, в каких аятах встречается и как совершается?',
+      'What is the sajdah of recitation, in which ayahs does it occur and how is it performed?');
 
   Widget _buildSajdaBanner() => GestureDetector(
     onTap: () => Navigator.push(
@@ -1846,7 +1939,7 @@ class _LearningScreenState extends State<LearningScreen>
       headerText = _s.multiAyahHeader('juz', plan.readJuzNumber, displayAyahs.length, '');
     } else {
       final ch = (displayAyahs.first['chapter'] as int).clamp(1, 114);
-      headerText = _s.multiAyahHeader('surah', 0, displayAyahs.length, (_s.isRu ? surahNamesRu : surahNames)[ch - 1]);
+      headerText = _s.multiAyahHeader('surah', 0, displayAyahs.length, _s.surahNamesL10n[ch - 1]);
     }
 
     return Column(
@@ -1968,7 +2061,7 @@ class _LearningScreenState extends State<LearningScreen>
                     children: [
                       _infoBadge(
                         icon: Icons.location_on_outlined,
-                        label: _s.isRu ? _s.placeRu(meta.place) : meta.place,
+                        label: _s.placeL10n(meta.place),
                         color: meta.place == 'Мекке'
                             ? _c.meccaFg
                             : _c.green,
@@ -2058,7 +2151,7 @@ class _LearningScreenState extends State<LearningScreen>
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            (_s.isRu ? surahNamesRu : surahNames)[(chapter - 1).clamp(0, 113)],
+                            _s.surahNamesL10n[(chapter - 1).clamp(0, 113)],
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -2685,7 +2778,7 @@ class _LearningScreenState extends State<LearningScreen>
                                               final chIdx = (pos['chapter']! - 1).clamp(0, 113);
                                               final meta = surahMeta[chIdx];
                                               final metaRu = surahMetaRu[chIdx];
-                                              final displayName = _s.isRu ? surahNamesRu[chIdx] : surahNames[chIdx];
+                                              final displayName = _s.surahNamesL10n[chIdx];
                                               return Column(
                                                 children: [
                                                   Wrap(
@@ -2710,7 +2803,7 @@ class _LearningScreenState extends State<LearningScreen>
                                                       ),
                                                       _infoBadge(
                                                         icon: Icons.location_on_outlined,
-                                                        label: _s.isRu ? _s.placeRu(meta.place) : meta.place,
+                                                        label: _s.placeL10n(meta.place),
                                                         color: meta.place == 'Мекке'
                                                             ? _c.meccaFg
                                                             : _c.green,
@@ -2893,7 +2986,7 @@ class _LearningScreenState extends State<LearningScreen>
                         onLearned: _nextAyah,
                         completedLabel:
                             isReadMode ? _readCompletedLabel : s.tr('iMemorized'),
-                        idleLabel: s.isRu ? 'Сдвиньте' : 'Жылжытыңыз',
+                        idleLabel: s.pick('Жылжытыңыз', 'Сдвиньте', 'Slide'),
                         isReadMode: isReadMode,
                         leftHanded: _leftHanded,
                         // iOS can't minimize/close on "Ок" tap — show it dimmed.

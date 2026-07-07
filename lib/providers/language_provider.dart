@@ -2,17 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/strings.dart';
-import '../services/quran_api.dart' show ruTranslationId;
+import '../services/quran_api.dart'
+    show ruTranslationId, enTranslationId;
+import 'plan_provider.dart'
+    show surahNames, surahNamesRu, surahNamesEn;
 
 class LanguageProvider extends ChangeNotifier {
   String _lang = 'kz';
 
   String get lang => _lang;
   bool get isRu => _lang == 'ru';
+  bool get isEn => _lang == 'en';
+
+  /// English translation editions on quran.com: (resource id, label).
+  static const enTranslations = [
+    (20, 'Saheeh International'),
+    (131, 'Dr. Mustafa Khattab — The Clear Quran'),
+    (85, 'M.A.S. Abdel Haleem'),
+    (84, 'T. Usmani'),
+    (19, 'M. Pickthall'),
+    (22, 'A. Yusuf Ali'),
+    (95, 'A. Maududi — Tafhim'),
+    (203, 'Al-Hilali & Khan'),
+  ];
+
+  int _enTranslationId = enTranslationId;
+
+  /// Currently selected English translation edition.
+  int get enTranslationChoice => _enTranslationId;
+
+  String get enTranslationLabel => enTranslations
+      .firstWhere((t) => t.$1 == _enTranslationId,
+          orElse: () => enTranslations.first)
+      .$2;
+
+  Future<void> setEnTranslation(int id) async {
+    if (_enTranslationId == id) return;
+    _enTranslationId = id;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('enTranslationId', id);
+  }
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _lang = prefs.getString('appLang') ?? 'kz';
+    _enTranslationId = prefs.getInt('enTranslationId') ?? enTranslationId;
     notifyListeners();
   }
 
@@ -28,129 +63,167 @@ class LanguageProvider extends ChangeNotifier {
   String tr(String key) =>
       appStrings[key]?[_lang] ?? appStrings[key]?['kz'] ?? key;
 
+  /// Picks the variant for the current language.
+  String pick(String kz, String ru, String en) {
+    switch (_lang) {
+      case 'ru': return ru;
+      case 'en': return en;
+      default:   return kz;
+    }
+  }
+
+  /// Surah names in the current language.
+  List<String> get surahNamesL10n {
+    switch (_lang) {
+      case 'ru': return surahNamesRu;
+      case 'en': return surahNamesEn;
+      default:   return surahNames;
+    }
+  }
+
   // ── Dynamic strings ───────────────────────────────────────────────────────
 
   String daysAgo(int n) =>
-      isRu ? '$n дн. назад' : '$n күн бұрын';
+      pick('$n күн бұрын', '$n дн. назад', '$n d. ago');
 
   String weeksAgo(int n) =>
-      isRu ? '$n апт. назад' : '$n апта бұрын';
+      pick('$n апта бұрын', '$n апт. назад', '$n wk. ago');
 
   String monthsAgo(int n) =>
-      isRu ? '$n ай бұрын' : '$n ай бұрын';
+      pick('$n ай бұрын', '$n мес. назад', '$n mo. ago');
 
   String juzProgress(int assigned) =>
-      isRu ? '$assigned/30 джузов' : '$assigned/30 жүз';
+      pick('$assigned/30 жүз', '$assigned/30 джузов', '$assigned/30 juz');
 
   String myJuzLabel(int juz) =>
-      isRu ? '$juz-джуз' : '$juz-жүз';
+      pick('$juz-жүз', '$juz-джуз', 'Juz $juz');
 
   String khatamCount(int n) =>
-      isRu ? 'Хатм: $n' : 'Хатым: $n';
+      pick('Хатым: $n', 'Хатм: $n', 'Khatam: $n');
 
   String assignedJuz(int assigned, int total) =>
-      isRu ? '$assigned/$total джузов' : '$assigned/$total жүз';
+      pick('$assigned/$total жүз', '$assigned/$total джузов', '$assigned/$total juz');
 
   String completedJuz(int n) =>
-      isRu ? '$n завершено ✓' : '$n бітті ✓';
+      pick('$n бітті ✓', '$n завершено ✓', '$n done ✓');
 
-  String surahFullMemorized(String name, int total) => isRu
-      ? '$name сурасы\n$total аят толық жаттадыңыз! 🤲'
-      : '$name сүресін\n$total аятты толық жаттадыңыз! 🤲';
+  String surahFullMemorized(String name, int total) => pick(
+      '$name сүресін\n$total аятты толық жаттадыңыз! 🤲',
+      '$name сурасы\n$total аят толық жаттадыңыз! 🤲',
+      'You memorized Surah $name\ncompletely — all $total ayahs! 🤲');
 
   String streakDays(int n) =>
-      isRu ? '$n дней' : '$n күн';
+      pick('$n күн', '$n дней', '$n days');
 
   String learnedAyahs(int n) =>
-      isRu ? '$n аят' : '$n аят';
+      pick('$n аят', '$n аят', '$n ayahs');
 
-  String memorizeProgress(double pct) => isRu
-      ? 'Прогресс запоминания: ${pct.toStringAsFixed(0)}%'
-      : 'Жаттау прогресі: ${pct.toStringAsFixed(0)}%';
+  String memorizeProgress(double pct) => pick(
+      'Жаттау прогресі: ${pct.toStringAsFixed(0)}%',
+      'Прогресс запоминания: ${pct.toStringAsFixed(0)}%',
+      'Memorization progress: ${pct.toStringAsFixed(0)}%');
 
-  String deleteGroupConfirm(String name) => isRu
-      ? '"$name" группасын толықтай жойасыз ба? Бұл әрекетті қайтару мүмкін емес.'
-      : '"$name" тобын толығымен жойасыз ба? Бұл әрекетті қайтару мүмкін емес.';
+  String deleteGroupConfirm(String name) => pick(
+      '"$name" тобын толығымен жойасыз ба? Бұл әрекетті қайтару мүмкін емес.',
+      '"$name" группасын толықтай жойасыз ба? Бұл әрекетті қайтару мүмкін емес.',
+      'Delete the group "$name" permanently? This cannot be undone.');
 
-  String leaveGroupConfirm(String name) =>
-      isRu ? '"$name" тобынан шығасыз ба?' : '"$name" топтан шығарасыз ба?';
+  String leaveGroupConfirm(String name) => pick(
+      '"$name" топтан шығарасыз ба?',
+      '"$name" тобынан шығасыз ба?',
+      'Leave the group "$name"?');
 
-  String removeMemberConfirm(String name) =>
-      isRu ? '"$name" мүшесін шығарасыз ба?' : '"$name" шығарасыз ба?';
+  String removeMemberConfirm(String name) => pick(
+      '"$name" шығарасыз ба?',
+      '"$name" мүшесін шығарасыз ба?',
+      'Remove "$name" from the group?');
 
-  String removeFriendConfirm(String name) =>
-      isRu ? '"$name" достар тізімінен шығарасыз ба?'
-           : '"$name" достар тізімінен шығарасыз ба?';
+  String removeFriendConfirm(String name) => pick(
+      '"$name" достар тізімінен шығарасыз ба?',
+      '"$name" достар тізімінен шығарасыз ба?',
+      'Remove "$name" from your friends?');
 
   String juzSelectedLabel(int juz) =>
-      isRu ? '$juz-джуз таңдалды' : '$juz-жүз таңдалды';
+      pick('$juz-жүз таңдалды', '$juz-джуз таңдалды', 'Juz $juz selected');
 
-  String unmarkJuzConfirm(int juz) =>
-      isRu ? '$juz-джуз белгісін қайтарасыз ба?' : '$juz-жүз белгісін қайтарасыз ба?';
+  String unmarkJuzConfirm(int juz) => pick(
+      '$juz-жүз белгісін қайтарасыз ба?',
+      '$juz-джуз белгісін қайтарасыз ба?',
+      'Remove the mark from juz $juz?');
 
-  String surahMemorizedSuffix(int total) =>
-      isRu ? '\n$total аятов полностью запомнили! 🤲'
-           : '\n$total аятты толық жаттадыңыз! 🤲';
+  String surahMemorizedSuffix(int total) => pick(
+      '\n$total аятты толық жаттадыңыз! 🤲',
+      '\n$total аятов полностью запомнили! 🤲',
+      '\nYou memorized all $total ayahs! 🤲');
 
   String multiAyahHeader(String unit, int num, int count, String surahName) {
-    if (isRu) {
-      switch (unit) {
-        case 'page': return '$num-стр.  •  $count аят';
-        case 'juz':  return '$num-джуз  •  $count аят';
-        default:     return '$surahName  •  $count аят';
-      }
-    }
-    switch (unit) {
-      case 'page': return '$num-бет  •  $count аят';
-      case 'juz':  return '$num-жүз  •  $count аят';
-      default:     return '$surahName  •  $count аят';
+    switch (_lang) {
+      case 'ru':
+        switch (unit) {
+          case 'page': return '$num-стр.  •  $count аят';
+          case 'juz':  return '$num-джуз  •  $count аят';
+          default:     return '$surahName  •  $count аят';
+        }
+      case 'en':
+        switch (unit) {
+          case 'page': return 'Page $num  •  $count ayahs';
+          case 'juz':  return 'Juz $num  •  $count ayahs';
+          default:     return '$surahName  •  $count ayahs';
+        }
+      default:
+        switch (unit) {
+          case 'page': return '$num-бет  •  $count аят';
+          case 'juz':  return '$num-жүз  •  $count аят';
+          default:     return '$surahName  •  $count аят';
+        }
     }
   }
 
   String readUnitSwipeHint(String unit) {
-    if (isRu) {
-      switch (unit) {
-        case 'surah': return 'Сура';
-        case 'juz':   return 'Джуз';
-        default:      return 'Стр.';
-      }
-    }
     switch (unit) {
-      case 'surah': return 'Сүре';
-      case 'juz':   return 'Жүз';
-      default:      return 'Бет';
+      case 'surah': return pick('Сүре', 'Сура', 'Surah');
+      case 'juz':   return pick('Жүз', 'Джуз', 'Juz');
+      default:      return pick('Бет', 'Стр.', 'Page');
     }
   }
 
-  String sajdaInlineText() =>
-      isRu ? 'سَجْدَةٌ  •  Сажда тиляват — совершите сажда'
-           : 'سَجْدَةٌ  •  Тіләуат сәждесі — сәжде жасаңыз';
+  String sajdaInlineText() => pick(
+      'سَجْدَةٌ  •  Тіләуат сәждесі — сәжде жасаңыз',
+      'سَجْدَةٌ  •  Сажда тиляват — совершите сажда',
+      'سَجْدَةٌ  •  Sajdah of recitation — perform sajdah');
 
   String selectedSurahsCount(int n) =>
-      isRu ? 'Выбрано: $n сур' : 'Таңдалды: $n сүре';
+      pick('Таңдалды: $n сүре', 'Выбрано: $n сур', 'Selected: $n surahs');
 
   String selectedCount(int n) =>
-      isRu ? 'Выбрано: $n' : 'Таңдалды: $n';
+      pick('Таңдалды: $n', 'Выбрано: $n', 'Selected: $n');
 
-  String streakLabel(int days) =>
-      isRu ? '🔥  $days дней подряд' : '🔥  $days күн қатарынан';
+  String streakLabel(int days) => pick(
+      '🔥  $days күн қатарынан',
+      '🔥  $days дней подряд',
+      '🔥  $days days in a row');
 
   String genderAgeLine(String gender, String age) {
-    final gLabel = isRu
-        ? (gender == 'male' ? 'Мужчина' : 'Женщина')
-        : (gender == 'male' ? 'Ер азамат' : 'Әйел');
-    final agePart = isRu ? '$age лет' : '$age жас';
+    final String gLabel;
+    switch (_lang) {
+      case 'ru': gLabel = gender == 'male' ? 'Мужчина' : 'Женщина'; break;
+      case 'en': gLabel = gender == 'male' ? 'Male' : 'Female'; break;
+      default:   gLabel = gender == 'male' ? 'Ер азамат' : 'Әйел';
+    }
+    final agePart = pick('$age жас', '$age лет', '$age y.o.');
     return '$gLabel  •  $agePart';
   }
 
   String totalReadFmt(int n) =>
-      isRu ? 'Всего: $n раз' : 'Барлығы: $n рет';
+      pick('Барлығы: $n рет', 'Всего: $n раз', 'Total: $n times');
 
   String remainingAyahs(int n) =>
-      isRu ? 'Осталось: $n аят' : 'Қалды: $n аят';
+      pick('Қалды: $n аят', 'Осталось: $n аят', 'Remaining: $n ayahs');
 
-  String friendAddedMsg(String name) =>
-      isRu ? '$name добавлен в друзья!' : '$name достар тізіміне қосылды!';
+  String friendAddedMsg(String name) => pick(
+      '$name достар тізіміне қосылды!',
+      '$name добавлен в друзья!',
+      '$name added as a friend!');
 
   String friendActivityLabel(String dateStr) {
     if (dateStr.isEmpty) return tr('inactive');
@@ -167,221 +240,322 @@ class LanguageProvider extends ChangeNotifier {
     return monthsAgo(diff ~/ 30);
   }
 
-  List<String> get weekdays => isRu
-      ? ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
-      : ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб', 'Жк'];
-
-  List<String> get months => isRu
-      ? ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-         'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-      : ['Қаңтар', 'Ақпан', 'Наурыз', 'Сәуір', 'Мамыр', 'Маусым',
-         'Шілде', 'Тамыз', 'Қыркүйек', 'Қазан', 'Қараша', 'Желтоқсан'];
-
-  String khatamLabel2(int n) =>
-      isRu ? 'Хатм: $n' : 'Хатым: $n';
-
-  String juzAssignedLabel(int assigned) =>
-      isRu ? '$assigned/30 джузов' : '$assigned/30 жүз';
-
-  String memorizeProgressLabel(double pct) =>
-      isRu ? 'Прогресс запоминания: ${pct.toStringAsFixed(0)}%'
-           : 'Жаттау прогресі: ${pct.toStringAsFixed(0)}%';
-
-  String goalNotifTitle(bool isLearn) => isRu
-      ? 'Dudi — ${isLearn ? 'Выучить' : 'Чтение'}'
-      : 'Dudi — ${isLearn ? 'Жаттау' : 'Оқу'} мақсаты';
-
-  String goalNotifBody(bool isLearn, String deadlineLabel) => isRu
-      ? '${isLearn ? 'Цель запоминания' : 'Цель чтения'}! 📖 $deadlineLabel'
-      : '${isLearn ? 'Жаттау' : 'Оқу'} мақсатыңды ұмытпа! 📖 $deadlineLabel';
-
-  String pagesPerDayFmt(int n) =>
-      isRu ? '$n стр. / день' : '$n бет / күн';
-
-  String pagesFmt(int n) =>
-      isRu ? '$n стр.' : '$n бет';
-
-  String knownSurahsLabel(int n) =>
-      isRu ? 'Известных сур: $n' : 'Білетін сүрелер: $n';
-
-  String resetKhatamsConfirm(String groupName) => isRu
-      ? 'Сбросить хатмы в группе "$groupName"?'
-      : '"$groupName" тобындағы хатымдар санын тастаймыз ба?';
-
-  String addedYouMsg(String name) =>
-      isRu ? '$name добавил вас в друзья! 🤝' : '$name сізді достар тізіміне қосты! 🤝';
-
-  String khatamGroupMsg(int number) => isRu
-      ? 'Группа прочитала Коран $number-й раз!\n\nДуа хатма — сунна. Это закрепляет саваб прочитанного Корана.'
-      : 'Топ $number-ші рет Құранды толық хатым жасады!\n\nХатым дұғасын оқу — сүннет. Ол оқылған Құранның сауабын бекітеді.';
-
-  String khatamGroupSimple(int number) => isRu
-      ? 'Группа прочитала Коран $number-й раз!\nМожно выбрать новые джузы.'
-      : 'Топ $number-ші рет Құранды хатым жасады!\nЖаңа жүздерді таңдауға болады.';
-
-  String khatamHistoryTitle(int n) =>
-      isRu ? 'История хатмов ($n)' : 'Хатым тарихы ($n)';
-
-  String khatamNumber(int n) => isRu ? '$n-й хатм' : '$n-хатым';
-
-  String membersTitle(int n) =>
-      isRu ? 'Участники ($n)' : 'Мүшелер ($n)';
-
-  // ── Ramadan хатм challenge ──────────────────────────────────────────────
-  String get ramadanTitle => isRu ? '🌙 Рамадан хатм' : '🌙 Рамазан хатым';
-  String get ramadanSubtitle => isRu
-      ? 'Прочитай весь Коран за Рамадан — 1 джуз в день'
-      : 'Рамазанда Құранды толық оқы — күніне 1 жүз';
-  String ramadanCountdown(int days) => isRu
-      ? 'До Рамадана $days дн.'
-      : 'Рамазанға дейін $days күн';
-  String ramadanDayLabel(int day) =>
-      isRu ? 'День $day из 30' : '$day-күн / 30';
-  String ramadanJuzProgress(int done) =>
-      isRu ? '$done/30 джуз' : '$done/30 жүз';
-  String ramadanBehind(int need) => isRu
-      ? 'Отставание: нужно ещё $need джуз сегодня'
-      : 'Артта қалдыңыз: бүгін тағы $need жүз керек';
-  String get ramadanOnTrack => isRu ? 'Ты в графике 👍' : 'Кестедесің 👍';
-  String get ramadanJoin => isRu ? 'Участвовать' : 'Қатысу';
-  String get ramadanJoined => isRu ? 'Вы участвуете ✓' : 'Қатысудасыз ✓';
-  String get ramadanMarkBtn => isRu ? 'Джуз прочитан ✓' : 'Жүзді оқыдым ✓';
-  String get ramadanMarkedToday =>
-      isRu ? 'Сегодня отмечено ✓' : 'Бүгін белгіленді ✓';
-  String get ramadanDone => isRu
-      ? 'Хатм завершён! Барака Аллаху фик'
-      : 'Хатым аяқталды! Барака Аллаһу фик';
-  String get ramadanLeave => isRu ? 'Покинуть' : 'Шығу';
-
-  String juzDone(int juz) => isRu ? '$juz-джуз ✓' : '$juz-жүз ✓';
-
-  String juzInProgress(int juz) =>
-      isRu ? '$juz-джуз читается' : '$juz-жүз оқуда';
-
-  String codeCopied(String code) =>
-      isRu ? 'Код скопирован: $code' : 'Код көшірілді: $code';
-
-  String inviteCodeLabel(String code) =>
-      isRu ? 'Код приглашения: $code' : 'Шақыру коды: $code';
-
-  String myJuzBanner(int juz) =>
-      isRu ? 'Ваш джуз: $juz-джуз' : 'Сіздің жүзіңіз: $juz-жүз';
-
-  String get duaTranslation => isRu
-      ? 'О, Аллах!\n'
-        'Смилуйся над нами через Коран,\n'
-        'сделай его для нас имамом, светом, руководством и милостью.\n\n'
-        'О, Аллах!\n'
-        'Напомни нам то, что мы забыли из него,\n'
-        'научи нас тому, что мы не знаем.\n'
-        'Дай нам читать его в ночное время и в часы дня.\n'
-        'Сделай его нашим доводом, о Господь миров!\n\n'
-        'О, Аллах!\n'
-        'Исправь нашу религию, которая является защитой нашего дела.\n'
-        'Исправь нашу мирскую жизнь, в которой наше существование.\n'
-        'Исправь нашу будущую жизнь, к которой мы возвращаемся.\n\n'
-        'О, Аллах!\n'
-        'Сделай Коран весной наших сердец,\n'
-        'светом наших грудей,\n'
-        'рассеивателем наших печалей,\n'
-        'уходом наших забот и горестей.\n\n'
-        'Да благословит Аллах нашего Пророка Мухаммада (ﷺ),\n'
-        'его семью и всех его сподвижников.\n'
-        'Амин.'
-      : 'Уа, Алла!\n'
-        'Бізге Құран арқылы рақым ет.\n'
-        'Оны бізге жол көрсетуші, нұр, туралық және мейірім ет.\n\n'
-        'Уа, Алла!\n'
-        'Ұмытқанымызды Құран арқылы есімізге сал,\n'
-        'білмегенімізді үйрет.\n'
-        'Күндіз-түні Құран оқуды нәсіп ет.\n'
-        'Қиямет күні оны бізге айғақ ет, ей әлемдердің Раббысы!\n\n'
-        'Уа, Алла!\n'
-        'Дінімізді түзет, өйткені ол біздің қорғанымыз.\n'
-        'Дүниемізді түзет, өйткені онда біздің тіршілігіміз бар.\n'
-        'Ақыретімізді түзет, өйткені оған қайтамыз.\n\n'
-        'Уа, Алла!\n'
-        'Құранды жүректеріміздің көктемі,\n'
-        'көкіректеріміздің нұры,\n'
-        'қайғымыздың кетуі,\n'
-        'уайымдарымыздың сейілуі ет.\n\n'
-        'Алланың салауаты мен сәлемі\n'
-        'Пайғамбарымыз Мұхаммедке (с.а.у.),\n'
-        'оның отбасы мен сахабаларына болсын.\n'
-        'Әмин.';
-
-  String sleepRemainingLabel(String timeStr) =>
-      isRu ? 'Осталось: $timeStr' : 'Қалды: $timeStr';
-
-  String surahWarnTitle(bool isLearned) => isRu
-      ? (isLearned ? 'Вы выучили эту суру' : 'Вы знаете эту суру')
-      : (isLearned ? 'Бұл сүрені жаттадыңыз' : 'Бұл сүрені білесіз');
-
-  String surahWarnBody(String name, bool isLearned) {
-    final verb = isLearned
-        ? (isRu ? 'выучили' : 'жаттадыңыз')
-        : (isRu ? 'знаете' : 'білесіз');
-    return isRu
-        ? 'Вы $verb суру «$name».\nВсё равно добавить в список для изучения?'
-        : '«$name» сүресін $verb.\nДегенмен жаттау тізіміне қосасыз ба?';
+  List<String> get weekdays {
+    switch (_lang) {
+      case 'ru': return ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      case 'en': return ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+      default:   return ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб', 'Жк'];
+    }
   }
 
-  String selectedFraction(int n, int total) =>
-      isRu ? 'Выбрано: $n / $total' : 'Таңдалды: $n / $total';
+  List<String> get months {
+    switch (_lang) {
+      case 'ru':
+        return ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+      case 'en':
+        return ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+      default:
+        return ['Қаңтар', 'Ақпан', 'Наурыз', 'Сәуір', 'Мамыр', 'Маусым',
+                'Шілде', 'Тамыз', 'Қыркүйек', 'Қазан', 'Қараша', 'Желтоқсан'];
+    }
+  }
 
-  String surahsFmt(int n) => isRu ? '$n сур' : '$n сүре';
+  String khatamLabel2(int n) =>
+      pick('Хатым: $n', 'Хатм: $n', 'Khatam: $n');
 
-  String saveSurahsBtn(int n) =>
-      isRu ? 'Сохранить ($n сур)' : 'Сақтау  ($n сүре)';
+  String juzAssignedLabel(int assigned) =>
+      pick('$assigned/30 жүз', '$assigned/30 джузов', '$assigned/30 juz');
 
-  String shareCodeMsg(String code) => isRu
-      ? 'Qari — мой код друга: $code\n'
-        'Скачай Qari, зайди в «Друзья» и введи код! 📖'
-      : 'Qari — менің дос кодым: $code\n'
-        'Qari қосымшасын жүктеп, Достар бөліміне кіріп, кодты енгізіңіз! 📖';
+  String memorizeProgressLabel(double pct) => pick(
+      'Жаттау прогресі: ${pct.toStringAsFixed(0)}%',
+      'Прогресс запоминания: ${pct.toStringAsFixed(0)}%',
+      'Memorization progress: ${pct.toStringAsFixed(0)}%');
+
+  String goalNotifTitle(bool isLearn) => pick(
+      'Dudi — ${isLearn ? 'Жаттау' : 'Оқу'} мақсаты',
+      'Dudi — ${isLearn ? 'Выучить' : 'Чтение'}',
+      'Dudi — ${isLearn ? 'Memorization' : 'Reading'} goal');
+
+  String goalNotifBody(bool isLearn, String deadlineLabel) => pick(
+      '${isLearn ? 'Жаттау' : 'Оқу'} мақсатыңды ұмытпа! 📖 $deadlineLabel',
+      '${isLearn ? 'Цель запоминания' : 'Цель чтения'}! 📖 $deadlineLabel',
+      'Don\'t forget your ${isLearn ? 'memorization' : 'reading'} goal! 📖 $deadlineLabel');
+
+  String pagesPerDayFmt(int n) =>
+      pick('$n бет / күн', '$n стр. / день', '$n pages / day');
+
+  String pagesFmt(int n) =>
+      pick('$n бет', '$n стр.', '$n pages');
+
+  String knownSurahsLabel(int n) =>
+      pick('Білетін сүрелер: $n', 'Известных сур: $n', 'Surahs known: $n');
+
+  String resetKhatamsConfirm(String groupName) => pick(
+      '"$groupName" тобындағы хатымдар санын тастаймыз ба?',
+      'Сбросить хатмы в группе "$groupName"?',
+      'Reset khatams in the group "$groupName"?');
+
+  String addedYouMsg(String name) => pick(
+      '$name сізді достар тізіміне қосты! 🤝',
+      '$name добавил вас в друзья! 🤝',
+      '$name added you as a friend! 🤝');
+
+  String khatamGroupMsg(int number) => pick(
+      'Топ $number-ші рет Құранды толық хатым жасады!\n\nХатым дұғасын оқу — сүннет. Ол оқылған Құранның сауабын бекітеді.',
+      'Группа прочитала Коран $number-й раз!\n\nДуа хатма — сунна. Это закрепляет саваб прочитанного Корана.',
+      'The group completed the Quran for the $number time!\n\nReciting the khatam dua is a sunnah. It seals the reward of the completed Quran.');
+
+  String khatamGroupSimple(int number) => pick(
+      'Топ $number-ші рет Құранды хатым жасады!\nЖаңа жүздерді таңдауға болады.',
+      'Группа прочитала Коран $number-й раз!\nМожно выбрать новые джузы.',
+      'The group completed the Quran for the $number time!\nYou can pick new juz now.');
+
+  String khatamHistoryTitle(int n) =>
+      pick('Хатым тарихы ($n)', 'История хатмов ($n)', 'Khatam history ($n)');
+
+  String khatamNumber(int n) =>
+      pick('$n-хатым', '$n-й хатм', 'Khatam #$n');
+
+  String membersTitle(int n) =>
+      pick('Мүшелер ($n)', 'Участники ($n)', 'Members ($n)');
+
+  // ── Ramadan хатм challenge ──────────────────────────────────────────────
+  String get ramadanTitle =>
+      pick('🌙 Рамазан хатым', '🌙 Рамадан хатм', '🌙 Ramadan Khatam');
+  String get ramadanSubtitle => pick(
+      'Рамазанда Құранды толық оқы — күніне 1 жүз',
+      'Прочитай весь Коран за Рамадан — 1 джуз в день',
+      'Read the whole Quran during Ramadan — 1 juz a day');
+  String ramadanCountdown(int days) => pick(
+      'Рамазанға дейін $days күн',
+      'До Рамадана $days дн.',
+      '$days days until Ramadan');
+  String ramadanDayLabel(int day) =>
+      pick('$day-күн / 30', 'День $day из 30', 'Day $day of 30');
+  String ramadanJuzProgress(int done) =>
+      pick('$done/30 жүз', '$done/30 джуз', '$done/30 juz');
+  String ramadanBehind(int need) => pick(
+      'Артта қалдыңыз: бүгін тағы $need жүз керек',
+      'Отставание: нужно ещё $need джуз сегодня',
+      'Behind schedule: $need more juz needed today');
+  String get ramadanOnTrack =>
+      pick('Кестедесің 👍', 'Ты в графике 👍', 'You\'re on track 👍');
+  String get ramadanJoin => pick('Қатысу', 'Участвовать', 'Join');
+  String get ramadanJoined =>
+      pick('Қатысудасыз ✓', 'Вы участвуете ✓', 'You\'re in ✓');
+  String get ramadanMarkBtn =>
+      pick('Жүзді оқыдым ✓', 'Джуз прочитан ✓', 'Juz read ✓');
+  String get ramadanMarkedToday =>
+      pick('Бүгін белгіленді ✓', 'Сегодня отмечено ✓', 'Marked today ✓');
+  String get ramadanDone => pick(
+      'Хатым аяқталды! Барака Аллаһу фик',
+      'Хатм завершён! Барака Аллаху фик',
+      'Khatam complete! BarakAllahu fik');
+  String get ramadanLeave => pick('Шығу', 'Покинуть', 'Leave');
+
+  String juzDone(int juz) =>
+      pick('$juz-жүз ✓', '$juz-джуз ✓', 'Juz $juz ✓');
+
+  String juzInProgress(int juz) => pick(
+      '$juz-жүз оқуда', '$juz-джуз читается', 'Juz $juz in progress');
+
+  String codeCopied(String code) => pick(
+      'Код көшірілді: $code', 'Код скопирован: $code', 'Code copied: $code');
+
+  String inviteCodeLabel(String code) => pick(
+      'Шақыру коды: $code', 'Код приглашения: $code', 'Invite code: $code');
+
+  String myJuzBanner(int juz) => pick(
+      'Сіздің жүзіңіз: $juz-жүз', 'Ваш джуз: $juz-джуз', 'Your juz: $juz');
+
+  String get duaTranslation {
+    switch (_lang) {
+      case 'ru':
+        return 'О, Аллах!\n'
+            'Смилуйся над нами через Коран,\n'
+            'сделай его для нас имамом, светом, руководством и милостью.\n\n'
+            'О, Аллах!\n'
+            'Напомни нам то, что мы забыли из него,\n'
+            'научи нас тому, что мы не знаем.\n'
+            'Дай нам читать его в ночное время и в часы дня.\n'
+            'Сделай его нашим доводом, о Господь миров!\n\n'
+            'О, Аллах!\n'
+            'Исправь нашу религию, которая является защитой нашего дела.\n'
+            'Исправь нашу мирскую жизнь, в которой наше существование.\n'
+            'Исправь нашу будущую жизнь, к которой мы возвращаемся.\n\n'
+            'О, Аллах!\n'
+            'Сделай Коран весной наших сердец,\n'
+            'светом наших грудей,\n'
+            'рассеивателем наших печалей,\n'
+            'уходом наших забот и горестей.\n\n'
+            'Да благословит Аллах нашего Пророка Мухаммада (ﷺ),\n'
+            'его семью и всех его сподвижников.\n'
+            'Амин.';
+      case 'en':
+        return 'O Allah!\n'
+            'Have mercy on us through the Quran,\n'
+            'make it for us an imam, a light, a guidance and a mercy.\n\n'
+            'O Allah!\n'
+            'Remind us of what we have forgotten of it,\n'
+            'teach us of it that which we do not know.\n'
+            'Grant us its recitation in the hours of the night and the day.\n'
+            'Make it a proof for us, O Lord of the worlds!\n\n'
+            'O Allah!\n'
+            'Set right our religion, which is the safeguard of our affairs.\n'
+            'Set right our worldly life, in which is our livelihood.\n'
+            'Set right our Hereafter, to which we shall return.\n\n'
+            'O Allah!\n'
+            'Make the Quran the spring of our hearts,\n'
+            'the light of our chests,\n'
+            'the remover of our sorrows,\n'
+            'and the reliever of our worries and grief.\n\n'
+            'May Allah bless our Prophet Muhammad (ﷺ),\n'
+            'his family and all his companions.\n'
+            'Ameen.';
+      default:
+        return 'Уа, Алла!\n'
+            'Бізге Құран арқылы рақым ет.\n'
+            'Оны бізге жол көрсетуші, нұр, туралық және мейірім ет.\n\n'
+            'Уа, Алла!\n'
+            'Ұмытқанымызды Құран арқылы есімізге сал,\n'
+            'білмегенімізді үйрет.\n'
+            'Күндіз-түні Құран оқуды нәсіп ет.\n'
+            'Қиямет күні оны бізге айғақ ет, ей әлемдердің Раббысы!\n\n'
+            'Уа, Алла!\n'
+            'Дінімізді түзет, өйткені ол біздің қорғанымыз.\n'
+            'Дүниемізді түзет, өйткені онда біздің тіршілігіміз бар.\n'
+            'Ақыретімізді түзет, өйткені оған қайтамыз.\n\n'
+            'Уа, Алла!\n'
+            'Құранды жүректеріміздің көктемі,\n'
+            'көкіректеріміздің нұры,\n'
+            'қайғымыздың кетуі,\n'
+            'уайымдарымыздың сейілуі ет.\n\n'
+            'Алланың салауаты мен сәлемі\n'
+            'Пайғамбарымыз Мұхаммедке (с.а.у.),\n'
+            'оның отбасы мен сахабаларына болсын.\n'
+            'Әмин.';
+    }
+  }
+
+  String sleepRemainingLabel(String timeStr) =>
+      pick('Қалды: $timeStr', 'Осталось: $timeStr', 'Remaining: $timeStr');
+
+  String surahWarnTitle(bool isLearned) => pick(
+      isLearned ? 'Бұл сүрені жаттадыңыз' : 'Бұл сүрені білесіз',
+      isLearned ? 'Вы выучили эту суру' : 'Вы знаете эту суру',
+      isLearned ? 'You memorized this surah' : 'You know this surah');
+
+  String surahWarnBody(String name, bool isLearned) {
+    switch (_lang) {
+      case 'ru':
+        final verb = isLearned ? 'выучили' : 'знаете';
+        return 'Вы $verb суру «$name».\nВсё равно добавить в список для изучения?';
+      case 'en':
+        final verb = isLearned ? 'memorized' : 'know';
+        return 'You already $verb Surah "$name".\nAdd it to the study list anyway?';
+      default:
+        final verb = isLearned ? 'жаттадыңыз' : 'білесіз';
+        return '«$name» сүресін $verb.\nДегенмен жаттау тізіміне қосасыз ба?';
+    }
+  }
+
+  String selectedFraction(int n, int total) => pick(
+      'Таңдалды: $n / $total', 'Выбрано: $n / $total', 'Selected: $n / $total');
+
+  String surahsFmt(int n) =>
+      pick('$n сүре', '$n сур', '$n surahs');
+
+  String saveSurahsBtn(int n) => pick(
+      'Сақтау  ($n сүре)', 'Сохранить ($n сур)', 'Save ($n surahs)');
+
+  String shareCodeMsg(String code) => pick(
+      'Qari — менің дос кодым: $code\n'
+          'Qari қосымшасын жүктеп, Достар бөліміне кіріп, кодты енгізіңіз! 📖',
+      'Qari — мой код друга: $code\n'
+          'Скачай Qari, зайди в «Друзья» и введи код! 📖',
+      'Qari — my friend code: $code\n'
+          'Download Qari, open "Friends" and enter the code! 📖');
 
   String greetingMsg(String name) {
-    final hi = name.isEmpty
-        ? (isRu ? 'Ассаляму алейкум!' : 'Ассаламу алейкум!')
-        : (isRu ? 'Ассаляму алейкум, $name!' : 'Ассаламу алейкум, $name!');
-    final body = isRu
-        ? 'Я Dudi — ваш Коранный помощник. Задайте вопрос, попросите мотивацию или начните квиз!'
-        : 'Мен Dudi — сіздің Құран жолдасыңыз. Сұрақ қойыңыз, мотивация сұраңыз немесе квизді бастаңыз!';
+    final String hi;
+    switch (_lang) {
+      case 'ru':
+        hi = name.isEmpty ? 'Ассаляму алейкум!' : 'Ассаляму алейкум, $name!';
+        break;
+      case 'en':
+        hi = name.isEmpty ? 'Assalamu alaikum!' : 'Assalamu alaikum, $name!';
+        break;
+      default:
+        hi = name.isEmpty ? 'Ассаламу алейкум!' : 'Ассаламу алейкум, $name!';
+    }
+    final body = pick(
+        'Мен Dudi — сіздің Құран жолдасыңыз. Сұрақ қойыңыз, мотивация сұраңыз немесе квизді бастаңыз!',
+        'Я Dudi — ваш Коранный помощник. Задайте вопрос, попросите мотивацию или начните квиз!',
+        'I\'m Dudi — your Quran companion. Ask a question, get motivation or start a quiz!');
     return '$hi $body';
   }
 
-  String noLearnedAyahs() => isRu
-      ? 'Сначала выучи аяты! В режиме запоминания нажмите "Запомнил!".'
-      : 'Алдымен аяттарды жатта! Жаттау режимінде "Жаттадым!" басыңыз.';
+  String noLearnedAyahs() => pick(
+      'Алдымен аяттарды жатта! Жаттау режимінде "Жаттадым!" басыңыз.',
+      'Сначала выучи аяты! В режиме запоминания нажмите "Запомнил!".',
+      'Memorize some ayahs first! Tap "Memorized!" in memorization mode.');
 
-  String kqSubtitle(int n) => isRu
-      ? '$n вопросов · Выберите правильный ответ'
-      : '$n сұрақ · Дұрыс жауапты таңда';
+  String kqSubtitle(int n) => pick(
+      '$n сұрақ · Дұрыс жауапты таңда',
+      '$n вопросов · Выберите правильный ответ',
+      '$n questions · Pick the right answer');
 
   String streakTitle(int n) =>
-      isRu ? '$n дней подряд' : '$n күн қатарынан';
+      pick('$n күн қатарынан', '$n дней подряд', '$n days in a row');
 
-  String learnedAyahsDesc(int n) => isRu
-      ? 'Из $n выученных аятов — случайный аят'
-      : 'Жатталған $n аяттан кездейсоқ бір аят шығады';
+  String learnedAyahsDesc(int n) => pick(
+      'Жатталған $n аяттан кездейсоқ бір аят шығады',
+      'Из $n выученных аятов — случайный аят',
+      'A random ayah from the $n you memorized');
 
-  String verseFrom(String surah, dynamic verse) => isRu
-      ? 'Аят $verse суры $surah'
-      : '$surah сүресінің $verse-аяты';
+  String verseFrom(String surah, dynamic verse) => pick(
+      '$surah сүресінің $verse-аяты',
+      'Аят $verse суры $surah',
+      'Ayah $verse of Surah $surah');
 
-  int get translationId => isRu ? ruTranslationId : 113;
+  int get translationId {
+    switch (_lang) {
+      case 'ru': return ruTranslationId;
+      case 'en': return _enTranslationId;
+      default:   return 113;
+    }
+  }
 
-  String placeRu(String placeKz) =>
-      placeKz == 'Мекке' ? 'Мекка' : 'Медина';
+  String placeRu(String placeKz) {
+    if (isEn) return placeKz == 'Мекке' ? 'Mecca' : 'Medina';
+    return placeKz == 'Мекке' ? 'Мекка' : 'Медина';
+  }
+
+  /// Revelation place label in the current language ('Мекке' stays in Kazakh).
+  String placeL10n(String placeKz) {
+    switch (_lang) {
+      case 'ru': return placeKz == 'Мекке' ? 'Мекка' : 'Медина';
+      case 'en': return placeKz == 'Мекке' ? 'Mecca' : 'Medina';
+      default:   return placeKz;
+    }
+  }
 
   String tajweedName(String key) {
-    if (isRu) return _tajweedNamesRu[key] ?? key;
-    return _tajweedNamesKz[key] ?? key;
+    switch (_lang) {
+      case 'ru': return _tajweedNamesRu[key] ?? key;
+      case 'en': return _tajweedNamesEn[key] ?? key;
+      default:   return _tajweedNamesKz[key] ?? key;
+    }
   }
 
   String tajweedDescription(String key) {
-    if (isRu) return _tajweedDescriptionsRu[key] ?? '';
-    return _tajweedDescriptionsKz[key] ?? '';
+    switch (_lang) {
+      case 'ru': return _tajweedDescriptionsRu[key] ?? '';
+      case 'en': return _tajweedDescriptionsEn[key] ?? '';
+      default:   return _tajweedDescriptionsKz[key] ?? '';
+    }
   }
 
   static const _tajweedNamesRu = {
@@ -402,6 +576,16 @@ class LanguageProvider extends ChangeNotifier {
     'idgham': 'Идғам', 'idgham_shafawi': 'Идғам Шәфәуи',
     'idgham_ghunnah': 'Идғам Ғуннамен', 'idgham_wo_ghunnah': 'Идғам Ғуннасыз',
     'qalaqah': 'Қалқала', 'iqlab': 'Иқлаб',
+  };
+
+  static const _tajweedNamesEn = {
+    'ham_wasl': 'Hamzat al-Wasl', 'laam_shamsiyah': 'Laam Shamsiyyah',
+    'slnt': 'Silent', 'madda_necessary': 'Madd Lazim',
+    'madda_permissible': 'Madd Ja\'iz', 'madda_normal': 'Madd Tabee\'i',
+    'ghunnah': 'Ghunnah', 'ikhafa': 'Ikhfa', 'ikhafa_shafawi': 'Ikhfa Shafawi',
+    'idgham': 'Idgham', 'idgham_shafawi': 'Idgham Shafawi',
+    'idgham_ghunnah': 'Idgham with Ghunnah', 'idgham_wo_ghunnah': 'Idgham without Ghunnah',
+    'qalaqah': 'Qalqalah', 'iqlab': 'Iqlab',
   };
 
   static const _tajweedDescriptionsRu = {
@@ -438,6 +622,24 @@ class LanguageProvider extends ChangeNotifier {
     'idgham_wo_ghunnah': 'Идғам Ғуннасыз — әріптерді мұрын дыбысынсыз қосып оқу.',
     'qalaqah': 'Қалқала — белгілі әріптер сукун жағдайда қысқа дірілмен оқылады.',
     'iqlab': 'Иқлаб — сукунды нун мен тәнуиннен кейін "бә" келсе, мим дыбысына ауысып оқылады.',
+  };
+
+  static const _tajweedDescriptionsEn = {
+    'ham_wasl': 'Hamzat al-Wasl — a hamza read only at the start of speech; it is dropped when words are joined.',
+    'laam_shamsiyah': 'Laam Shamsiyyah — the laam of "ال" is not pronounced before the sun letters and merges with the following letter.',
+    'slnt': 'Silent — a letter or word is written but not pronounced during recitation.',
+    'madda_necessary': 'Madd Lazim — an obligatory prolonged stretch, normally recited for 6 counts.',
+    'madda_permissible': 'Madd Ja\'iz — a permissible stretch of variable length (usually 2–5 counts).',
+    'madda_normal': 'Madd Tabee\'i — the natural stretch of 2 counts.',
+    'ghunnah': 'Ghunnah — the nasal sound produced with the letters noon and meem.',
+    'ikhafa': 'Ikhfa — concealed pronunciation of noon sakinah or tanween before certain letters.',
+    'ikhafa_shafawi': 'Ikhfa Shafawi — concealed pronunciation of meem before the letter "ba".',
+    'idgham': 'Idgham — merging one letter into the next during recitation.',
+    'idgham_shafawi': 'Idgham Shafawi — merging two meems that meet each other.',
+    'idgham_ghunnah': 'Idgham with Ghunnah — merging letters with a nasal sound.',
+    'idgham_wo_ghunnah': 'Idgham without Ghunnah — merging letters without a nasal sound.',
+    'qalaqah': 'Qalqalah — a slight echoing bounce on certain letters bearing sukoon.',
+    'iqlab': 'Iqlab — converting noon sakinah or tanween into a "meem" sound before the letter "ba".',
   };
 }
 

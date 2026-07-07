@@ -1490,7 +1490,7 @@ class _HadiScreenState extends State<HadiScreen>
       userMessage: text,
       context: _buildContext(),
       history: _history.where((m) => m.role != 'assistant' || _history.indexOf(m) > 0).toList(),
-      isRu: _s.isRu,
+      lang: _s.lang,
     );
 
     if (mounted) {
@@ -1529,7 +1529,7 @@ class _HadiScreenState extends State<HadiScreen>
     final parts = key.split(':');
     final ch = int.tryParse(parts[0]) ?? 1;
     final v = int.tryParse(parts.length > 1 ? parts[1] : '1') ?? 1;
-    final name = (_s.isRu ? surahNamesRu : surahNames)[(ch - 1).clamp(0, 113)];
+    final name = _s.surahNamesL10n[(ch - 1).clamp(0, 113)];
     setState(() {
       _quizAyah = {'chapter': ch, 'verse': v, 'surah': name, 'key': key};
       _quizRevealed = false;
@@ -1542,7 +1542,7 @@ class _HadiScreenState extends State<HadiScreen>
   }
 
   Future<void> _loadQuizQuestion(int ch, int v, String name) async {
-    final q = await HadiService.quizQuestion(_buildContext(), name, v, '$ch:$v', isRu: _s.isRu);
+    final q = await HadiService.quizQuestion(_buildContext(), name, v, '$ch:$v', lang: _s.lang);
     if (mounted) setState(() { _quizHadiQ = q; _quizLoading = false; });
   }
 
@@ -1661,26 +1661,30 @@ class _HadiScreenState extends State<HadiScreen>
 
     setState(() { _checkingPronunciation = true; _pronunciationResult = ''; });
 
-    final isRu = _s.isRu;
+    final lang = _s.lang;
     final prompt = _heardText.isEmpty
-        ? (isRu
-            ? 'Пользователь читал $verse-й аят суры $surah, но голос не распознан. Подбодри повторить.'
-            : 'Пайдаланушы $surah сүресінің $verse-аятын оқыды, бірақ дыбыс танылмады. Қайталап оқыуға ынталандыр.')
-        : (isRu
-            ? 'Пользователь прочитал: "$_heardText".\n'
-              'Правильный аят: "$arabic" ($surah, $verse-й аят).\n'
-              'Оцени в 2–3 предложениях: правильно ли? Если есть ошибки — на какие слова обратить внимание. Отвечай тепло и ободряюще.'
-            : 'Пайдаланушы мына аятты оқыды: "$_heardText".\n'
+        ? _s.pick(
+            'Пайдаланушы $surah сүресінің $verse-аятын оқыды, бірақ дыбыс танылмады. Қайталап оқыуға ынталандыр.',
+            'Пользователь читал $verse-й аят суры $surah, но голос не распознан. Подбодри повторить.',
+            'The user recited ayah $verse of Surah $surah, but the voice was not recognized. Encourage them to try again.')
+        : _s.pick(
+            'Пайдаланушы мына аятты оқыды: "$_heardText".\n'
               'Дұрыс аят: "$arabic" ($surah, $verse-аят).\n'
               'Тыңдап, 2-3 сөйлемде бағала: дұрыс па? '
               'Қателер болса, қай сөздерге назар аудару керек. '
-              'Жылы және ынталандырушы тонда жауап бер.');
+              'Жылы және ынталандырушы тонда жауап бер.',
+            'Пользователь прочитал: "$_heardText".\n'
+              'Правильный аят: "$arabic" ($surah, $verse-й аят).\n'
+              'Оцени в 2–3 предложениях: правильно ли? Если есть ошибки — на какие слова обратить внимание. Отвечай тепло и ободряюще.',
+            'The user recited: "$_heardText".\n'
+              'The correct ayah: "$arabic" (Surah $surah, ayah $verse).\n'
+              'Assess in 2–3 sentences: is it correct? If there are mistakes, which words to pay attention to. Reply warmly and encouragingly.');
 
     final result = await HadiService.send(
       userMessage: prompt,
       context: _buildContext(),
       history: [],
-      isRu: isRu,
+      lang: lang,
     );
     if (mounted) setState(() { _pronunciationResult = result; _checkingPronunciation = false; });
   }
@@ -2515,7 +2519,7 @@ class _HadiScreenState extends State<HadiScreen>
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (sheetCtx) => _FriendsSheet(
         friends: friends,
-        isRu: _s.isRu,
+        lang: _s.lang,
         c: c,
         sheetContext: sheetCtx,
         onChallenge: _createChallengeForFriend,
@@ -2561,7 +2565,8 @@ class _HadiScreenState extends State<HadiScreen>
       if (!mounted) return;
       setState(() => _challengeCreating = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(_s.isRu ? 'Не удалось создать вызов' : 'Шақыру жасалмады'),
+        content: Text(_s.pick('Шақыру жасалмады', 'Не удалось создать вызов',
+            'Failed to create the challenge')),
       ));
     }
   }
@@ -2572,7 +2577,7 @@ class _HadiScreenState extends State<HadiScreen>
       if (!mounted) return;
       if (data == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(_s.isRu ? 'Код не найден' : 'Код табылмады'),
+          content: Text(_s.pick('Код табылмады', 'Код не найден', 'Code not found')),
         ));
         return;
       }
@@ -2591,7 +2596,7 @@ class _HadiScreenState extends State<HadiScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(_s.isRu ? 'Ошибка загрузки' : 'Жүктеу қатесі'),
+          content: Text(_s.pick('Жүктеу қатесі', 'Ошибка загрузки', 'Failed to load')),
         ));
       }
     }
@@ -2631,10 +2636,10 @@ class _HadiScreenState extends State<HadiScreen>
     final waiting = opScore < 0;
     final opName  = _challengeOpponentName.isNotEmpty
         ? _challengeOpponentName
-        : (_s.isRu ? 'Соперник' : 'Қарсылас');
+        : _s.pick('Қарсылас', 'Соперник', 'Opponent');
     final myName  = () {
       final n = context.read<OnboardingProvider>().firstName;
-      return n.isNotEmpty ? n : (_s.isRu ? 'Вы' : 'Сіз');
+      return n.isNotEmpty ? n : _s.pick('Сіз', 'Вы', 'You');
     }();
 
     final String winner;
@@ -2656,10 +2661,10 @@ class _HadiScreenState extends State<HadiScreen>
           children: [
             // Header
             Text(
-              winner == 'wait' ? (_s.isRu ? '⏳ Ждём соперника…' : '⏳ Қарсыласты күтеміз…')
-                  : winner == 'me'   ? (_s.isRu ? '🏆 Вы победили!'        : '🏆 Сіз жеңдіңіз!')
-                  : winner == 'op'   ? (_s.isRu ? '😤 Соперник победил'    : '😤 Қарсылас жеңді')
-                  :                    (_s.isRu ? '🤝 Ничья!'               : '🤝 Тең нәтиже!'),
+              winner == 'wait' ? _s.pick('⏳ Қарсыласты күтеміз…', '⏳ Ждём соперника…', '⏳ Waiting for the opponent…')
+                  : winner == 'me'   ? _s.pick('🏆 Сіз жеңдіңіз!', '🏆 Вы победили!', '🏆 You won!')
+                  : winner == 'op'   ? _s.pick('😤 Қарсылас жеңді', '😤 Соперник победил', '😤 Opponent won')
+                  :                    _s.pick('🤝 Тең нәтиже!', '🤝 Ничья!', '🤝 It\'s a draw!'),
               style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.w900,
                 color: winner == 'me'   ? c.green
@@ -2761,7 +2766,7 @@ class _HadiScreenState extends State<HadiScreen>
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _s.isRu ? 'Входящие вызовы' : 'Кіріс шақырулар',
+                    _s.pick('Кіріс шақырулар', 'Входящие вызовы', 'Incoming challenges'),
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -2772,7 +2777,7 @@ class _HadiScreenState extends State<HadiScreen>
                 const SizedBox(height: 8),
                 ..._incomingChallenges.map((ch) {
                   final fromName = ch['creatorName'] as String? ??
-                      (_s.isRu ? 'Друг' : 'Дос');
+                      _s.pick('Дос', 'Друг', 'Friend');
                   final id = ch['id'] as String;
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
@@ -2811,7 +2816,7 @@ class _HadiScreenState extends State<HadiScreen>
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              _s.isRu ? 'Принять' : 'Қабылдау',
+                              _s.pick('Қабылдау', 'Принять', 'Accept'),
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
@@ -2832,7 +2837,8 @@ class _HadiScreenState extends State<HadiScreen>
                   () => setState(() => _kqStarted = true)),
               const SizedBox(height: 12),
               _PrimaryBtn(
-                _s.isRu ? '⚔️  Бросить вызов другу' : '⚔️  Досыңды сайысқа шақыру',
+                _s.pick('⚔️  Досыңды сайысқа шақыру', '⚔️  Бросить вызов другу',
+                    '⚔️  Challenge a friend'),
                 const Color(0xFFE67E22),
                 _challengeCreating ? () {} : _showFriendsSheet,
               ),
@@ -2876,7 +2882,7 @@ class _HadiScreenState extends State<HadiScreen>
                 Text(
                   _challengeOpponentName.isNotEmpty
                       ? 'vs $_challengeOpponentName'
-                      : (_s.isRu ? 'Вызов другу' : 'Досқа вызов'),
+                      : _s.pick('Досқа вызов', 'Вызов другу', 'Challenge a friend'),
                   style: const TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w700,
                       color: Color(0xFFE67E22)),
@@ -3755,18 +3761,21 @@ class _PrimaryBtn extends StatelessWidget {
 
 class _FriendsSheet extends StatelessWidget {
   final List<FriendProfile> friends;
-  final bool isRu;
+  final String lang;
   final AppColors c;
   final BuildContext sheetContext;
   final void Function(FriendProfile?) onChallenge;
 
   const _FriendsSheet({
     required this.friends,
-    required this.isRu,
+    required this.lang,
     required this.c,
     required this.sheetContext,
     required this.onChallenge,
   });
+
+  String _pick(String kz, String ru, String en) =>
+      lang == 'ru' ? ru : lang == 'en' ? en : kz;
 
   @override
   Widget build(BuildContext context) {
@@ -3788,7 +3797,7 @@ class _FriendsSheet extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              isRu ? 'Выберите друга' : 'Досыңды таңда',
+              _pick('Досыңды таңда', 'Выберите друга', 'Pick a friend'),
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w800, color: c.text),
             ),
@@ -3834,7 +3843,7 @@ class _FriendsSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      isRu ? 'Вызвать' : 'Шақыру',
+                      _pick('Шақыру', 'Вызвать', 'Challenge'),
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,

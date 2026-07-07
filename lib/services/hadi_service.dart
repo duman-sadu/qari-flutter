@@ -1229,8 +1229,36 @@ class HadiService {
     await prefs.setString(_keyApiKey, key.trim());
   }
 
-  static String _systemPrompt(HadiContext ctx, bool isRu) {
-    if (isRu) {
+  static String _systemPrompt(HadiContext ctx, String lang) {
+    if (lang == 'en') {
+      return '''
+You are Dudi, the friendly AI assistant of the Qari app. You help English-speaking Muslims learn the Quran, in the persona of a camel.
+
+User data:
+- Name: ${ctx.userName.isEmpty ? 'unknown' : ctx.userName}
+- Streak: ${ctx.streak} days in a row
+- Studied today: ${ctx.studiedToday ? 'yes (${ctx.learnedToday} ayahs)' : 'no'}
+- Total memorized: ${ctx.totalLearned} ayahs
+- Total read: ${ctx.totalRead} ayahs
+- Mode: ${ctx.studyMode}
+
+Rules:
+1. Answer only in English
+2. Speak warmly and kindly, in an Islamic spirit
+3. Keep answers short (2–4 sentences)
+4. Answer questions about the Quran, motivation and memorization
+5. Use words of praise: "MashaAllah", "BarakAllahu fik" etc.
+6. Refer to the user's actual data (streak, ayahs)
+7. Occasionally (once in 3–5 messages) share an interesting fact about the Quran — translate it into English
+
+Interesting facts about the Quran (share occasionally, translated into English):
+${quranFactsRu.map((f) => '• $f').join('\n')}
+
+25 prophets mentioned in the Quran:
+${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n')}
+''';
+    }
+    if (lang == 'ru') {
       return '''
 Ты — Dudi, дружелюбный AI-ассистент приложения Qari. Ты помогаешь русскоязычным мусульманам изучать Коран в образе верблюда.
 
@@ -1290,11 +1318,11 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
     required String userMessage,
     required HadiContext context,
     required List<HadiMessage> history,
-    bool isRu = false,
+    String lang = 'kz',
   }) async {
     final apiKey = await getApiKey();
     if (apiKey == null || apiKey.isEmpty) {
-      return _localReply(userMessage, context, isRu: isRu);
+      return _localReply(userMessage, context, lang: lang);
     }
 
     final messages = <Map<String, String>>[];
@@ -1315,7 +1343,7 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
         body: jsonEncode({
           'model': _model,
           'max_tokens': 300,
-          'system': _systemPrompt(context, isRu),
+          'system': _systemPrompt(context, lang),
           'messages': messages,
         }),
       );
@@ -1323,27 +1351,38 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['content']?[0]?['text']?.toString() ??
-            (isRu ? 'Не удалось получить ответ.' : 'Жауап алу мүмкін болмады.');
+            (lang == 'ru'
+                ? 'Не удалось получить ответ.'
+                : lang == 'en'
+                    ? 'Failed to get a reply.'
+                    : 'Жауап алу мүмкін болмады.');
       } else if (response.statusCode == 401) {
-        return isRu
+        return lang == 'ru'
             ? 'Неверный API-ключ. Проверьте в настройках.'
-            : 'API кілті қате. Баптаулардан тексеріңіз.';
+            : lang == 'en'
+                ? 'Invalid API key. Check it in settings.'
+                : 'API кілті қате. Баптаулардан тексеріңіз.';
       } else {
-        return isRu
+        return lang == 'ru'
             ? 'Произошла ошибка (${response.statusCode}). Попробуйте ещё раз.'
-            : 'Қате орын алды (${response.statusCode}). Қайталаңыз.';
+            : lang == 'en'
+                ? 'Something went wrong (${response.statusCode}). Try again.'
+                : 'Қате орын алды (${response.statusCode}). Қайталаңыз.';
       }
     } catch (e) {
-      return isRu
+      return lang == 'ru'
           ? 'Ошибка подключения к интернету. Проверьте соединение.'
-          : 'Интернетке қосылу қатесі. Байланысты тексеріңіз.';
+          : lang == 'en'
+              ? 'Internet connection error. Check your connection.'
+              : 'Интернетке қосылу қатесі. Байланысты тексеріңіз.';
     }
   }
 
   // ── Локальный бот ─────────────────────────────────────────────────────────
 
-  static String _localReply(String userMessage, HadiContext ctx, {bool isRu = false}) {
-    if (isRu) return _localReplyRu(userMessage, ctx);
+  static String _localReply(String userMessage, HadiContext ctx, {String lang = 'kz'}) {
+    if (lang == 'ru') return _localReplyRu(userMessage, ctx);
+    if (lang == 'en') return _localReplyEn(userMessage, ctx);
     final msg = userMessage.toLowerCase();
     final name = ctx.userName.isEmpty ? 'інім' : ctx.userName;
 
@@ -2458,10 +2497,49 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
   static bool _has(String msg, List<String> keywords) =>
       keywords.any((k) => msg.contains(k));
 
+  // ── Local bot (English) ────────────────────────────────────────────────────
+  // Compact fallback without an API key: greeting / motivation / stats /
+  // default encouragement. The full keyword bot exists only in kz/ru.
+
+  static String _localReplyEn(String userMessage, HadiContext ctx) {
+    final msg = userMessage.toLowerCase();
+    final name = ctx.userName.isEmpty ? 'friend' : ctx.userName;
+    final r = Random();
+
+    if (_has(msg, ['salam', 'salaam', 'hello', 'hi ', 'assalamu'])) {
+      return 'Wa alaikum assalam, $name! 🐪 How can I help you with the Quran today?';
+    }
+    if (_has(msg, ['motivation', 'motivate', 'tired', 'lazy', 'hard'])) {
+      final msgs = [
+        'MashaAllah, $name! Your streak is ${ctx.streak} days — consistency is beloved to Allah 🔥',
+        'Every ayah you learn stays with you forever. Keep going, $name! 🐪',
+        'The Prophet ﷺ said: the best deeds are the most consistent. One ayah today is enough 🌿',
+      ];
+      return msgs[r.nextInt(msgs.length)];
+    }
+    if (_has(msg, ['progress', 'stat', 'how many', 'streak'])) {
+      return 'Your progress, $name: 🔥 ${ctx.streak}-day streak, '
+          '📘 ${ctx.totalLearned} ayahs memorized, 📖 ${ctx.totalRead} ayahs read. MashaAllah!';
+    }
+    final defaults = [
+      'MashaAllah, $name! Keep reading regularly — may Allah bless your efforts 🐪',
+      'I\'m here to help you with the Quran, $name. Ask me for motivation or start a quiz! 📖',
+      'Consistency matters more than quantity, $name. Even one ayah a day 🌿',
+    ];
+    return defaults[r.nextInt(defaults.length)];
+  }
+
   // ── Quiz question (локальная версия) ──────────────────────────────────────
 
-  static String _localQuizQuestion(String surahName, int verse, {bool isRu = false}) {
-    if (isRu) {
+  static String _localQuizQuestion(String surahName, int verse, {String lang = 'kz'}) {
+    if (lang == 'en') {
+      final questions = [
+        'Recite ayah $verse of Surah $surahName 🎤',
+        'Remember it? Surah $surahName, ayah $verse! Say it out loud 📖',
+      ];
+      return questions[Random().nextInt(questions.length)];
+    }
+    if (lang == 'ru') {
       final questions = [
         'Прочитайте $verse-й аят суры $surahName 🎤',
         'Помните? $surahName — $verse-й аят! Произнесите вслух 📖',
@@ -2481,22 +2559,25 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
 
   // ── Public methods ─────────────────────────────────────────────────────────
 
-  static Future<String> quickMotivation(HadiContext ctx, {bool isRu = false}) async {
+  static Future<String> quickMotivation(HadiContext ctx, {String lang = 'kz'}) async {
     return send(
-      userMessage: isRu ? 'мотивация' : 'мотивация',
+      userMessage: lang == 'en' ? 'motivation' : 'мотивация',
       context: ctx,
       history: [],
-      isRu: isRu,
+      lang: lang,
     );
   }
 
   static Future<String> quizQuestion(HadiContext ctx, String surahName,
-      int verse, String arabic, {bool isRu = false}) async {
+      int verse, String arabic, {String lang = 'kz'}) async {
     final apiKey = await getApiKey();
     if (apiKey == null || apiKey.isEmpty) {
-      return _localQuizQuestion(surahName, verse, isRu: isRu);
+      return _localQuizQuestion(surahName, verse, lang: lang);
     }
-    final prompt = isRu
+    final prompt = lang == 'en'
+        ? 'Create a quiz question: check whether the user knows ayah $verse of '
+          'Surah "$surahName" ($arabic) by heart. Ask only one specific question.'
+        : lang == 'ru'
         ? 'Составь вопрос для квиза: проверь, знает ли пользователь $verse-й аят '
           'суры "$surahName" ($arabic) наизусть. Задай только один конкретный вопрос.'
         : 'Квиз сұрағы жасашы: "$surahName" сүресінің $verse-аятын '
@@ -2506,7 +2587,7 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
       userMessage: prompt,
       context: ctx,
       history: [],
-      isRu: isRu,
+      lang: lang,
     );
   }
 }

@@ -48,12 +48,12 @@ void main() {
 void _openSupportSheet() {
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
-  final isRu = ctx.read<LanguageProvider>().isRu;
+  final lang = ctx.read<LanguageProvider>().lang;
   showModalBottomSheet(
     context: ctx,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (_) => SupportSheet(isRu: isRu),
+    builder: (_) => SupportSheet(lang: lang),
   );
 }
 
@@ -142,16 +142,16 @@ Future<void> _appMain() async {
           .difference(DateTime(last.year, last.month, last.day))
           .inDays;
     }
-    final isRu = (prefs.getString('appLang') ?? 'kz') == 'ru';
-    await NotificationService.scheduleReminder(daysSince, isRu: isRu);
-    await NotificationService.scheduleMorningReminder(daysSince, isRu: isRu);
-    await NotificationService.scheduleFridayReminder(isRu: isRu);
+    final lang = prefs.getString('appLang') ?? 'kz';
+    await NotificationService.scheduleReminder(daysSince, lang: lang);
+    await NotificationService.scheduleMorningReminder(daysSince, lang: lang);
+    await NotificationService.scheduleFridayReminder(lang: lang);
 
     final hasDonated = prefs.getBool('hasDonated') ?? false;
     if (hasDonated) {
       await NotificationService.cancelSupportReminder();
     } else {
-      await NotificationService.scheduleSupportReminder(isRu: isRu);
+      await NotificationService.scheduleSupportReminder(lang: lang);
     }
 
     // белсенді (iOS): refresh the daily ayah reminders so their text reflects
@@ -161,20 +161,18 @@ Future<void> _appMain() async {
       await NotificationService.scheduleActiveMemorization(
         chapter: pos['chapter']!,
         verse: pos['verse']!,
-        isRu: isRu,
+        lang: lang,
       );
     }
 
     // Ramadan хатм: refresh the per-day reminders on launch (no-op if not joined).
-    await ramadanProvider.refreshNotifications(isRu: isRu);
+    await ramadanProvider.refreshNotifications(lang: lang);
 
     // Goal notifications — one per remaining day, stops at deadline
     for (final g in goalProvider.goals) {
       try {
         final isLearn = g.type == GoalType.learn;
-        final title = isRu
-            ? 'Dudi — ${isLearn ? 'Цель заучивания' : 'Цель чтения'}'
-            : 'Dudi — ${isLearn ? 'Жаттау' : 'Оқу'} мақсаты';
+        final title = languageProvider.goalNotifTitle(isLearn);
         await NotificationService.scheduleGoalNotifications(
           baseId: g.notifId,
           title: title,
@@ -182,7 +180,7 @@ Future<void> _appMain() async {
           minute: g.notifMinute,
           deadline: g.deadline,
           isLearn: isLearn,
-          isRu: isRu,
+          lang: lang,
         );
       } catch (_) {}
     }

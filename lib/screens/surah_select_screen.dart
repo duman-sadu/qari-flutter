@@ -57,7 +57,7 @@ class _SurahSelectScreenState extends State<SurahSelectScreen> {
 
       if (isKnown || isLearned) {
         final c = AppColors.of(context);
-        final name = (_s.isRu ? surahNamesRu : surahNames)[index];
+        final name = _s.surahNamesL10n[index];
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => Dialog(
@@ -345,7 +345,7 @@ class _SurahSelectScreenState extends State<SurahSelectScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                (_s.isRu ? surahNamesRu : surahNames)[index],
+                                _s.surahNamesL10n[index],
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,

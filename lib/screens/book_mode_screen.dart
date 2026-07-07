@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/language_provider.dart';
-import '../providers/plan_provider.dart';
 import '../services/quran_api.dart';
 
 class BookModeScreen extends StatefulWidget {
@@ -77,7 +76,7 @@ class _BookModeScreenState extends State<BookModeScreen> {
     final bg = isDark ? const Color(0xFF1B1510) : const Color(0xFFF9F5E8);
     final fg = isDark ? const Color(0xFFE0CFA0) : const Color(0xFF2C1A0E);
     final isMarked = _bookmarkPage == _currentPage;
-    final isRu = context.watch<LanguageProvider>().isRu;
+    final s = context.watch<LanguageProvider>();
 
     return Scaffold(
       backgroundColor: bg,
@@ -189,7 +188,8 @@ class _BookModeScreenState extends State<BookModeScreen> {
                           ),
                           const Spacer(),
                           Text(
-                            isRu ? 'Стр. $_currentPage' : '$_currentPage-бет',
+                            s.pick('$_currentPage-бет', 'Стр. $_currentPage',
+                                'Page $_currentPage'),
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
@@ -352,8 +352,8 @@ class _BookPageState extends State<_BookPage> {
   }
 
   Widget _surahHeader(int ch) {
-    final isRu = context.read<LanguageProvider>().isRu;
-    final name = (isRu ? surahNamesRu : surahNames)[(ch - 1).clamp(0, 113)];
+    final name = context.read<LanguageProvider>()
+        .surahNamesL10n[(ch - 1).clamp(0, 113)];
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 14),
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -394,13 +394,14 @@ class _BookPageState extends State<_BookPage> {
   }
 
   Widget _surahContinue(int ch, int verse) {
-    final isRu = context.read<LanguageProvider>().isRu;
-    final name = (isRu ? surahNamesRu : surahNames)[(ch - 1).clamp(0, 113)];
+    final s = context.read<LanguageProvider>();
+    final name = s.surahNamesL10n[(ch - 1).clamp(0, 113)];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Center(
         child: Text(
-          isRu ? '· $name · с $verse аята ·' : '· $name · $verse-аяттан ·',
+          s.pick('· $name · $verse-аяттан ·', '· $name · с $verse аята ·',
+              '· $name · from ayah $verse ·'),
           style: TextStyle(
             fontSize: 11,
             color: widget.fg.withValues(alpha: 0.45),

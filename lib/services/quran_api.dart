@@ -12,6 +12,7 @@ final Map<String, List<Map<String, dynamic>>> _juzAyahsCache = {};
 
 const _kzTranslationId = 113; // Kazakh offline translation ID
 const ruTranslationId  = 45;  // Russian translation ID (quran.com)
+const enTranslationId  = 20;  // English — Saheeh International (quran.com)
 
 // ── Offline asset data ────────────────────────────────────────────────────────
 Map<String, Map<String, dynamic>>? _offlineAyahs;

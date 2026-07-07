@@ -63,7 +63,7 @@ class _MenuDrawerWidgetState extends State<MenuDrawerWidget>
       context: ctx,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => SupportSheet(isRu: s.isRu),
+      builder: (_) => SupportSheet(lang: s.lang),
     );
   }
 
@@ -442,6 +442,7 @@ class _LangPicker extends StatelessWidget {
   static const _langs = [
     ('kz', 'ҚАЗ', 'Қазақша'),
     ('ru', 'РУС', 'Русский'),
+    ('en', 'ENG', 'English'),
   ];
 
   @override

@@ -119,7 +119,8 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
-    final isRu = context.watch<LanguageProvider>().isRu;
+    final s = context.watch<LanguageProvider>();
+    final isRu = s.isRu;
     final isLast = _page == _slides.length - 1;
 
     return Scaffold(
@@ -156,7 +157,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     ),
                     child: Text(
-                      isRu ? 'Пропустить' : 'Өткізу',
+                      s.pick('Өткізу', 'Пропустить', 'Skip'),
                       style: const TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w500),
                     ),
@@ -196,8 +197,8 @@ class _IntroScreenState extends State<IntroScreen> {
                     children: [
                       Text(
                         isLast
-                            ? (isRu ? 'Начать' : 'Бастау')
-                            : (isRu ? 'Далее' : 'Келесі'),
+                            ? s.pick('Бастау', 'Начать', 'Start')
+                            : s.pick('Келесі', 'Далее', 'Next'),
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w700),
                       ),

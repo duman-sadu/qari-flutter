@@ -87,11 +87,19 @@ class GoalProvider extends ChangeNotifier {
   Future<void> _scheduleOne(GoalItem g) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final isRu = (prefs.getString('appLang') ?? 'kz') == 'ru';
+      final lang = prefs.getString('appLang') ?? 'kz';
       final isLearn = g.type == GoalType.learn;
-      final title = isRu
-          ? 'Dudi — ${isLearn ? 'Цель заучивания' : 'Цель чтения'}'
-          : 'Dudi — ${isLearn ? 'Жаттау' : 'Оқу'} мақсаты';
+      final String title;
+      switch (lang) {
+        case 'ru':
+          title = 'Dudi — ${isLearn ? 'Цель заучивания' : 'Цель чтения'}';
+          break;
+        case 'en':
+          title = 'Dudi — ${isLearn ? 'Memorization' : 'Reading'} goal';
+          break;
+        default:
+          title = 'Dudi — ${isLearn ? 'Жаттау' : 'Оқу'} мақсаты';
+      }
       await NotificationService.scheduleGoalNotifications(
         baseId: g.notifId,
         title: title,
@@ -99,7 +107,7 @@ class GoalProvider extends ChangeNotifier {
         minute: g.notifMinute,
         deadline: g.deadline,
         isLearn: isLearn,
-        isRu: isRu,
+        lang: lang,
       );
     } catch (_) {}
   }

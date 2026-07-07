@@ -607,7 +607,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                                     GestureDetector(
                                                       onTap: () async {
                                                         final messenger = ScaffoldMessenger.of(context);
-                                                        final isRu = _s.isRu;
+                                                        final errText = _s.pick(
+                                                            'Сброс қатесі', 'Ошибка сброса', 'Reset failed');
                                                         final confirm = await showDialog<bool>(
                                                           context: context,
                                                           builder: (ctx) => AlertDialog(
@@ -642,7 +643,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                                             _loadDeletedKhatams();
                                                           } else if (mounted) {
                                                             messenger.showSnackBar(
-                                                              SnackBar(content: Text(isRu ? 'Ошибка сброса' : 'Сброс қатесі')),
+                                                              SnackBar(content: Text(errText)),
                                                             );
                                                           }
                                                         }
