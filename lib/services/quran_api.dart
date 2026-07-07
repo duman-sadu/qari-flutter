@@ -14,6 +14,20 @@ const _kzTranslationId = 113; // Kazakh offline translation ID
 const ruTranslationId  = 45;  // Russian translation ID (quran.com)
 const enTranslationId  = 20;  // English — Saheeh International (quran.com)
 
+// When true (English UI), keep the API's Latin transliteration as is
+// instead of converting it to Cyrillic. Set from LanguageProvider.
+bool _latinTranslit = false;
+void setLatinTransliteration(bool value) => _latinTranslit = value;
+String _translit(String s) => _latinTranslit ? s : latinToCyrillic(s);
+
+// Some English editions (e.g. Saheeh International) embed footnote markup
+// like <sup foot_note=...>1</sup> in the translation text — strip all tags.
+String _cleanTranslation(String s) => s
+    .replaceAll(RegExp(r'<sup[^>]*>.*?</sup>'), '')
+    .replaceAll(RegExp(r'<[^>]+>'), '')
+    .replaceAll(RegExp(r'\s{2,}'), ' ')
+    .trim();
+
 // ── Offline asset data ────────────────────────────────────────────────────────
 Map<String, Map<String, dynamic>>? _offlineAyahs;
 Map<String, String>? _offlineSurahs;
@@ -206,7 +220,7 @@ Future<Map<String, dynamic>?> fetchAyah(
       'arabic':          offline['arabic']?.toString() ?? '',
       'tajweed':         tajweed,
       'translation':     offline['translation']?.toString() ?? '',
-      'transliteration': latinToCyrillic(offline['transliteration']?.toString() ?? ''),
+      'transliteration': _translit(offline['transliteration']?.toString() ?? ''),
       'audio':           _defaultAudioUrl(chapter, verse),
       'surah':           surahName,
       'chapter':         chapter,
@@ -286,8 +300,8 @@ Future<Map<String, dynamic>?> fetchAyah(
     return {
       'arabic':          verseData['text_uthmani']?.toString() ?? '',
       'tajweed':         verseData['text_uthmani_tajweed']?.toString() ?? '',
-      'translation':     translationObj?['text']?.toString() ?? '',
-      'transliteration': latinToCyrillic(translitText),
+      'translation':     _cleanTranslation(translationObj?['text']?.toString() ?? ''),
+      'transliteration': _translit(translitText),
       'audio':           audioUrl,
       'surah':           surahName,
       'chapter':         chapter,
@@ -329,7 +343,7 @@ Future<List<Map<String, dynamic>>?> fetchSurahAyahsFull(
           'arabic':          off['arabic']?.toString() ?? '',
           'tajweed':         off['tajweed']?.toString() ?? '',
           'translation':     off['translation']?.toString() ?? '',
-          'transliteration': latinToCyrillic(off['transliteration']?.toString() ?? ''),
+          'transliteration': _translit(off['transliteration']?.toString() ?? ''),
           'audio':           '',
           'surah':           surahName,
           'chapter':         chapter,
@@ -392,8 +406,8 @@ Future<List<Map<String, dynamic>>?> fetchSurahAyahsFull(
       return {
         'arabic': v['text_uthmani']?.toString() ?? '',
         'tajweed': v['text_uthmani_tajweed']?.toString() ?? '',
-        'translation': tr?['text']?.toString() ?? '',
-        'transliteration': latinToCyrillic(translitMap[vNum] ?? ''),
+        'translation': _cleanTranslation(tr?['text']?.toString() ?? ''),
+        'transliteration': _translit(translitMap[vNum] ?? ''),
         'audio': '',
         'surah': surahName,
         'chapter': chapter,
@@ -469,7 +483,7 @@ Future<List<Map<String, dynamic>>?> fetchVersesByJuz(
           'arabic':          off['arabic']?.toString() ?? '',
           'tajweed':         off['tajweed']?.toString() ?? '',
           'translation':     off['translation']?.toString() ?? '',
-          'transliteration': latinToCyrillic(off['transliteration']?.toString() ?? ''),
+          'transliteration': _translit(off['transliteration']?.toString() ?? ''),
           'audio':           '',
           'surah':           _surahCache[ch] ?? '',
           'chapter':         ch,
@@ -528,8 +542,8 @@ Future<List<Map<String, dynamic>>?> fetchVersesByJuz(
       return {
         'arabic': v['text_uthmani']?.toString() ?? '',
         'tajweed': v['text_uthmani_tajweed']?.toString() ?? '',
-        'translation': tr?['text']?.toString() ?? '',
-        'transliteration': latinToCyrillic(translitMap['$chNum:$vNum'] ?? ''),
+        'translation': _cleanTranslation(tr?['text']?.toString() ?? ''),
+        'transliteration': _translit(translitMap['$chNum:$vNum'] ?? ''),
         'audio': '',
         'surah': '',
         'chapter': chNum,
@@ -582,7 +596,7 @@ Future<List<Map<String, dynamic>>?> fetchVersesByPage(
           'arabic':          off['arabic']?.toString() ?? '',
           'tajweed':         off['tajweed']?.toString() ?? '',
           'translation':     off['translation']?.toString() ?? '',
-          'transliteration': latinToCyrillic(off['transliteration']?.toString() ?? ''),
+          'transliteration': _translit(off['transliteration']?.toString() ?? ''),
           'audio':           '',
           'surah':           _surahCache[ch] ?? '',
           'chapter':         ch,
@@ -641,8 +655,8 @@ Future<List<Map<String, dynamic>>?> fetchVersesByPage(
       return {
         'arabic': v['text_uthmani']?.toString() ?? '',
         'tajweed': v['text_uthmani_tajweed']?.toString() ?? '',
-        'translation': tr?['text']?.toString() ?? '',
-        'transliteration': latinToCyrillic(translitMap['$chNum:$vNum'] ?? ''),
+        'translation': _cleanTranslation(tr?['text']?.toString() ?? ''),
+        'transliteration': _translit(translitMap['$chNum:$vNum'] ?? ''),
         'audio': '',
         'surah': '',
         'chapter': chNum,

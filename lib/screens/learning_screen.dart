@@ -1450,7 +1450,6 @@ class _LearningScreenState extends State<LearningScreen>
         : plan.currentPosition;
     final chapter = (pos['chapter'] ?? 1).clamp(1, 114);
     final meta = surahMeta[chapter - 1];
-    final metaRu = surahMetaRu[chapter - 1];
 
     showModalBottomSheet(
       context: context,
@@ -1501,7 +1500,7 @@ class _LearningScreenState extends State<LearningScreen>
                                 fontSize: 15,
                                 fontWeight: FontWeight.w800,
                                 color: _c.text)),
-                        Text(_s.isRu ? metaRu.name : meta.name,
+                        Text(_s.surahMetaName(chapter - 1),
                             style: TextStyle(
                                 fontSize: 11, color: _c.subtext)),
                       ],
@@ -2049,7 +2048,6 @@ class _LearningScreenState extends State<LearningScreen>
           Builder(builder: (_) {
             final ch = (displayAyahs.first['chapter'] as int).clamp(1, 114);
             final meta = surahMeta[ch - 1];
-            final metaRu = surahMetaRu[ch - 1];
             return Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 6),
               child: Column(
@@ -2086,7 +2084,7 @@ class _LearningScreenState extends State<LearningScreen>
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      _s.isRu ? metaRu.info : meta.info,
+                      _s.surahInfo(ch - 1),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
@@ -2777,7 +2775,6 @@ class _LearningScreenState extends State<LearningScreen>
                                             Builder(builder: (_) {
                                               final chIdx = (pos['chapter']! - 1).clamp(0, 113);
                                               final meta = surahMeta[chIdx];
-                                              final metaRu = surahMetaRu[chIdx];
                                               final displayName = _s.surahNamesL10n[chIdx];
                                               return Column(
                                                 children: [
@@ -2828,7 +2825,7 @@ class _LearningScreenState extends State<LearningScreen>
                                                       borderRadius: BorderRadius.circular(10),
                                                     ),
                                                     child: Text(
-                                                      _s.isRu ? metaRu.info : meta.info,
+                                                      _s.surahInfo(chIdx),
                                                       textAlign: TextAlign.center,
                                                       style: TextStyle(
                                                         fontSize: 12,

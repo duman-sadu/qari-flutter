@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/strings.dart';
 import '../services/quran_api.dart'
-    show ruTranslationId, enTranslationId;
+    show ruTranslationId, enTranslationId, setLatinTransliteration;
 import 'plan_provider.dart'
     show surahNames, surahNamesRu, surahNamesEn;
+import '../data/surah_info.dart'
+    show surahMeta, surahMetaRu, surahMetaEn;
 
 class LanguageProvider extends ChangeNotifier {
   String _lang = 'kz';
@@ -15,9 +17,10 @@ class LanguageProvider extends ChangeNotifier {
   bool get isEn => _lang == 'en';
 
   /// English translation editions on quran.com: (resource id, label).
+  /// Note: id 131 (Clear Quran) is NOT in the list — api.quran.com v4
+  /// returns no translations for it (verified empirically).
   static const enTranslations = [
     (20, 'Saheeh International'),
-    (131, 'Dr. Mustafa Khattab — The Clear Quran'),
     (85, 'M.A.S. Abdel Haleem'),
     (84, 'T. Usmani'),
     (19, 'M. Pickthall'),
@@ -47,13 +50,20 @@ class LanguageProvider extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _lang = prefs.getString('appLang') ?? 'kz';
-    _enTranslationId = prefs.getInt('enTranslationId') ?? enTranslationId;
+    final savedTid = prefs.getInt('enTranslationId') ?? enTranslationId;
+    // Guard against a stored id that is no longer in the supported list
+    // (e.g. 131, which the API silently returns nothing for).
+    _enTranslationId = enTranslations.any((t) => t.$1 == savedTid)
+        ? savedTid
+        : enTranslationId;
+    setLatinTransliteration(_lang == 'en');
     notifyListeners();
   }
 
   Future<void> setLanguage(String lang) async {
     if (_lang == lang) return;
     _lang = lang;
+    setLatinTransliteration(lang == 'en');
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('appLang', lang);
@@ -78,6 +88,31 @@ class LanguageProvider extends ChangeNotifier {
       case 'ru': return surahNamesRu;
       case 'en': return surahNamesEn;
       default:   return surahNames;
+    }
+  }
+
+  /// Surah meta name / meaning / info in the current language (0-based index).
+  String surahMetaName(int index) {
+    switch (_lang) {
+      case 'ru': return surahMetaRu[index].name;
+      case 'en': return surahMetaEn[index].name;
+      default:   return surahMeta[index].name;
+    }
+  }
+
+  String surahMeaning(int index) {
+    switch (_lang) {
+      case 'ru': return surahMetaRu[index].meaning;
+      case 'en': return surahMetaEn[index].meaning;
+      default:   return surahMeta[index].meaning;
+    }
+  }
+
+  String surahInfo(int index) {
+    switch (_lang) {
+      case 'ru': return surahMetaRu[index].info;
+      case 'en': return surahMetaEn[index].info;
+      default:   return surahMeta[index].info;
     }
   }
 

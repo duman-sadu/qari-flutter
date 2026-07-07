@@ -1329,6 +1329,194 @@ correctRu: 'Буква с удвоением'
 
 ];
 
+// English quiz bank — mirrors _kqList 1:1 (same order & length, required for
+// friend challenges which reference questions by index). qRu is unused here.
+const _kqListEn = [
+_KQ('Which surah is called "the Mother of the Quran"?', '', ['Al-Fatihah', 'Ya-Sin', 'Al-Mulk'], 'Al-Fatihah'),
+_KQ('In which ayah of Surah Al-Baqarah is Ayatul-Kursi?', '', ['255', '256', '257'], '255'),
+_KQ('What is the number of the longest ayah of the Quran?', '', ['255', '282', '286'], '282'),
+_KQ('Which of these is one of the first Madinan surahs?', '', ['Al-Baqarah', 'An-Nas', 'Al-Fil'], 'Al-Baqarah'),
+_KQ('Who was the first prophet?', '', ['Musa', 'Adam', 'Nuh'], 'Adam'),
+_KQ('Who is the last prophet?', '', ['Isa', 'Musa', 'Muhammad ﷺ'], 'Muhammad ﷺ'),
+_KQ('Which prophet is mentioned most often in the Quran?', '', ['Ibrahim', 'Musa', 'Nuh'], 'Musa'),
+_KQ('In which surah is the story of Yusuf told in full?', '', ['Ya-Sin', 'Yusuf', 'Maryam'], 'Yusuf'),
+_KQ('Which prophet was inside the fish?', '', ['Nuh', 'Musa', 'Yunus'], 'Yunus'),
+_KQ('Which son built the Kaaba together with Ibrahim?', '', ['Yusuf', 'Ismail', 'Ishaq'], 'Ismail'),
+_KQ('At what age did Muhammad ﷺ receive prophethood?', '', ['35', '40', '45'], '40'),
+_KQ('In what year was Muhammad ﷺ born?', '', ['569', '570', '571'], '570'),
+_KQ('At what age did Muhammad ﷺ pass away?', '', ['60', '63', '65'], '63'),
+_KQ('What was the name of the mother of Muhammad ﷺ?', '', ['Khadijah', 'Amina', 'Fatimah'], 'Amina'),
+_KQ('What was the name of the father of Muhammad ﷺ?', '', ['Abdullah', 'Abdul-Muttalib', 'Abu Talib'], 'Abdullah'),
+_KQ('What was the name of the grandfather of Muhammad ﷺ?', '', ['Abu Talib', 'Abdul-Muttalib', 'Abdullah'], 'Abdul-Muttalib'),
+_KQ('When did the father of Muhammad ﷺ pass away?', '', ['Before his birth', 'At his birth', 'When he was 2'], 'Before his birth'),
+_KQ('In what year did the Hijra take place?', '', ['610', '622', '630'], '622'),
+_KQ('Which region is considered the homeland of Ibrahim (a.s.)?', '', ['Egypt', 'Ur (Iraq)', 'Sham'], 'Ur (Iraq)'),
+_KQ('In whose palace did Musa (a.s.) grow up?', '', ['Nimrod', 'Pharaoh', 'Shaddad'], 'Pharaoh'),
+_KQ('What was the name of the mother of Isa (a.s.)?', '', ['Khadijah', 'Maryam', 'Asiya'], 'Maryam'),
+_KQ('Whose son was Sulayman (a.s.)?', '', ['Ibrahim', 'Dawud', 'Musa'], 'Dawud'),
+_KQ('On which mountain did the ark of Nuh (a.s.) come to rest?', '', ['Sinai', 'Judi', 'Olives'], 'Judi'),
+_KQ('What was the other name of Yaqub (a.s.)?', '', ['Israel', 'Idris', 'Dhul-Kifl'], 'Israel'),
+_KQ('Which craft is traditionally associated with Idris (a.s.)?', '', ['Blacksmith', 'Tailor', 'Shepherd'], 'Tailor'),
+_KQ('To which people was Ilyas (a.s.) sent?', '', ['The Egyptians', 'Bani Israil', 'The Arabs'], 'Bani Israil'),
+_KQ('Which son of Yaqub was Yusuf (a.s.) by order?', '', ['7', '11', '12'], '11'),
+_KQ('Who was one of the sons of Muhammad ﷺ?', '', ['Zayd', 'Ibrahim', 'Ali'], 'Ibrahim'),
+_KQ('What was the name of the son of Prophet Zakariya?', '', ['Yusuf', 'Yahya', 'Ismail'], 'Yahya'),
+_KQ('Which prophet is known as the one who spoke with Allah?', '', ['Nuh', 'Musa', 'Yusuf'], 'Musa'),
+_KQ('Which prophet is called "Khalilullah" (the friend of Allah)?', '', ['Ibrahim', 'Musa', 'Nuh'], 'Ibrahim'),
+_KQ('Which woman is mentioned by name in the Quran?', '', ['Asiya', 'Khadijah', 'Maryam'], 'Maryam'),
+_KQ('How many prophets are mentioned by name in the Quran?', '', ['20', '25', '30'], '25'),
+_KQ('To which people was Yunus (a.s.) sent?', '', ['The people of Nineveh', 'The Quraysh', 'The Egyptians'], 'The people of Nineveh'),
+_KQ('Which scripture was given to Dawud (a.s.)?', '', ['Tawrat', 'Injil', 'Zabur'], 'Zabur'),
+_KQ('Which scripture was given to Musa (a.s.)?', '', ['Injil', 'Tawrat', 'Zabur'], 'Tawrat'),
+_KQ('Which scripture was given to Isa (a.s.)?', '', ['Tawrat', 'Injil', 'Zabur'], 'Injil'),
+_KQ('Who is the only companion mentioned by name in the Quran?', '', ['Umar ibn Al-Khattab', 'Zayd ibn Harithah', 'Aisha'], 'Zayd ibn Harithah'),
+_KQ('How many companions were given glad tidings of Paradise?', '', ['7', '10', '12'], '10'),
+_KQ('Who was the first woman to accept Islam?', '', ['Aisha', 'Khadijah', 'Fatimah'], 'Khadijah'),
+_KQ('Who narrated the most hadiths?', '', ['Umar', 'Aisha', 'Abu Hurairah'], 'Abu Hurairah'),
+_KQ('Who was the first muezzin of Islam?', '', ['Zayd', 'Bilal', 'Sa\'d'], 'Bilal'),
+_KQ('Approximately how many companions took part in the battle of Badr?', '', ['313', '700', '1000'], '313'),
+_KQ('Who was one of the youngest commanders among the companions?', '', ['Usama ibn Zayd', 'Zayd ibn Harithah', 'Ibn Mas\'ud'], 'Usama ibn Zayd'),
+_KQ('In which surah is Zayd ibn Harithah mentioned?', '', ['Al-Baqarah', 'Al-Ahzab', 'Ya-Sin'], 'Al-Ahzab'),
+_KQ('Approximately how many companions were there in total?', '', ['10,000', '50,000', '100,000+'], '100,000+'),
+_KQ('Who was the first caliph?', '', ['Umar', 'Abu Bakr', 'Uthman'], 'Abu Bakr'),
+_KQ('Who was the second caliph?', '', ['Umar', 'Uthman', 'Ali'], 'Umar'),
+_KQ('Who was the third caliph?', '', ['Uthman', 'Umar', 'Ali'], 'Uthman'),
+_KQ('Who was the fourth caliph?', '', ['Uthman', 'Ali', 'Abu Bakr'], 'Ali'),
+_KQ('What is Uthman (r.a.) especially known for?', '', ['Collecting hadiths', 'Unifying the Quranic text', 'Commanding the army'], 'Unifying the Quranic text'),
+_KQ('Who was Ali (r.a.) to the Prophet ﷺ?', '', ['Cousin and son-in-law', 'Neighbor', 'Maternal uncle'], 'Cousin and son-in-law'),
+_KQ('Who was called "the Lion of Allah"?', '', ['Umar', 'Ali', 'Hamza'], 'Hamza'),
+_KQ('What did Khadijah (r.a.) do for a living?', '', ['Medicine', 'Trade', 'Teaching'], 'Trade'),
+_KQ('To whom does the title "Al-Faruq" belong?', '', ['Umar', 'Uthman', 'Ali'], 'Umar'),
+_KQ('Who was called "Dhun-Nurayn"?', '', ['Uthman', 'Umar', 'Ali'], 'Uthman'),
+_KQ('To whom does the title "As-Siddiq" belong?', '', ['Umar', 'Uthman', 'Abu Bakr'], 'Abu Bakr'),
+_KQ('What is the famous title of Khalid ibn Al-Walid?', '', ['Faruq', 'Sayfullah', 'Asadullah'], 'Sayfullah'),
+_KQ('What is Mus\'ab ibn Umayr known for?', '', ['As the first envoy', 'As a muezzin', 'As a judge'], 'As the first envoy'),
+_KQ('Where was Salman Al-Farisi from?', '', ['From Persia', 'From Yemen', 'From Egypt'], 'From Persia'),
+_KQ('What was Abdullah ibn Mas\'ud known for?', '', ['Knowledge of tafsir and the Quran', 'Trade', 'Military affairs'], 'Knowledge of tafsir and the Quran'),
+_KQ('In which science did Ibn Abbas especially excel?', '', ['Fiqh and tafsir', 'Medicine', 'Astronomy'], 'Fiqh and tafsir'),
+_KQ('Besides being a muezzin, what is Bilal (r.a.) known for?', '', ['A model of patience in Islam', 'Becoming caliph', 'Becoming a judge'], 'A model of patience in Islam'),
+_KQ('Approximately how long did the caliphate of Abu Bakr last?', '', ['2 years', '5 years', '10 years'], '2 years'),
+_KQ('What happened to the Islamic state under Umar (r.a.)?', '', ['It expanded', 'It shrank', 'It stopped'], 'It expanded'),
+_KQ('What is Sa\'d ibn Abi Waqqas known for?', '', ['Marksmanship', 'The adhan', 'Trade'], 'Marksmanship'),
+_KQ('What was Abu Ubaidah ibn Al-Jarrah called?', '', ['Trustee of the ummah', 'Secretary of the ummah', 'Poet of the ummah'], 'Trustee of the ummah'),
+_KQ('What is Talha ibn Ubaydullah known for?', '', ['Generosity', 'Royalty', 'Being a poet'], 'Generosity'),
+_KQ('Who was Zubayr ibn Al-Awwam?', '', ['One of those promised Paradise', 'One of the tabi\'in', 'A judge'], 'One of those promised Paradise'),
+_KQ('What are the five pillars of Islam?', '', ['Prayer, Fasting, Zakat, Hajj, Shahada', 'Prayer, Fasting, Sadaqah, Jihad, Shahada', 'Prayer, Dhikr, Hajj, Sadaqah, Shahada'], 'Prayer, Fasting, Zakat, Hajj, Shahada'),
+_KQ('How many obligatory prayers are performed each day?', '', ['3', '5', '7'], '5'),
+_KQ('How many fard rak\'ahs are in the Fajr prayer?', '', ['2', '3', '4'], '2'),
+_KQ('How many fard rak\'ahs are in the Zuhr prayer?', '', ['2', '4', '6'], '4'),
+_KQ('How many fard rak\'ahs are in the Asr prayer?', '', ['2', '4', '6'], '4'),
+_KQ('How many fard rak\'ahs are in the Maghrib prayer?', '', ['2', '3', '4'], '3'),
+_KQ('How many fard rak\'ahs are in the Isha prayer?', '', ['2', '4', '5'], '4'),
+_KQ('What purification is performed before prayer?', '', ['Tasbih', 'Wudu', 'Sadaqah'], 'Wudu'),
+_KQ('In which direction is the prayer performed?', '', ['Toward Medina', 'Toward the Kaaba', 'To the east'], 'Toward the Kaaba'),
+_KQ('How many prostrations are performed in one rak\'ah?', '', ['1', '2', '3'], '2'),
+_KQ('How many fard rak\'ahs are in the Friday prayer?', '', ['2', '4', '6'], '2'),
+_KQ('What is Ramadan?', '', ['The month of Hajj', 'The month of fasting', 'The month of Muharram'], 'The month of fasting'),
+_KQ('When does the fast begin?', '', ['At sunrise', 'At dawn', 'At noon'], 'At dawn'),
+_KQ('When does the fast end?', '', ['At sunset', 'At noon', 'At midnight'], 'At sunset'),
+_KQ('What is iftar?', '', ['The morning meal', 'Breaking the fast', 'The sacrifice'], 'Breaking the fast'),
+_KQ('What is suhoor?', '', ['The evening meal', 'The pre-dawn meal', 'The Eid prayer'], 'The pre-dawn meal'),
+_KQ('In which part of Ramadan is Laylatul-Qadr sought?', '', ['The first ten days', 'The middle ten days', 'The last ten days'], 'The last ten days'),
+_KQ('What is the standard share of zakat from wealth?', '', ['1/10', '1/40', '1/20'], '1/40'),
+_KQ('For whom is Hajj obligatory?', '', ['Everyone', 'A Muslim who is able', 'Only men'], 'A Muslim who is able'),
+_KQ('In which month is Hajj performed?', '', ['Ramadan', 'Muharram', 'Dhul-Hijjah'], 'Dhul-Hijjah'),
+_KQ('What is tawaf?', '', ['Circling the Kaaba', 'Walking between Safa and Marwa', 'Standing at Arafat'], 'Circling the Kaaba'),
+_KQ('What is sa\'y?', '', ['Standing at Arafat', 'Walking between Safa and Marwa', 'Circling the Kaaba'], 'Walking between Safa and Marwa'),
+_KQ('Standing at Arafat is an essential part of what?', '', ['Umrah', 'Hajj', 'The Eid prayer'], 'Hajj'),
+_KQ('What is the main difference between Umrah and Hajj?', '', ['In timing and some rites', 'Only in language', 'In the number of prayers'], 'In timing and some rites'),
+_KQ('What does "SubhanAllah" mean?', '', ['Allah is the greatest', 'Allah is free of imperfection', 'All praise belongs to Allah'], 'Allah is free of imperfection'),
+_KQ('What does "Alhamdulillah" mean?', '', ['Allah forgives', 'All praise belongs to Allah', 'There is no god but Allah'], 'All praise belongs to Allah'),
+_KQ('What does "Allahu Akbar" mean?', '', ['Allah is the greatest', 'Allah forgives', 'Allah is free of imperfection'], 'Allah is the greatest'),
+_KQ('What is said in the shahada?', '', ['There is no god but Allah, and Muhammad ﷺ is His Messenger', 'Only prayer is required', 'Only fasting is required'], 'There is no god but Allah, and Muhammad ﷺ is His Messenger'),
+_KQ('With which holidays is the Eid prayer associated?', '', ['Eid al-Fitr and Eid al-Adha', 'Mawlid and Ashura', 'Friday and Monday'], 'Eid al-Fitr and Eid al-Adha'),
+_KQ('Which of these is a common dhikr?', '', ['SubhanAllah', 'Only dua', 'Only silence'], 'SubhanAllah'),
+_KQ('What is the standing position in prayer called?', '', ['Ruku', 'Qiyam', 'Sajdah'], 'Qiyam'),
+_KQ('What is the bowing in prayer called?', '', ['Sajdah', 'Qiyam', 'Ruku'], 'Ruku'),
+_KQ('What is the prostration called?', '', ['Qiyam', 'Sajdah', 'Tashahhud'], 'Sajdah'),
+_KQ('Which act of worship is associated with Eid al-Adha?', '', ['The sacrifice', 'Only fasting', 'Only Hajj'], 'The sacrifice'),
+_KQ('What kind of worship is zakat?', '', ['Financial worship', 'Only bodily worship', 'Only travel'], 'Financial worship'),
+_KQ('How many surahs are in the Quran?', '', ['100', '114', '120'], '114'),
+_KQ('Into how many juz is the Quran divided?', '', ['20', '30', '60'], '30'),
+_KQ('Into how many hizb is the Quran divided?', '', ['30', '60', '114'], '60'),
+_KQ('Approximately how many ayahs are in the Quran?', '', ['5000', '6236', '7000'], '6236'),
+_KQ('Over how many years was the Quran revealed?', '', ['10', '23', '40'], '23'),
+_KQ('What was the first revealed ayah?', '', ['Al-Fatihah 1', 'Al-Alaq 1', 'Al-Baqarah 1'], 'Al-Alaq 1'),
+_KQ('What was the first revealed surah?', '', ['Al-Fatihah', 'Al-Baqarah', 'Al-Alaq'], 'Al-Alaq'),
+_KQ('What is the first surah in the Quran?', '', ['Al-Fatihah', 'Al-Baqarah', 'Ya-Sin'], 'Al-Fatihah'),
+_KQ('What is the last surah in the Quran?', '', ['Al-Ikhlas', 'Al-Falaq', 'An-Nas'], 'An-Nas'),
+_KQ('What is the longest surah?', '', ['Ya-Sin', 'Al-Baqarah', 'An-Nisa'], 'Al-Baqarah'),
+_KQ('How many ayahs are in Surah Al-Baqarah?', '', ['200', '286', '300'], '286'),
+_KQ('Which is one of the shortest surahs?', '', ['Al-Fatihah', 'Al-Kawthar', 'Ya-Sin'], 'Al-Kawthar'),
+_KQ('How many ayahs are in Surah Al-Kawthar?', '', ['3', '4', '5'], '3'),
+_KQ('How many ayahs are in Surah Al-Fatihah?', '', ['5', '7', '9'], '7'),
+_KQ('How many ayahs are in Surah Al-Ikhlas?', '', ['3', '4', '5'], '4'),
+_KQ('In which surah is the longest ayah located?', '', ['An-Nisa', 'Al-Baqarah', 'Al-Ma\'idah'], 'Al-Baqarah'),
+_KQ('In which surah is Ayatul-Kursi located?', '', ['Al-Fatihah', 'Al-Baqarah', 'Ya-Sin'], 'Al-Baqarah'),
+_KQ('What is the number of Surah Ya-Sin in the Quran?', '', ['34', '36', '38'], '36'),
+_KQ('How many ayahs are in Surah Al-Kahf?', '', ['100', '110', '120'], '110'),
+_KQ('Which surah is often recommended to read on Friday?', '', ['Al-Kahf', 'An-Nas', 'Al-Fil'], 'Al-Kahf'),
+_KQ('How many ayahs are in Surah Al-Mulk?', '', ['20', '30', '40'], '30'),
+_KQ('What part of the Quran is Surah Al-Ikhlas said to equal?', '', ['1/2', '1/3', '1/4'], '1/3'),
+_KQ('Which ayah is repeated often in Surah Ar-Rahman?', '', ['فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ', 'اللَّهُ الصَّمَدُ', 'اقْرَأْ'], 'فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ'),
+_KQ('How many times is this ayah repeated in Surah Ar-Rahman?', '', ['29', '31', '33'], '31'),
+_KQ('Which surah has no "Bismillah"?', '', ['At-Tawbah', 'Al-Fil', 'An-Nas'], 'At-Tawbah'),
+_KQ('Which surah is named after a woman?', '', ['An-Nisa', 'Maryam', 'An-Nur'], 'Maryam'),
+_KQ('Which surah is associated with bees?', '', ['An-Nahl', 'An-Naml', 'Al-Fil'], 'An-Nahl'),
+_KQ('Which surah is associated with ants?', '', ['Al-Ankabut', 'An-Naml', 'Al-Fil'], 'An-Naml'),
+_KQ('Which surah is associated with the spider?', '', ['Al-Ankabut', 'Al-Fil', 'An-Nahl'], 'Al-Ankabut'),
+_KQ('Which surah tells about the elephant?', '', ['Al-Fil', 'An-Nasr', 'Al-Qari\'ah'], 'Al-Fil'),
+_KQ('Which surah is associated with iron?', '', ['Al-Hadid', 'Al-Mulk', 'Al-Qamar'], 'Al-Hadid'),
+_KQ('Which surah is associated with the moon?', '', ['Al-Qamar', 'Ash-Shams', 'Al-Layl'], 'Al-Qamar'),
+_KQ('In which surah is there an oath by the sun?', '', ['Ash-Shams', 'Al-Layl', 'Al-Fajr'], 'Ash-Shams'),
+_KQ('In which surah is there an oath by the night?', '', ['Al-Layl', 'An-Nas', 'Al-Qalam'], 'Al-Layl'),
+_KQ('In which surah is there an oath by time?', '', ['Al-Asr', 'Ash-Shams', 'An-Nur'], 'Al-Asr'),
+_KQ('In which surah is there an oath by the pen?', '', ['Al-Qalam', 'Al-Qadr', 'At-Takathur'], 'Al-Qalam'),
+_KQ('In which surah is there an oath by the star?', '', ['An-Najm', 'Al-Layl', 'Al-Qamar'], 'An-Najm'),
+_KQ('Is there a separate surah about the jinn in the Quran?', '', ['Yes', 'No', 'Only in hadith'], 'Yes'),
+_KQ('What is the surah about the jinn called?', '', ['Al-Jinn', 'An-Nur', 'Al-Furqan'], 'Al-Jinn'),
+_KQ('Which surah is devoted to the Night of Decree?', '', ['Al-Qadr', 'An-Nasr', 'Al-Falaq'], 'Al-Qadr'),
+_KQ('How many ayahs are in Surah Al-Qadr?', '', ['3', '5', '7'], '5'),
+_KQ('Better than how many months is Laylatul-Qadr?', '', ['100', '1000', '10000'], '1000'),
+_KQ('What is special about Surah Yusuf?', '', ['It tells one continuous story', 'It is the shortest surah', 'It contains only prayers'], 'It tells one continuous story'),
+_KQ('What is the second name of Surah Al-Fatihah?', '', ['Umm al-Kitab', 'An-Nur', 'Al-Furqan'], 'Umm al-Kitab'),
+_KQ('Approximately how many Meccan surahs are there?', '', ['50', '86', '100'], '86'),
+_KQ('Approximately how many Madinan surahs are there?', '', ['28', '40', '60'], '28'),
+_KQ('Who founded the Hanafi madhhab?', '', ['Imam Malik', 'Imam Abu Hanifa', 'Imam Shafi\'i'], 'Imam Abu Hanifa'),
+_KQ('Who founded the Maliki madhhab?', '', ['Imam Malik ibn Anas', 'Imam Shafi\'i', 'Imam Ahmad'], 'Imam Malik ibn Anas'),
+_KQ('Who founded the Shafi\'i madhhab?', '', ['Imam Malik', 'Imam Muhammad ibn Idris ash-Shafi\'i', 'Imam Abu Hanifa'], 'Imam Muhammad ibn Idris ash-Shafi\'i'),
+_KQ('Who founded the Hanbali madhhab?', '', ['Imam Ahmad ibn Hanbal', 'Imam Bukhari', 'Imam Tirmidhi'], 'Imam Ahmad ibn Hanbal'),
+_KQ('What are the main sources of fiqh?', '', ['Quran, Sunnah, Ijma, Qiyas', 'Quran, History, Literature', 'Tafsir, Fatwa, Poetry'], 'Quran, Sunnah, Ijma, Qiyas'),
+_KQ('What does "halal" mean?', '', ['Permitted', 'Forbidden', 'Doubtful'], 'Permitted'),
+_KQ('What does "haram" mean?', '', ['Permitted', 'Forbidden', 'Recommended'], 'Forbidden'),
+_KQ('What does "makruh" mean?', '', ['A disliked act', 'An obligatory act', 'Completely forbidden'], 'A disliked act'),
+_KQ('What does taharat mean?', '', ['Purification through ablution', 'Fasting', 'Giving sadaqah'], 'Purification through ablution'),
+_KQ('What is ghusl?', '', ['The full ablution', 'Only washing the hands', 'Only washing the face'], 'The full ablution'),
+_KQ('When is tayammum performed?', '', ['When there is no water or it cannot be used', 'Before every prayer', 'Only on Friday'], 'When there is no water or it cannot be used'),
+_KQ('What does nikah mean in Islam?', '', ['The marriage contract', 'A trade contract', 'An oath'], 'The marriage contract'),
+_KQ('What is mahr?', '', ['The groom\'s gift to the bride', 'A type of zakat', 'A Hajj rite'], 'The groom\'s gift to the bride'),
+_KQ('What does sadaqah mean?', '', ['Voluntary charity', 'The obligatory prayer', 'A type of fasting'], 'Voluntary charity'),
+_KQ('What kind of worship does zakat belong to?', '', ['Worship through wealth', 'Only bodily worship', 'Only verbal worship'], 'Worship through wealth'),
+_KQ('Whose collection is Sahih Bukhari?', '', ['Imam Bukhari\'s', 'Imam Muslim\'s', 'Imam Tirmidhi\'s'], 'Imam Bukhari\'s'),
+_KQ('Whose collection is Sahih Muslim?', '', ['Imam Muslim\'s', 'Imam Bukhari\'s', 'Imam Nasa\'i\'s'], 'Imam Muslim\'s'),
+_KQ('What is Kutub as-Sitta?', '', ['The six major hadith collections', 'Six books of tafsir', 'Six madhhabs'], 'The six major hadith collections'),
+_KQ('What does isnad mean?', '', ['The chain of hadith narrators', 'The hadith text', 'A book of tafsir'], 'The chain of hadith narrators'),
+_KQ('What is the matn of a hadith?', '', ['The main text of the hadith', 'The list of narrators', 'A book of hadiths'], 'The main text of the hadith'),
+_KQ('What is a sahih hadith?', '', ['An authentic hadith', 'A weak hadith', 'A fabricated hadith'], 'An authentic hadith'),
+_KQ('What is a hasan hadith?', '', ['An acceptable type of hadith', 'A fabricated hadith', 'A Quranic ayah'], 'An acceptable type of hadith'),
+_KQ('What is a da\'if hadith?', '', ['A weak hadith', 'The highest grade of hadith', 'A Quranic ayah'], 'A weak hadith'),
+_KQ('What is a mutawatir hadith?', '', ['A hadith transmitted by many through many chains', 'A hadith transmitted by one person', 'A weak hadith'], 'A hadith transmitted by many through many chains'),
+_KQ('How many hadiths is the "Arbain" of Imam An-Nawawi known for?', '', ['42', '30', '100'], '42'),
+_KQ('What does tajweed mean?', '', ['The rules of correct Quran recitation', 'Fast reading', 'Counting ayahs'], 'The rules of correct Quran recitation'),
+_KQ('What is madd?', '', ['Lengthening', 'A pause', 'Lowering the voice'], 'Lengthening'),
+_KQ('What does izhar mean?', '', ['Clear pronunciation', 'Hidden pronunciation', 'Merging'], 'Clear pronunciation'),
+_KQ('What does idgham mean?', '', ['Merging sounds', 'Stopping', 'Lengthening'], 'Merging sounds'),
+_KQ('What does ikhfa mean?', '', ['Hidden pronunciation', 'Open pronunciation', 'Strong lengthening'], 'Hidden pronunciation'),
+_KQ('What does iqlab mean?', '', ['Changing the sound', 'Lengthening', 'Stopping'], 'Changing the sound'),
+_KQ('What is waqf?', '', ['Stopping while reciting', 'Raising the voice', 'Fast reading'], 'Stopping while reciting'),
+_KQ('What is a letter with shadda?', '', ['A doubled letter', 'A short letter', 'A lengthened letter'], 'A doubled letter'),
+];
+
 class HadiScreen extends StatefulWidget {
   final String? initialQuery;
   // When opened from a challenge push: the quiz tab opens and joins this battle.
@@ -1342,6 +1530,9 @@ class HadiScreen extends StatefulWidget {
 class _HadiScreenState extends State<HadiScreen>
     with SingleTickerProviderStateMixin {
   LanguageProvider get _s => context.read<LanguageProvider>();
+
+  /// Active quiz bank — English UI gets the mirrored _kqListEn (same order).
+  List<_KQ> get _kqSource => _s.isEn ? _kqListEn : _kqList;
 
   late final TabController _tabCtrl;
   final _msgCtrl = TextEditingController();
@@ -1397,7 +1588,7 @@ class _HadiScreenState extends State<HadiScreen>
   void initState() {
     super.initState();
     _tabCtrl = TabController(length: 3, vsync: this);
-    _kqShuffled = (List<_KQ>.of(_kqList)..shuffle()).take(23).toList();
+    _kqShuffled = (List<_KQ>.of(_kqSource)..shuffle()).take(23).toList();
     _loadApiKey();
     _initStt();
     if (widget.initialQuery != null && widget.initialQuery!.isNotEmpty) {
@@ -1800,10 +1991,10 @@ class _HadiScreenState extends State<HadiScreen>
                     unselectedLabelColor: Colors.white54,
                     labelStyle: const TextStyle(
                         fontWeight: FontWeight.w700, fontSize: 13),
-                    tabs: const [
-                      Tab(text: '💬  Чат'),
-                      Tab(text: '🎯  Квиз'),
-                      Tab(text: '📊  Прогресс'),
+                    tabs: [
+                      Tab(text: _s.pick('💬  Чат', '💬  Чат', '💬  Chat')),
+                      Tab(text: _s.pick('🎯  Квиз', '🎯  Квиз', '🎯  Quiz')),
+                      Tab(text: _s.pick('📊  Прогресс', '📊  Прогресс', '📊  Progress')),
                     ],
                   ),
                 ],
@@ -1902,6 +2093,7 @@ class _HadiScreenState extends State<HadiScreen>
   // ── Quick questions panel ─────────────────────────────────────────────────
   static const _quickCats = ['🔥 Жеке', '🕌 Пайғамбарлар', '🌟 Сахабалар', '📖 Сүрелер', '☁️ Ахирет', '🔬 Ғылым', '🤲 Дұғалар', '📜 Аяттар', '📿 Хадистер'];
   static const _quickCatsRu = ['🔥 Личное', '🕌 Пророки', '🌟 Сподвижники', '📖 Суры', '☁️ Ахира', '🔬 Наука', '🤲 Дуа', '📜 Аяты', '📿 Хадисы'];
+  static const _quickCatsEn = ['🔥 Personal', '🕌 Prophets', '🌟 Companions', '📖 Surahs', '☁️ Hereafter', '🔬 Science', '🤲 Duas', '📜 Ayahs', '📿 Hadiths'];
 
   static const _quickQuestions = [
     // 0 — жеке
@@ -2030,6 +2222,135 @@ class _HadiScreenState extends State<HadiScreen>
       ('🤲 Дұға', 'Дұға хадисін айт'),
       ('🤝 Туыстық', 'Туыс хадисін айт'),
       ('☪️ Мұсылман кім?', 'Мұсылман хадисін айт'),
+    ],
+  ];
+
+  static const _quickQuestionsEn = [
+    // 0 — personal
+    [
+      ('🔥 Streak', 'Tell me about my streak'),
+      ('🌙 Motivation', 'Give me motivation for today'),
+      ('🤲 Dua', 'Which dua should I recite before memorizing?'),
+      ('📖 Advice', 'Give me advice on memorizing the Quran'),
+      ('⏰ Best time', 'When is the best time to study the Quran?'),
+      ('😔 I forget', 'I forget what I memorized — what should I do?'),
+      ('🚀 Where to start', 'Where do I start learning the Quran?'),
+      ('💪 It\'s hard', 'Memorizing is hard for me, any advice?'),
+      ('🕌 Sajdah ayahs', 'What is the sajdah of recitation, in which ayahs does it occur and how is it performed?'),
+    ],
+    // 1 — prophets
+    [
+      ('🌟 Yusuf', 'Tell me about Prophet Yusuf'),
+      ('🌊 Musa', 'Tell me about Prophet Musa'),
+      ('🔥 Ibrahim', 'Tell me about Prophet Ibrahim'),
+      ('🕊️ Isa', 'Tell me about Prophet Isa'),
+      ('🌙 Muhammad', 'Tell me about Prophet Muhammad'),
+      ('🚢 Nuh', 'Tell me about Prophet Nuh'),
+      ('🐋 Yunus', 'Tell me about Prophet Yunus'),
+      ('👑 Sulayman', 'Tell me about Prophet Sulayman'),
+      ('⚖️ Dawud', 'Tell me about Prophet Dawud'),
+      ('🤲 Yaqub', 'Tell me about Prophet Yaqub'),
+      ('🐫 Salih', 'Tell me about Prophet Salih'),
+      ('📋 All', 'List the prophets'),
+    ],
+    // 2 — companions
+    [
+      ('📌 Zayd ibn Harithah', 'Tell me about Zayd ibn Harithah — the only companion named in the Quran'),
+      ('🌟 The 10 of Paradise', 'List the ten companions given glad tidings of Paradise'),
+      ('👑 Abu Bakr', 'Tell me about Abu Bakr As-Siddiq'),
+      ('⚔️ Umar', 'Tell me about Umar ibn Al-Khattab'),
+      ('📖 Uthman', 'Tell me about Uthman ibn Affan'),
+      ('🦁 Ali', 'Tell me about Ali ibn Abi Talib'),
+      ('💎 Khadijah', 'Tell me about Khadijah bint Khuwaylid — the first to believe'),
+      ('🌺 Aisha', 'Tell me about Aisha bint Abu Bakr'),
+      ('🎤 Bilal', 'Tell me about Bilal ibn Rabah — the first muezzin'),
+      ('📚 Ibn Mas\'ud', 'Tell me about Abdullah ibn Mas\'ud'),
+      ('🏹 Sa\'d', 'Tell me about Sa\'d ibn Abi Waqqas — whose duas were answered'),
+      ('⚔️ Badr', 'Tell me about the battle of Badr'),
+      ('🤲 The Ansar', 'Tell me about the Ansar and the Muhajirun'),
+      ('📊 How many', 'Tell me about the total number of companions'),
+    ],
+    // 3 — surahs
+    [
+      ('📊 Longest surah', 'Which surah is the longest?'),
+      ('🔢 How many prophets', 'How many prophets are there?'),
+      ('📖 Al-Baqarah', 'Tell me about Surah Al-Baqarah'),
+      ('💚 Ya-Sin', 'Tell me about Surah Ya-Sin'),
+      ('🌙 Al-Mulk', 'Tell me about Surah Al-Mulk'),
+      ('⭐ Al-Fatihah', 'Tell me about Surah Al-Fatihah'),
+      ('📅 Al-Kahf', 'Tell me about Surah Al-Kahf'),
+      ('✨ Al-Ikhlas', 'Tell me about Surah Al-Ikhlas'),
+      ('🛡️ Al-Mu\'awwidhatayn', 'Tell me about Al-Falaq and An-Nas'),
+      ('🌊 Al-Kawthar', 'Tell me about Surah Al-Kawthar'),
+      ('💡 Fun fact', 'Tell me an interesting fact'),
+      ('🌟 First ayah', 'Which ayah was revealed first?'),
+      ('🕌 Sajdah', 'What is the sajdah of recitation, in which ayahs does it occur and how is it performed?'),
+    ],
+    // 4 — hereafter
+    [
+      ('☁️ Qiyamah', 'Will the Day of Judgment happen?'),
+      ('🌿 Paradise', 'What is Paradise like?'),
+      ('🔥 Hellfire', 'What is Hellfire like?'),
+      ('🌉 Sirat', 'What is the Sirat bridge?'),
+      ('🕊️ The grave', 'Is there punishment in the grave?'),
+      ('📖 Hereafter', 'What is the Hereafter?'),
+    ],
+    // 5 — science
+    [
+      ('🔬 Embryology', 'Is there embryology in the Quran?'),
+      ('🌌 Big Bang', 'Does the Quran mention the Big Bang?'),
+      ('🚀 Expanding universe', 'Does the Quran mention the expansion of the universe?'),
+      ('⛰️ Mountains', 'What does the Quran say about mountains?'),
+      ('💧 Water cycle', 'Is the water cycle mentioned in the Quran?'),
+    ],
+    // 6 — duas
+    [
+      ('📋 List', 'List the duas'),
+      ('📿 Before reading', 'Tell me the dua before reading'),
+      ('🌅 Morning', 'Tell me the morning dua'),
+      ('🌙 Evening', 'Tell me the evening dua'),
+      ('😴 Before sleep', 'Tell me the dua before sleeping'),
+      ('🌄 Upon waking', 'Tell me the dua upon waking up'),
+      ('🍽️ Before eating', 'Tell me the dua before eating'),
+      ('🍴 After eating', 'Tell me the dua after eating'),
+      ('🏠 Leaving home', 'Tell me the dua for leaving home'),
+      ('🕌 Mosque', 'Tell me the dua for entering the mosque'),
+      ('🙏 Istighfar', 'Tell me the istighfar dua'),
+      ('💝 Salawat', 'Send salawat upon the Prophet'),
+      ('👨‍👩‍👧 For parents', 'Tell me the dua for parents'),
+      ('💪 For patience', 'Tell me the dua for patience'),
+    ],
+    // 7 — ayahs
+    [
+      ('🤲 Patience', 'Tell me an ayah about patience'),
+      ('🙏 Gratitude', 'Tell me the ayah about gratitude'),
+      ('🕊️ Tawakkul', 'Tell me the ayah about tawakkul'),
+      ('👨‍👩‍👧 Parents', 'Tell me the ayah about parents'),
+      ('📚 Knowledge', 'Tell me an ayah about knowledge'),
+      ('💫 Faith', 'Tell me an ayah about faith'),
+      ('🤲 Answered dua', 'Tell me the ayah about answered dua'),
+      ('💚 Dhikr', 'Tell me the ayah about dhikr'),
+      ('🕌 Prayer', 'Tell me an ayah about prayer'),
+      ('✨ Goodness', 'Tell me the ayah about goodness'),
+      ('🌟 Hope', 'Tell me the ayah about hope'),
+    ],
+    // 8 — hadiths
+    [
+      ('🎯 Intention', 'Tell me the hadith about intention'),
+      ('🕌 Prayer', 'Tell me the hadith about prayer'),
+      ('💧 Purity', 'Tell me the hadith about purity'),
+      ('😤 Anger', 'Tell me the hadith about anger'),
+      ('💚 Mercy', 'Tell me the hadith about mercy'),
+      ('✅ Honesty', 'Tell me the hadith about honesty'),
+      ('🤲 Sadaqah', 'Tell me the hadith about sadaqah'),
+      ('📚 Knowledge', 'Tell me the hadith about knowledge'),
+      ('🗣️ The tongue', 'Tell me a hadith about the tongue'),
+      ('👨‍👩‍👧 Parents', 'Tell me a hadith about parents'),
+      ('📅 Friday', 'Tell me the hadith about Friday'),
+      ('🌙 Ramadan', 'Tell me the hadith about Ramadan'),
+      ('🤲 Dua', 'Tell me the hadith about dua'),
+      ('🤝 Kinship', 'Tell me the hadith about kinship'),
+      ('☪️ Who is a Muslim?', 'Tell me the hadith about who a Muslim is'),
     ],
   ];
 
@@ -2200,7 +2521,11 @@ class _HadiScreenState extends State<HadiScreen>
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
               child: Row(
                 children: List.generate(_quickCats.length, (i) {
-                  final cats = _s.isRu ? _quickCatsRu : _quickCats;
+                  final cats = _s.isRu
+                      ? _quickCatsRu
+                      : _s.isEn
+                          ? _quickCatsEn
+                          : _quickCats;
                   final sel = _quickCat == i;
                   return GestureDetector(
                     onTap: () => setState(() => _quickCat = i),
@@ -2233,7 +2558,12 @@ class _HadiScreenState extends State<HadiScreen>
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
               child: Row(
-                children: (_s.isRu ? _quickQuestionsRu[_quickCat] : _quickQuestions[_quickCat]).map((q) {
+                children: (_s.isRu
+                        ? _quickQuestionsRu[_quickCat]
+                        : _s.isEn
+                            ? _quickQuestionsEn[_quickCat]
+                            : _quickQuestions[_quickCat])
+                    .map((q) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: _QuickChip(q.$1, c, () => _send(q.$2)),
@@ -2250,7 +2580,11 @@ class _HadiScreenState extends State<HadiScreen>
   // ── Daily Ayah banner ─────────────────────────────────────────────────────
   Widget _buildDailyAyahCard(AppColors c) {
     final ayah = HadiService.getDailyAyah();
-    final translation = _s.isRu ? ayah.russian : ayah.kazakh;
+    final translation = _s.isRu
+        ? ayah.russian
+        : _s.isEn
+            ? ayah.english
+            : ayah.kazakh;
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 10, 12, 2),
       decoration: BoxDecoration(
@@ -2462,7 +2796,7 @@ class _HadiScreenState extends State<HadiScreen>
       _challengeOpponentName = '';
       _challengeMyScore = -1;
       _challengeOpponentScore = -1;
-      _kqShuffled = (List<_KQ>.of(_kqList)..shuffle()).take(23).toList();
+      _kqShuffled = (List<_KQ>.of(_kqSource)..shuffle()).take(23).toList();
       _kqIdx = 0;
       _kqSelected = null;
       _kqScore = 0;
@@ -2532,7 +2866,7 @@ class _HadiScreenState extends State<HadiScreen>
     try {
       final onboarding = context.read<OnboardingProvider>();
       final name = '${onboarding.firstName} ${onboarding.lastName}'.trim();
-      final allIdx = List.generate(_kqList.length, (i) => i)..shuffle();
+      final allIdx = List.generate(_kqSource.length, (i) => i)..shuffle();
       final indices = allIdx.take(23).toList();
       final id = await ChallengeService.create(
         questionIndices: indices,
@@ -2555,7 +2889,7 @@ class _HadiScreenState extends State<HadiScreen>
         _challengeOpponentName = friend?.name ?? '';
         _isChallenge = true;
         _challengeCreating = false;
-        _kqShuffled = indices.map((i) => _kqList[i]).toList();
+        _kqShuffled = indices.map((i) => _kqSource[i]).toList();
         _kqIdx = 0;
         _kqSelected = null;
         _kqScore = 0;
@@ -2587,7 +2921,7 @@ class _HadiScreenState extends State<HadiScreen>
         _isChallenge = true;
         _challengeOpponentName = ChallengeService.opponentName(data);
         _challengeOpponentScore = ChallengeService.opponentScore(data);
-        _kqShuffled = indices.map((i) => _kqList[i]).toList();
+        _kqShuffled = indices.map((i) => _kqSource[i]).toList();
         _kqIdx = 0;
         _kqSelected = null;
         _kqScore = 0;

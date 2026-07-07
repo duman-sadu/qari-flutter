@@ -35,8 +35,10 @@ class DailyAyah {
   final String arabic;
   final String kazakh;
   final String russian;
+  final String english;
   final String source;
-  const DailyAyah(this.arabic, this.kazakh, this.source, [this.russian = '']);
+  const DailyAyah(this.arabic, this.kazakh, this.source,
+      [this.russian = '', this.english = '']);
 }
 
 class _ProphetEntry {
@@ -142,180 +144,210 @@ class HadiService {
       'Алла ешкімге шамасынан тыс жүктемейді',
       'Бақара: 286',
       'Аллах не возлагает на душу сверх её возможностей',
+      'Allah does not burden a soul beyond what it can bear',
     ),
     DailyAyah(
       'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',
       'Алла — Одан басқа тәңір жоқ, Мәңгі Тірі, Мәңгі Өкім ететін',
       'Бақара: 255',
       'Аллах — нет божества, кроме Него, Живой, Вседержитель',
+      'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence',
     ),
     DailyAyah(
       'اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ',
       'Сабыр мен намазды өзіңізге жәрдемші етіңіз',
       'Бақара: 153',
       'Прибегайте к помощи терпения и молитвы',
+      'Seek help through patience and prayer',
     ),
     DailyAyah(
       'فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ',
       'Мен жақынмын — шақырған адамның дұғасына жауап беремін',
       'Бақара: 186',
       'Я близок — отвечаю на зов молящегося, когда он взывает ко Мне',
+      'Indeed I am near — I respond to the call of the caller when he calls upon Me',
     ),
     DailyAyah(
       'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',
       'Шүкір етсеңіздер, (нығметті) арттырамын',
       'Ибраhим: 7',
       'Если будете благодарны, Я непременно прибавлю вам',
+      'If you are grateful, I will surely give you more',
     ),
     DailyAyah(
       'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',
       'Расында Алла әділдікке және жақсылыққа бұйырады',
       'Нахл: 90',
       'Воистину, Аллах велит соблюдать справедливость и творить добро',
+      'Indeed, Allah commands justice and good conduct',
     ),
     DailyAyah(
       'وَبِالْوَالِدَيْنِ إِحْسَانًا',
       'Ата-анаға жақсылық жасаңыздар',
       'Исра: 23',
       'Делайте добро своим родителям',
+      'And be good to your parents',
     ),
     DailyAyah(
       'رَبِّ زِدْنِي عِلْمًا',
       'Раббым, маған ілім арттыра гөр',
       'Та-ха: 114',
       'Господи! Умножь мои знания',
+      'My Lord, increase me in knowledge',
     ),
     DailyAyah(
       'يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ',
       'Алла иман келтіргендер мен ілім берілгендердің дәрежесін көтереді',
       'Мүжадала: 11',
       'Аллах возвышает верующих и тех, кому даровано знание',
+      'Allah raises in degrees those who believe and those who were given knowledge',
     ),
     DailyAyah(
       'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
       'Аллаға сүйенген адамға Алла жетеді',
       'Талақ: 3',
       'Тому, кто уповает на Аллаха, Он достаточен',
+      'Whoever relies upon Allah — He is sufficient for him',
     ),
     DailyAyah(
       'لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ',
       'Алланың рахметінен үміт үзбеңдер',
       'Зүмер: 53',
       'Не отчаивайтесь в милости Аллаха',
+      'Do not despair of the mercy of Allah',
     ),
     DailyAyah(
       'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
       'Жүректер тек Алланы еске алумен тыныш табады',
       'Раъд: 28',
       'Воистину, поминанием Аллаха успокаиваются сердца',
+      'Verily, in the remembrance of Allah do hearts find rest',
     ),
     DailyAyah(
       'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا',
       'Қиындықпен бірге жеңілдік бар. Расында қиындықпен бірге жеңілдік бар',
       'Инширах: 5–6',
       'За каждой трудностью следует облегчение. Воистину, за каждой трудностью следует облегчение',
+      'Indeed, with hardship comes ease. Indeed, with hardship comes ease',
     ),
     DailyAyah(
       'الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا',
       'Сіздерді сынау үшін өлімді және тіршілікті жаратты: ең жақсы іс кімде деп',
       'Мүлк: 2',
       'Он создал смерть и жизнь, чтобы испытать вас: кто лучше по делам',
+      'He who created death and life to test you as to which of you is best in deed',
     ),
     DailyAyah(
       'إِنَّمَا أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَن يَقُولَ لَهُ كُن فَيَكُونُ',
       'Бірдеңені тілесе, тек: «Бол» дейді — ол бола қалады',
       'Ясин: 82',
       'Когда Он хочет чего-то, то говорит: «Будь!» — и оно бывает',
+      'When He intends a thing, He only says to it "Be" — and it is',
     ),
     DailyAyah(
       'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',
       'Алла — аспандар мен жердің нұры',
       'Нур: 35',
       'Аллах — Свет небес и земли',
+      'Allah is the Light of the heavens and the earth',
     ),
     DailyAyah(
       'إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ',
       '«Раббымыз Алла» деп, содан соң тура жолда тұрғандарға — мелектер түседі',
       'Фуссилат: 30',
       'К тем, кто сказал «Наш Господь — Аллах» и шёл прямым путём, нисходят ангелы',
+      'Upon those who say "Our Lord is Allah" and remain steadfast, the angels descend',
     ),
     DailyAyah(
       'إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ',
       'Расында намаз ұятсыздық пен жамандықтан тыяды',
       'Анкәбут: 45',
       'Воистину, молитва удерживает от мерзкого и порицаемого',
+      'Indeed, prayer prohibits immorality and wrongdoing',
     ),
     DailyAyah(
       'وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ',
       'Жасыспаңдар, қайғырмаңдар — мүмін болсаңыздар, жоғарысыздар',
       'Ал-и Имран: 139',
       'Не падайте духом и не печальтесь — вы выше, если вы истинно верующие',
+      'Do not weaken and do not grieve — you will be superior if you are true believers',
     ),
     DailyAyah(
       'أَلَا إِنَّ أَوْلِيَاءَ اللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ',
       'Алланың достарына қорқу да жоқ, қайғы да жоқ',
       'Юнус: 62',
       'Воистину, угодники Аллаха не знают страха и не будут опечалены',
+      'Indeed, the friends of Allah — no fear will there be for them, nor will they grieve',
     ),
     DailyAyah(
       'قَدْ أَفْلَحَ الْمُؤْمِنُونَ ۝ الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ',
       'Мүміндер шынымен жеңіске жетті — олар намазларында тәуекелмен тұрады',
       'Мүминун: 1–2',
       'Воистину, верующие обрели успех — те, кто смиренен в своих молитвах',
+      'Successful indeed are the believers — those who are humble in their prayers',
     ),
     DailyAyah(
       'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',
       'Мен жындар мен адамдарды тек Маған ибадат ету үшін жараттым',
       'Зарият: 56',
       'Я сотворил джиннов и людей только для того, чтобы они поклонялись Мне',
+      'I created the jinn and mankind only to worship Me',
     ),
     DailyAyah(
       'هُوَ اللَّهُ الَّذِي لَا إِلَٰهَ إِلَّا هُوَ عَالِمُ الْغَيْبِ وَالشَّهَادَةِ',
       'Ол Алла — Одан басқа тәңір жоқ, жасырын мен ашықты білуші',
       'Хашр: 22',
       'Он — Аллах, нет божества, кроме Него, Ведающий сокровенное и явное',
+      'He is Allah, besides whom there is no deity, Knower of the unseen and the witnessed',
     ),
     DailyAyah(
       'إِنَّمَا الْمُؤْمِنُونَ الَّذِينَ آمَنُوا بِاللَّهِ وَرَسُولِهِ ثُمَّ لَمْ يَرْتَابُوا',
       'Мүміндер — Аллаға иман келтіріп, күмән келтірмегендер',
       'Хужурат: 15',
       'Верующие — лишь те, кто уверовал в Аллаха и Его Посланника и не испытывал сомнений',
+      'The believers are only those who believe in Allah and His Messenger and then do not doubt',
     ),
     DailyAyah(
       'وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا وَلَا تَفَرَّقُوا',
       'Алланың арқанынан бірге ұстаныңдар, бөлінбеңдер',
       'Ал-и Имран: 103',
       'Крепко держитесь за вервь Аллаха все вместе и не разделяйтесь',
+      'Hold firmly to the rope of Allah all together and do not become divided',
     ),
     DailyAyah(
       'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ ۗ وَإِنَّمَا تُوَفَّوْنَ أُجُورَكُمْ يَوْمَ الْقِيَامَةِ',
       'Әрбір жан өлімді татады. Сыйақыларыңыз Қиямет күні толық беріледі',
       'Ал-и Имран: 185',
       'Каждая душа вкусит смерть. Воздаяние вам будет сполна выплачено в День воскресения',
+      'Every soul will taste death, and you will be given your full reward on the Day of Resurrection',
     ),
     DailyAyah(
       'وَالْعَصْرِ ۝ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ۝ إِلَّا الَّذِينَ آمَنُوا',
       'Уақытқа ант. Расында адам залалда. Иман келтіргендерді қоспағанда',
       'Асыр: 1–3',
       'Клянусь временем! Воистину, каждый человек в убытке, кроме тех, кто уверовал',
+      'By time! Indeed, mankind is in loss, except those who believe',
     ),
     DailyAyah(
       'يَا أَيُّهَا الَّذِينَ آمَنُوا أَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',
       'Ей, иман келтіргендер! Намазды дұрыс орындаңдар, зекет беріңдер',
       'Бақара: 43',
       'О верующие! Совершайте молитву и выплачивайте закят',
+      'O you who believe! Establish prayer and give zakah',
     ),
     DailyAyah(
       'فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ',
       'Екеуіңіз Раббыларыңыздың қандай нығметін жоққа шығарасыздар?',
       'Рахман: 13',
       'Какое же из благодеяний вашего Господа вы оба отвергаете?',
+      'So which of the favors of your Lord would you both deny?',
     ),
     DailyAyah(
       'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
       'Алланың атымен, Мейірімді, Рахымды. Мадақ — барлық ғаламдар Раббысы Аллаға',
       'Фатиха: 1–2',
       'Во имя Аллаха, Милостивого, Милосердного. Хвала Аллаху — Господу миров',
+      'In the name of Allah, the Most Gracious, the Most Merciful. Praise be to Allah, Lord of the worlds',
     ),
   ];
 
@@ -2498,18 +2530,497 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
       keywords.any((k) => msg.contains(k));
 
   // ── Local bot (English) ────────────────────────────────────────────────────
-  // Compact fallback without an API key: greeting / motivation / stats /
-  // default encouragement. The full keyword bot exists only in kz/ru.
+  // Keyword-matched fallback without an API key. Keys are tuned to the
+  // English quick-question buttons plus common free-text phrasings.
+
+  static const _duaDataEn = <List<String>, String>{
+    ['list the duas', 'which duas', 'duas list', 'list of duas']:
+        '🤲 Available duas:\n\n'
+        '📿 Before reading\n'
+        '🌅 Morning / 🌙 Evening\n'
+        '😴 Before sleep / 🌄 Upon waking\n'
+        '🍽️ Before / after eating\n'
+        '🏠 Leaving home\n'
+        '🕌 Mosque dua\n'
+        '🙏 Istighfar / 💝 Salawat\n'
+        '👨‍👩‍👧 For parents / 💪 For patience\n\n'
+        'Ask for a specific one or tap the chips above! 🤲',
+    ['dua before reading', 'dua before memoriz', 'before memorizing',
+     'dua for knowledge', 'before studying']:
+        '📿 Dua before reading\n\n'
+        '«رَبِّ زِدْنِي عِلْمًا»\n'
+        '"Rabbi zidni \'ilma"\n'
+        '"My Lord, increase me in knowledge"\n\n'
+        '📖 Ta-Ha: 114',
+    ['morning dua', 'dua in the morning', 'morning dhikr']:
+        '🌅 Morning dua\n\n'
+        '«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ»\n'
+        '"Asbahna wa asbahal-mulku lillah"\n'
+        '"We have entered the morning, and all dominion belongs to Allah"\n\n'
+        '💡 Then recite Ayat al-Kursi once',
+    ['evening dua', 'dua in the evening', 'evening dhikr']:
+        '🌙 Evening dua\n\n'
+        '«أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ»\n'
+        '"Amsayna wa amsal-mulku lillah"\n'
+        '"We have entered the evening, and all dominion belongs to Allah"\n\n'
+        '💡 In the evening recite Al-Ikhlas, Al-Falaq and An-Nas 3 times',
+    ['before sleep', 'dua before sleeping', 'sleep dua']:
+        '😴 Dua before sleeping\n\n'
+        '«اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا»\n'
+        '"Allahumma bismika amutu wa ahya"\n'
+        '"O Allah, in Your name I die and I live"\n\n'
+        '💡 Recite Al-Ikhlas 3 times before sleeping',
+    ['upon waking', 'waking up dua', 'dua after waking']:
+        '🌄 Dua upon waking up\n\n'
+        '«الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ»\n'
+        '"Alhamdu lillahil-ladhi ahyana ba\'da ma amatana wa ilayhin-nushur"\n'
+        '"Praise be to Allah who gave us life after death, and to Him is the return"',
+    ['before eating', 'dua before food', 'eating dua']:
+        '🍽️ Dua before eating\n\n'
+        '«بِسْمِ اللَّهِ»\n'
+        '"Bismillah"\n'
+        '"In the name of Allah"\n\n'
+        '💡 If you forget, say while eating:\n'
+        '«بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ»\n'
+        '"In the name of Allah at its beginning and its end"',
+    ['after eating', 'dua after food']:
+        '🤲 Dua after eating\n\n'
+        '«الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الْمُسْلِمِينَ»\n'
+        '"Alhamdu lillahil-ladhi at\'amana wa saqana wa ja\'alana minal-muslimin"\n'
+        '"Praise be to Allah who fed us, gave us drink and made us Muslims"',
+    ['leaving home', 'dua when leaving', 'going out dua']:
+        '🏠 Dua for leaving home\n\n'
+        '«بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ»\n'
+        '"Bismillah, tawakkaltu \'alallah, la hawla wa la quwwata illa billah"\n'
+        '"In the name of Allah, I rely upon Allah; there is no power except with Allah"',
+    ['entering the mosque', 'mosque dua', 'dua for the mosque']:
+        '🕌 Dua for entering the mosque\n\n'
+        '«اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ»\n'
+        '"Allahumma-ftah li abwaba rahmatik"\n'
+        '"O Allah, open for me the gates of Your mercy"\n\n'
+        '🕌 When leaving the mosque:\n'
+        '«اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ»\n'
+        '"O Allah, I ask You of Your bounty"',
+    ['istighfar', 'dua for forgiveness', 'repentance dua']:
+        '🙏 Istighfar\n\n'
+        '«أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ»\n'
+        '"Astaghfirullahal-\'azim alladhi la ilaha illa huwal-hayyul-qayyumu wa atubu ilayh"\n\n'
+        '💡 It is recommended to say it 100 times a day',
+    ['salawat', 'salat upon the prophet', 'blessings upon the prophet']:
+        '💝 Salawat\n\n'
+        '«اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ»\n'
+        '"Allahumma salli \'ala Muhammadin wa \'ala ali Muhammad"\n'
+        '"O Allah, send blessings upon Muhammad as You sent blessings upon Ibrahim"\n\n'
+        '💡 It is recommended to recite it abundantly on Friday',
+    ['dua for parents', 'parents dua']:
+        '👨‍👩‍👧 Dua for parents\n\n'
+        '«رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا»\n'
+        '"Rabbir-hamhuma kama rabbayani saghira"\n'
+        '"My Lord, have mercy upon them as they raised me when I was small"\n\n'
+        '📖 Al-Isra: 24',
+    ['dua for patience', 'patience dua']:
+        '💪 Dua for patience\n\n'
+        '«رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا»\n'
+        '"Rabbana afrigh \'alayna sabran wa thabbit aqdamana"\n'
+        '"Our Lord, pour patience upon us and make our steps firm"\n\n'
+        '📖 Al-Baqarah: 250',
+  };
+
+  static const _verseDataEn = <List<String>, String>{
+    ['ayah about patience', 'verse about patience']:
+        '📖 Ayah about patience\n\n'
+        '«يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ»\n'
+        '"Ya ayyuhal-ladhina amanu-sta\'inu bis-sabri was-salah"\n'
+        '"O you who believe! Seek help through patience and prayer"\n\n'
+        '📖 Al-Baqarah: 153',
+    ['ayah about gratitude', 'verse about gratitude', 'ayah about thankfulness']:
+        '📖 Ayah about gratitude\n\n'
+        '«لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ»\n'
+        '"La in shakartum la azidannakum"\n'
+        '"If you are grateful, I will surely give you more; but if you are ungrateful, My punishment is severe"\n\n'
+        '📖 Ibrahim: 7',
+    ['ayah about tawakkul', 'verse about tawakkul', 'ayah about reliance']:
+        '📖 Ayah about tawakkul\n\n'
+        '«وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ إِنَّ اللَّهَ بَالِغُ أَمْرِهِ»\n'
+        '"Wa man yatawakkal \'alallahi fahuwa hasbuh"\n'
+        '"Whoever relies upon Allah — He is sufficient for him. Allah accomplishes His purpose"\n\n'
+        '📖 At-Talaq: 3',
+    ['ayah about parents', 'verse about parents']:
+        '📖 Ayah about honoring parents\n\n'
+        '«وَقَضَىٰ رَبُّكَ أَلَّا تَعْبُدُوا إِلَّا إِيَّاهُ وَبِالْوَالِدَيْنِ إِحْسَانًا»\n'
+        '"Wa qada rabbuka alla ta\'budu illa iyyahu wa bil-walidayni ihsana"\n'
+        '"Your Lord has decreed that you worship none but Him, and be good to your parents"\n\n'
+        '📖 Al-Isra: 23',
+    ['ayah about knowledge', 'verse about knowledge']:
+        '📖 Ayah about knowledge\n\n'
+        '«يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ»\n'
+        '"Yarfa\'illahul-ladhina amanu minkum wal-ladhina utul-\'ilma darajat"\n'
+        '"Allah raises in degrees those of you who believe and those who were given knowledge"\n\n'
+        '📖 Al-Mujadila: 11',
+    ['ayah about faith', 'verse about faith']:
+        '📖 Ayah about faith\n\n'
+        '«إِنَّمَا الْمُؤْمِنُونَ الَّذِينَ آمَنُوا بِاللَّهِ وَرَسُولِهِ ثُمَّ لَمْ يَرْتَابُوا»\n'
+        '"Innamal-mu\'minunal-ladhina amanu billahi wa rasulihi thumma lam yartabu"\n'
+        '"The believers are only those who believe in Allah and His Messenger and then do not doubt"\n\n'
+        '📖 Al-Hujurat: 15',
+    ['answered dua', 'ayah about dua', 'allah is near']:
+        '📖 Ayah about answered dua\n\n'
+        '«وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ»\n'
+        '"Wa idha sa\'alaka \'ibadi \'anni fa-inni qarib"\n'
+        '"When My servants ask you about Me — indeed I am near. I respond to the call of the caller when he calls upon Me"\n\n'
+        '📖 Al-Baqarah: 186',
+    ['ayah about dhikr', 'verse about dhikr', 'hearts find rest']:
+        '📖 Ayah about dhikr\n\n'
+        '«أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ»\n'
+        '"Ala bidhikrillahi tatma\'innul-qulub"\n'
+        '"Verily, in the remembrance of Allah do hearts find rest"\n\n'
+        '📖 Ar-Ra\'d: 28',
+    ['ayah about prayer', 'verse about prayer']:
+        '📖 Ayah about prayer\n\n'
+        '«وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ»\n'
+        '"Wa aqimus-salata wa atuz-zakata warka\'u ma\'ar-raki\'in"\n'
+        '"Establish prayer, give zakah and bow with those who bow"\n\n'
+        '📖 Al-Baqarah: 43',
+    ['ayah about goodness', 'verse about goodness', 'ayah about justice']:
+        '📖 Ayah about goodness\n\n'
+        '«إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ وَإِيتَاءِ ذِي الْقُرْبَىٰ»\n'
+        '"Innallaha ya\'muru bil-\'adli wal-ihsani wa ita\'i dhil-qurba"\n'
+        '"Indeed, Allah commands justice, good conduct and giving to relatives"\n\n'
+        '📖 An-Nahl: 90',
+    ['ayah about hope', 'verse about hope', 'ayah about mercy']:
+        '📖 Ayah about the mercy of Allah\n\n'
+        '«قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ»\n'
+        '"Qul ya \'ibadiyal-ladhina asrafu \'ala anfusihim la taqnatu mir-rahmatillah"\n'
+        '"Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah"\n\n'
+        '📖 Az-Zumar: 53',
+  };
+
+  static const _hadithDataEn = <List<String>, String>{
+    ['hadith about intention', 'intention hadith']:
+        '📿 Hadith about intention\n\n'
+        '«إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»\n'
+        '"Innamal-a\'malu bin-niyyat"\n'
+        '"Actions are only by intentions, and every person will have what he intended"\n\n'
+        '📚 Bukhari 1, Muslim 1907',
+    ['hadith about prayer', 'prayer hadith']:
+        '📿 Hadith about prayer\n\n'
+        '"The first thing a servant will be held to account for on the Day of Judgment is prayer.\n'
+        'If it is sound — all his deeds are sound.\n'
+        'If it is corrupt — all his deeds are corrupt"\n\n'
+        '📚 Tirmidhi 413, Tabarani',
+    ['hadith about purity', 'purity hadith', 'cleanliness hadith']:
+        '📿 Hadith about purity\n\n'
+        '«الطُّهُورُ شَطْرُ الإِيمَانِ»\n'
+        '"At-tuhuru shatrul-iman"\n'
+        '"Purity is half of faith"\n\n'
+        '📚 Muslim 223',
+    ['hadith about anger', 'anger hadith']:
+        '📿 Hadith about anger\n\n'
+        'A man said: "Advise me." The Prophet ﷺ said:\n'
+        '«لَا تَغْضَبْ» — "Do not get angry!"\n'
+        'The man repeated his request several times, and each time the Prophet ﷺ replied:\n'
+        '"Do not get angry!"\n\n'
+        '📚 Bukhari 6116',
+    ['hadith about mercy', 'mercy hadith']:
+        '📿 Hadith about mercy\n\n'
+        '«الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ»\n'
+        '"Ar-rahimuna yarhamuhumur-Rahman"\n'
+        '"The merciful are shown mercy by the Most Merciful.\n'
+        'Be merciful to those on earth, and the One above the heavens will be merciful to you"\n\n'
+        '📚 Tirmidhi 1924, Abu Dawud',
+    ['hadith about honesty', 'honesty hadith', 'truthfulness hadith']:
+        '📿 Hadith about honesty\n\n'
+        '«عَلَيْكُمْ بِالصِّدْقِ فَإِنَّ الصِّدْقَ يَهْدِي إِلَى الْبِرِّ»\n'
+        '"\'Alaykum bis-sidqi fa-innas-sidqa yahdi ilal-birr"\n'
+        '"Hold to truthfulness — it leads to righteousness,\n'
+        'and righteousness leads to Paradise"\n\n'
+        '📚 Bukhari 6094, Muslim 2607',
+    ['hadith about sadaqah', 'sadaqah hadith', 'charity hadith']:
+        '📿 Hadith about sadaqah\n\n'
+        '«مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ»\n'
+        '"Ma naqasat sadaqatun min mal"\n'
+        '"Charity does not decrease wealth.\n'
+        'And forgiveness only increases a servant in honor"\n\n'
+        '📚 Muslim 2588',
+    ['hadith about knowledge', 'knowledge hadith']:
+        '📿 Hadith about knowledge\n\n'
+        '«طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ»\n'
+        '"Talabul-\'ilmi faridatun \'ala kulli muslim"\n'
+        '"Seeking knowledge is an obligation upon every Muslim"\n\n'
+        '📚 Ibn Majah 224',
+    ['hadith about the tongue', 'tongue hadith', 'hadith about speech']:
+        '📿 Hadith about the tongue\n\n'
+        '«مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ»\n'
+        '"Whoever believes in Allah and the Last Day — let him speak good or remain silent"\n\n'
+        '📚 Bukhari 6018, Muslim 47',
+    ['hadith about parents', 'parents hadith']:
+        '📿 Hadith about honoring parents\n\n'
+        '«رِضَا اللَّهِ فِي رِضَا الْوَالِدَيْنِ وَسَخَطُ اللَّهِ فِي سَخَطِ الْوَالِدَيْنِ»\n'
+        '"The pleasure of Allah is in the pleasure of the parents,\n'
+        'and the anger of Allah is in the anger of the parents"\n\n'
+        '📚 Tirmidhi 1899',
+    ['hadith about friday', 'friday hadith']:
+        '📿 Hadith about Friday\n\n'
+        '"The best day on which the sun rises is Friday.\n'
+        'On it Adam (a.s.) was created, entered Paradise\n'
+        'and was expelled from it. And the Hour will occur on a Friday"\n\n'
+        '📚 Muslim 854',
+    ['hadith about ramadan', 'ramadan hadith', 'hadith about fasting']:
+        '📿 Hadith about Ramadan\n\n'
+        '"Whoever fasts Ramadan with faith and hoping for the reward,\n'
+        'his previous sins will be forgiven"\n\n'
+        '📚 Bukhari 38, Muslim 760',
+    ['hadith about dua', 'dua hadith']:
+        '📿 Hadith about dua\n\n'
+        '«الدُّعَاءُ هُوَ الْعِبَادَةُ»\n'
+        '"Ad-du\'au huwal-\'ibadah"\n'
+        '"Dua is worship itself"\n\n'
+        '📚 Tirmidhi 2969, Abu Dawud 1479',
+    ['hadith about kinship', 'kinship hadith', 'family ties hadith']:
+        '📿 Hadith about kinship ties\n\n'
+        '"Whoever wishes his provision to be increased and his life to be lengthened —\n'
+        'let him maintain his family ties"\n\n'
+        '📚 Bukhari 2067, Muslim 2557',
+    ['who a muslim is', 'hadith about who a muslim', 'muslim hadith']:
+        '📿 Hadith about the Muslim\n\n'
+        '«الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ»\n'
+        '"A Muslim is the one from whose tongue and hand\n'
+        'other Muslims are safe"\n\n'
+        '📚 Bukhari 10, Muslim 40',
+  };
+
+  static const _qaDataEn = <List<String>, String>{
+    // Hereafter
+    ['judgment day', 'day of judgment', 'qiyamah']:
+        '☁️ The Day of Judgment will certainly come.\n'
+        'Every person will account for their life.',
+    ['paradise', 'jannah']:
+        '🌿 Paradise (Jannah) is the abode of eternal bliss.\n'
+        'The everlasting reward Allah has promised the believers.',
+    ['hellfire', 'jahannam', 'hell ']:
+        '🔥 Hellfire (Jahannam) is the abode of punishment.\n'
+        'May Allah protect us from all evil! 🤲',
+    ['sirat', 'sirat bridge']:
+        '🌉 The Sirat is the fine bridge leading over to Paradise.\n'
+        'The speed of crossing depends on one\'s deeds.',
+    ['punishment in the grave', 'the grave', 'grave punishment']:
+        '🕌 The punishment of the grave is established in the hadiths.\n'
+        'Good deeds become light in the grave.',
+    ['hereafter', 'akhirah', 'afterlife']:
+        '📖 The Hereafter is the eternal life after this world.\n'
+        'This world is the place of preparation for it.',
+    // Science
+    ['embryology', 'embryo', 'human creation']:
+        '🔬 Yes! Surahs Al-Baqarah and Al-Mu\'minun describe the stages of human creation from a drop.\n'
+        'Something science confirmed only 1400 years later.',
+    ['big bang']:
+        '🌌 Yes! Al-Anbiya 30: "The heavens and the earth were a joined entity, then We separated them".\n'
+        'Scientists call it the Big Bang.',
+    ['expansion of the universe', 'expanding universe', 'universe expand']:
+        '🚀 Yes! Adh-Dhariyat 47: "We built the heaven with might, and indeed We are expanding it".\n'
+        'Science proved this only in the 20th century.',
+    ['mountains', 'about mountains']:
+        '⛰️ An-Nahl 15, Luqman 10: mountains are described as "pegs" stabilizing the earth.\n'
+        'Geology confirms plate tectonics.',
+    ['water cycle']:
+        '💧 Az-Zumar 21, Ar-Rum 24: the cycle of water evaporating and falling as rain is described.\n'
+        'Meteorology discovered it much later.',
+    // Surahs
+    ['longest surah', 'which surah is the longest']:
+        '📖 Al-Baqarah is the longest surah — 286 ayahs.\n'
+        'It contains Islamic rulings, the story of Musa and Ayat al-Kursi.',
+    ['about surah al-fatihah', 'about al-fatihah', 'why is al-fatihah']:
+        '🕌 Al-Fatihah is the opening of the Quran, called "Umm al-Kitab" (the Mother of the Book).\n'
+        'It is obligatory in every prayer.',
+    ['about surah ya-sin', 'about ya-sin', 'ya-sin surah']:
+        '💚 Ya-Sin — surah 36, 83 ayahs.\n'
+        'It is called "the heart of the Quran". Recited for the sick and the deceased.',
+    ['about surah al-mulk', 'about al-mulk']:
+        '🌙 Al-Mulk — surah 67, 30 ayahs.\n'
+        'About Allah\'s dominion and power. Highly recommended to recite in the evening.',
+    ['about surah al-kahf', 'about al-kahf']:
+        '📅 Al-Kahf — surah 18, 110 ayahs.\n'
+        'Recommended on Friday. It is said to protect from the Dajjal.',
+    ['about surah al-baqarah', 'about al-baqarah']:
+        '📖 Al-Baqarah is the longest surah (286 ayahs).\n'
+        'Islamic rulings, the story of Musa and Ayat al-Kursi are in it.',
+    ['about surah al-ikhlas', 'about al-ikhlas']:
+        '✨ Al-Ikhlas — surah 112, 4 ayahs.\n'
+        'About the oneness of Allah. Reciting it three times equals the reward of the whole Quran.',
+    ['al-falaq and an-nas', 'muawwidhatayn', 'mu\'awwidhatayn']:
+        '🛡️ Al-Falaq (113) and An-Nas (114) are called "Al-Mu\'awwidhatayn".\n'
+        'Recited for protection from the evil eye, jinn and harm.',
+    ['about surah al-kawthar', 'about al-kawthar']:
+        '🌊 Al-Kawthar — surah 108, only 3 ayahs.\n'
+        'About the river "Al-Kawthar" in Paradise, granted to our Prophet ﷺ.',
+    ['first revealed ayah', 'which ayah was revealed first', 'first ayah']:
+        '🌟 The first revealed ayah is «اقْرَأْ» — "Read!" (Al-Alaq 96:1),\n'
+        'revealed in the cave of Hira.',
+    ['how many prophets']:
+        '📋 25 prophets are mentioned by name in the Quran.\n'
+        'The first is Adam (a.s.), the last is Muhammad ﷺ.',
+    // Sajdah of recitation
+    ['sajdah of recitation', 'sajdah ayahs', 'recitation sajdah', 'sajdah at-tilawah']:
+        '🕌 *The sajdah of recitation* is a prostration performed upon reciting or '
+        'hearing certain ayahs. In the Hanafi madhhab it is wajib.\n\n'
+        '📍 *The sajdah ayahs — 15 places:*\n'
+        '1.  Al-A\'raf — 7:206\n'
+        '2.  Ar-Ra\'d — 13:15\n'
+        '3.  An-Nahl — 16:50\n'
+        '4.  Al-Isra — 17:109\n'
+        '5.  Maryam — 19:58\n'
+        '6.  Al-Hajj — 22:18\n'
+        '7.  Al-Hajj — 22:77\n'
+        '8.  Al-Furqan — 25:60\n'
+        '9.  An-Naml — 27:26\n'
+        '10. As-Sajdah — 32:15\n'
+        '11. Sad — 38:24\n'
+        '12. Fussilat — 41:38\n'
+        '13. An-Najm — 53:62\n'
+        '14. Al-Inshiqaq — 84:21\n'
+        '15. Al-Alaq — 96:19\n\n'
+        '🤲 *How to perform it:*\n'
+        '1. Have wudu (a condition)\n'
+        '2. Face the qibla\n'
+        '3. Say "Allahu Akbar" and prostrate\n'
+        '4. In sujud say: "Subhana rabbiyal-a\'la"\n'
+        '5. Say "Allahu Akbar" and rise\n\n'
+        '⚡ It is performed outside of prayer too — no special prayer needed!\n'
+        'It also becomes due when hearing the ayah recited.',
+  };
+
+  // Compact prophet & companion notes for the quick-question buttons.
+  static const _peopleDataEn = <List<String>, String>{
+    ['prophet yusuf', 'about yusuf']:
+        '🌟 Yusuf (a.s.) — the prophet whose full story is told in Surah Yusuf (12).\n'
+        'A story of patience through trials, forgiveness of brothers and trust in Allah.',
+    ['prophet musa', 'about musa']:
+        '🌊 Musa (a.s.) — the prophet mentioned most often in the Quran.\n'
+        'He was sent to Pharaoh, was given the Tawrat, and spoke directly with Allah.',
+    ['prophet ibrahim', 'about ibrahim']:
+        '🔥 Ibrahim (a.s.) — "Khalilullah", the friend of Allah.\n'
+        'He rebuilt the Kaaba with his son Ismail and is the father of prophets.',
+    ['prophet isa', 'about isa']:
+        '🕊️ Isa (a.s.) — born miraculously to Maryam.\n'
+        'He was given the Injil and is mentioned 25 times in the Quran.',
+    ['prophet muhammad', 'about muhammad']:
+        '🌙 Muhammad ﷺ — the last prophet, born in 570 in Makkah.\n'
+        'Received prophethood at 40; the Quran was revealed to him over 23 years.',
+    ['prophet nuh', 'about nuh']:
+        '🚢 Nuh (a.s.) — called his people to Allah for 950 years.\n'
+        'The believers were saved in the ark, which came to rest on mount Judi.',
+    ['prophet yunus', 'about yunus']:
+        '🐋 Yunus (a.s.) — the prophet swallowed by the great fish.\n'
+        'His dua: "La ilaha illa anta, subhanaka, inni kuntu minaz-zalimin".',
+    ['prophet sulayman', 'about sulayman']:
+        '👑 Sulayman (a.s.) — son of Dawud, the prophet-king.\n'
+        'He understood the speech of birds and ants; jinn served him by Allah\'s leave.',
+    ['prophet dawud', 'about dawud']:
+        '⚖️ Dawud (a.s.) — the prophet-king given the Zabur.\n'
+        'Famed for his beautiful voice and just judgment.',
+    ['prophet yaqub', 'about yaqub']:
+        '🤲 Yaqub (a.s.) — also named Israel, father of Yusuf.\n'
+        'An example of beautiful patience (sabrun jamil) in the loss of his son.',
+    ['prophet salih', 'about salih']:
+        '🐫 Salih (a.s.) — sent to the people of Thamud.\n'
+        'The she-camel was his sign, but his people hamstrung it.',
+    ['list the prophets', 'prophets list']:
+        '📋 25 prophets are named in the Quran:\n'
+        'Adam, Idris, Nuh, Hud, Salih, Lut, Ibrahim, Ismail, Ishaq, Yaqub, Yusuf, '
+        'Shu\'ayb, Ayyub, Dhul-Kifl, Musa, Harun, Dawud, Sulayman, Ilyas, Al-Yasa\', '
+        'Yunus, Zakariya, Yahya, Isa, Muhammad ﷺ 🤲',
+    ['zayd ibn harithah']:
+        '📌 Zayd ibn Harithah (r.a.) — the only companion mentioned by name in the Quran (Al-Ahzab 33:37).\n'
+        'The adopted son of the Prophet ﷺ.',
+    ['ten companions', '10 of paradise', 'promised paradise']:
+        '🌟 The ten promised Paradise: Abu Bakr, Umar, Uthman, Ali, Talha, Zubayr, '
+        'Abdur-Rahman ibn Awf, Sa\'d ibn Abi Waqqas, Sa\'id ibn Zayd, Abu Ubaidah 🤲',
+    ['abu bakr']:
+        '👑 Abu Bakr As-Siddiq (r.a.) — the first caliph and closest friend of the Prophet ﷺ.\n'
+        'The first man to accept Islam; his caliphate lasted about 2 years.',
+    ['about umar', 'umar ibn']:
+        '⚔️ Umar ibn Al-Khattab (r.a.) — the second caliph, "Al-Faruq".\n'
+        'Under him the Islamic state expanded greatly; known for justice.',
+    ['uthman']:
+        '📖 Uthman ibn Affan (r.a.) — the third caliph, "Dhun-Nurayn".\n'
+        'He unified the written text of the Quran into one standard copy.',
+    ['about ali', 'ali ibn']:
+        '🦁 Ali ibn Abi Talib (r.a.) — the fourth caliph, cousin and son-in-law of the Prophet ﷺ.\n'
+        'One of the first to accept Islam.',
+    ['khadijah']:
+        '💎 Khadijah bint Khuwaylid (r.a.) — the first wife of the Prophet ﷺ.\n'
+        'The first person to believe; a successful merchant.',
+    ['about aisha bint abu bakr', 'about aisha', 'aisha']:
+        '🌺 Aisha bint Abu Bakr (r.a.) — wife of the Prophet ﷺ.\n'
+        'She narrated more than 2000 hadiths.',
+    ['bilal']:
+        '🎤 Bilal ibn Rabah (r.a.) — the first muezzin of Islam.\n'
+        'A model of patience: he endured torture repeating "Ahad, Ahad!"',
+    ['ibn mas\'ud', 'ibn masud']:
+        '📚 Abdullah ibn Mas\'ud (r.a.) — one of the greatest scholars among the companions.\n'
+        'Known for his knowledge of tafsir and recitation of the Quran.',
+    ['sa\'d ibn abi waqqas', 'sad ibn abi']:
+        '🏹 Sa\'d ibn Abi Waqqas (r.a.) — one of the ten promised Paradise.\n'
+        'A famed archer whose duas were answered.',
+    ['battle of badr', 'about badr']:
+        '⚔️ The battle of Badr (624 CE / 2 AH) — the first great battle of Islam.\n'
+        'About 313 companions defeated a much larger army by Allah\'s help.',
+    ['the ansar', 'muhajirun']:
+        '🤲 The Muhajirun emigrated from Makkah; the Ansar of Madinah sheltered them.\n'
+        'The Prophet ﷺ established brotherhood between them — a model of unity.',
+    ['number of companions', 'how many companions']:
+        '📊 The companions numbered more than 100,000 in total.\n'
+        'A companion is anyone who saw the Prophet ﷺ, believed in him and died a Muslim.',
+  };
+
+  static const _quranFactsEn = [
+    'The Quran has 114 surahs.',
+    'The Quran is divided into 30 juz.',
+    'The Quran has about 6236 ayahs.',
+    'The Quran was revealed over 23 years.',
+    'The only companion named in the Quran is Zayd ibn Harithah (Al-Ahzab 33:37).',
+    'Surah Al-Ikhlas equals a third of the Quran in reward.',
+    'Ayat al-Kursi (2:255) is the greatest ayah of the Quran.',
+    'The refrain in Surah Ar-Rahman repeats 31 times.',
+    'Surah At-Tawbah has no Bismillah.',
+    'The only woman named in the Quran is Maryam.',
+  ];
+
+  // Longest-keyword match wins: "about aisha bint abu bakr" contains both
+  // "abu bakr" and "about aisha" — the more specific (longer) key is correct.
+  static String? _nluReplyEn(String t) {
+    String? best;
+    var bestLen = 0;
+    for (final data in [
+      _duaDataEn, _verseDataEn, _hadithDataEn, _qaDataEn, _peopleDataEn
+    ]) {
+      for (final entry in data.entries) {
+        for (final kw in entry.key) {
+          if (kw.length > bestLen && t.contains(kw)) {
+            best = entry.value;
+            bestLen = kw.length;
+          }
+        }
+      }
+    }
+    return best;
+  }
 
   static String _localReplyEn(String userMessage, HadiContext ctx) {
     final msg = userMessage.toLowerCase();
     final name = ctx.userName.isEmpty ? 'friend' : ctx.userName;
     final r = Random();
 
+    final nlu = _nluReplyEn(msg);
+    if (nlu != null) return nlu;
+
     if (_has(msg, ['salam', 'salaam', 'hello', 'hi ', 'assalamu'])) {
       return 'Wa alaikum assalam, $name! 🐪 How can I help you with the Quran today?';
     }
-    if (_has(msg, ['motivation', 'motivate', 'tired', 'lazy', 'hard'])) {
+    if (_has(msg, ['fact', 'interesting'])) {
+      return '💡 Interesting fact: ${_quranFactsEn[r.nextInt(_quranFactsEn.length)]}';
+    }
+    if (_has(msg, ['motivation', 'motivate', 'tired', 'lazy', 'hard for me', 'it\'s hard'])) {
       final msgs = [
         'MashaAllah, $name! Your streak is ${ctx.streak} days — consistency is beloved to Allah 🔥',
         'Every ayah you learn stays with you forever. Keep going, $name! 🐪',
@@ -2517,10 +3028,28 @@ ${quranProphets.asMap().entries.map((e) => '${e.key + 1}. ${e.value}').join('\n'
       ];
       return msgs[r.nextInt(msgs.length)];
     }
-    if (_has(msg, ['progress', 'stat', 'how many', 'streak'])) {
+    if (_has(msg, ['my streak', 'progress', 'my stat', 'how many ayahs have i'])) {
       return 'Your progress, $name: 🔥 ${ctx.streak}-day streak, '
           '📘 ${ctx.totalLearned} ayahs memorized, 📖 ${ctx.totalRead} ayahs read. MashaAllah!';
     }
+    if (_has(msg, ['where to start', 'where do i start', 'how to memorize', 'advice', 'i forget'])) {
+      return '📖 Advice, $name: start with the short surahs (An-Nas, Al-Falaq, Al-Ikhlas), '
+          'learn 3–5 ayahs a day and review them in your prayers. '
+          'Consistency matters more than quantity 🌿';
+    }
+    if (_has(msg, ['best time', 'when is the best', 'when to study'])) {
+      return '⏰ The best time is after Fajr — the mind is fresh and the day is blessed. '
+          'Reviewing before sleep also strengthens memory 🌅';
+    }
+
+    // Question-like message with no match — be honest instead of guessing.
+    if (msg.contains('?') ||
+        _has(msg, ['what', 'who', 'when', 'where', 'why', 'how', 'tell me', 'which'])) {
+      return 'Hmm, I don\'t have a detailed answer for that yet, $name 🐪 '
+          'Try the quick-question chips above, ask about duas, ayahs, hadiths, '
+          'prophets or companions — or start the Quiz! 📖';
+    }
+
     final defaults = [
       'MashaAllah, $name! Keep reading regularly — may Allah bless your efforts 🐪',
       'I\'m here to help you with the Quran, $name. Ask me for motivation or start a quiz! 📖',

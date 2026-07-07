@@ -970,14 +970,11 @@ class _ListenScreenState extends State<ListenScreen>
             var query = '';
             return StatefulBuilder(
               builder: (_, setQuery) {
-                final isRu = _s.isRu;
                 final filtered = query.isEmpty
                     ? List.generate(114, (i) => i + 1)
                     : List.generate(114, (i) => i + 1).where((n) {
                         final name = _s.surahNamesL10n[n - 1].toLowerCase();
-                        final meaning = isRu
-                            ? surahMetaRu[n - 1].meaning.toLowerCase()
-                            : surahMeta[n - 1].meaning.toLowerCase();
+                        final meaning = _s.surahMeaning(n - 1).toLowerCase();
                         return name.contains(query) ||
                             '$n'.contains(query) ||
                             meaning.contains(query);
@@ -1050,9 +1047,7 @@ class _ListenScreenState extends State<ListenScreen>
                           itemBuilder: (_, i) {
                             final num = filtered[i];
                             final name = _s.surahNamesL10n[num - 1];
-                            final meaning = isRu
-                                ? surahMetaRu[num - 1].meaning
-                                : surahMeta[num - 1].meaning;
+                            final meaning = _s.surahMeaning(num - 1);
                             final selected = num == _surah;
                             return GestureDetector(
                               onTap: () {
