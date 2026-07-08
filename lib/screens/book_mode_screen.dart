@@ -3,19 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/language_provider.dart';
+import '../providers/plan_provider.dart';
 import '../services/quran_api.dart';
 
 class BookModeScreen extends StatefulWidget {
   final int initialPage;
-  final int? bookmarkPage;
 
   const BookModeScreen({
     super.key,
     required this.initialPage,
-    this.bookmarkPage,
   });
 
   @override
@@ -25,7 +23,6 @@ class BookModeScreen extends StatefulWidget {
 class _BookModeScreenState extends State<BookModeScreen> {
   late final PageController _pageCtrl;
   late int _currentPage;
-  int? _bookmarkPage;
   bool _showOverlay = true;
   Timer? _overlayTimer;
 
@@ -33,7 +30,6 @@ class _BookModeScreenState extends State<BookModeScreen> {
   void initState() {
     super.initState();
     _currentPage = widget.initialPage;
-    _bookmarkPage = widget.bookmarkPage;
     _pageCtrl = PageController(initialPage: widget.initialPage - 1);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     _scheduleHide();
@@ -60,14 +56,7 @@ class _BookModeScreenState extends State<BookModeScreen> {
   }
 
   Future<void> _toggleBookmark() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (_bookmarkPage == _currentPage) {
-      await prefs.remove('bookmarkPage');
-      if (mounted) setState(() => _bookmarkPage = null);
-    } else {
-      await prefs.setInt('bookmarkPage', _currentPage);
-      if (mounted) setState(() => _bookmarkPage = _currentPage);
-    }
+    await context.read<PlanProvider>().togglePageBookmark(_currentPage);
   }
 
   @override
@@ -75,7 +64,8 @@ class _BookModeScreenState extends State<BookModeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? const Color(0xFF1B1510) : const Color(0xFFF9F5E8);
     final fg = isDark ? const Color(0xFFE0CFA0) : const Color(0xFF2C1A0E);
-    final isMarked = _bookmarkPage == _currentPage;
+    final isMarked =
+        context.watch<PlanProvider>().pageBookmarks.contains(_currentPage);
     final s = context.watch<LanguageProvider>();
 
     return Scaffold(

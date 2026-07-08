@@ -66,8 +66,6 @@ class _LearningScreenState extends State<LearningScreen>
   Timer? _hintTimer;
   bool _showHint = false;
 
-  int? _bookmarkPage;
-  String? _bookmarkAyah; // "chapter:verse"
   bool _hadiDismissed = false;
 
   @override
@@ -145,8 +143,6 @@ class _LearningScreenState extends State<LearningScreen>
       showTranslation = prefs.getBool('showTranslation') ?? true;
       showTransliteration = prefs.getBool('showTransliteration') ?? true;
       _leftHanded = prefs.getBool('leftHanded') ?? false;
-      _bookmarkPage = prefs.getInt('bookmarkPage');
-      _bookmarkAyah = prefs.getString('bookmarkAyah');
     });
     if (!(prefs.getBool('hadithWelcomeShown') ?? false)) {
       await prefs.setBool('hadithWelcomeShown', true);
@@ -364,45 +360,263 @@ class _LearningScreenState extends State<LearningScreen>
     final result = await Navigator.push<int>(
       context,
       MaterialPageRoute(
-        builder: (_) => BookModeScreen(
-          initialPage: plan.readPageNumber,
-          bookmarkPage: _bookmarkPage,
-        ),
+        builder: (_) => BookModeScreen(initialPage: plan.readPageNumber),
       ),
     );
     if (result != null && mounted) {
       await plan.setReadPageNumber(result);
-      // Sync bookmark if changed inside book mode
-      final prefs = await SharedPreferences.getInstance();
-      setState(() => _bookmarkPage = prefs.getInt('bookmarkPage'));
       await _loadAyah();
     }
   }
 
   Future<void> _togglePageBookmark() async {
     final plan = context.read<PlanProvider>();
-    final prefs = await SharedPreferences.getInstance();
     final n = plan.readPageNumber;
-    if (_bookmarkPage == n) {
-      await prefs.remove('bookmarkPage');
-      if (mounted) setState(() => _bookmarkPage = null);
-    } else {
-      await prefs.setInt('bookmarkPage', n);
-      if (mounted) setState(() => _bookmarkPage = n);
-      await plan.markPageRead(n); // count bookmark tap toward daily read goal
-    }
+    final added = await plan.togglePageBookmark(n);
+    if (added) await plan.markPageRead(n); // count toward daily read goal
   }
 
   Future<void> _toggleAyahBookmark(int chapter, int verse) async {
+    await context.read<PlanProvider>().toggleAyahBookmark('$chapter:$verse');
+  }
+
+  // ── Bookmarks panel ────────────────────────────────────────────────────────
+
+  String _pageLabel(int p) => _s.pick('$p-бет', 'Страница $p', 'Page $p');
+
+  Future<void> _jumpToPage(BuildContext sheetCtx, int page) async {
+    final plan = context.read<PlanProvider>();
+    final nav = Navigator.of(sheetCtx);
+    await plan.setReadPageNumber(page);
     final prefs = await SharedPreferences.getInstance();
-    final key = '$chapter:$verse';
-    if (_bookmarkAyah == key) {
-      await prefs.remove('bookmarkAyah');
-      if (mounted) setState(() => _bookmarkAyah = null);
-    } else {
-      await prefs.setString('bookmarkAyah', key);
-      if (mounted) setState(() => _bookmarkAyah = key);
-    }
+    await prefs.setString('readUnit', 'page');
+    if (!mounted) return;
+    setState(() => _readUnit = 'page');
+    nav.pop();
+    await _loadAyah();
+  }
+
+  Future<void> _jumpToAyah(BuildContext sheetCtx, int chapter, int verse) async {
+    final plan = context.read<PlanProvider>();
+    final nav = Navigator.of(sheetCtx);
+    await plan.jumpToReadAyah(chapter, verse);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('readUnit', 'ayah');
+    if (!mounted) return;
+    setState(() => _readUnit = 'ayah');
+    nav.pop();
+    await _loadAyah();
+  }
+
+  Widget _bmSectionHeader(String text) => Padding(
+        padding: const EdgeInsets.fromLTRB(2, 6, 2, 8),
+        child: Text(text,
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+                color: _c.subtext)),
+      );
+
+  Widget _bmTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required VoidCallback onDelete,
+  }) {
+    final c = _c;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: c.surfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: c.gold),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: c.text)),
+            ),
+            GestureDetector(
+              onTap: onDelete,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Icon(Icons.close, size: 18, color: c.subtext),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBookmarksSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _c.card,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetCtx) => Consumer<PlanProvider>(
+        builder: (_, plan, _) {
+          final c = _c;
+          final s = _s;
+          final pages = plan.pageBookmarks.toList()..sort();
+          final ayahs = plan.ayahBookmarks.toList()
+            ..sort((a, b) {
+              final pa = a.split(':');
+              final pb = b.split(':');
+              final ca = int.tryParse(pa[0]) ?? 0;
+              final cb = int.tryParse(pb[0]) ?? 0;
+              if (ca != cb) return ca.compareTo(cb);
+              return (int.tryParse(pa[1]) ?? 0)
+                  .compareTo(int.tryParse(pb[1]) ?? 0);
+            });
+          return SafeArea(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(sheetCtx).size.height * 0.8),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: c.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(s.tr('bookmarksTitle'),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: c.text)),
+                    const SizedBox(height: 14),
+                    // Where you stopped → continue
+                    GestureDetector(
+                      onTap: () => _jumpToPage(sheetCtx, plan.readPageNumber),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: c.greenTint,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                              color: c.green.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.play_circle_fill,
+                                size: 22, color: c.green),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(s.tr('lastPosition'),
+                                      style: TextStyle(
+                                          fontSize: 11, color: c.subtext)),
+                                  const SizedBox(height: 2),
+                                  Text(_pageLabel(plan.readPageNumber),
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: c.green)),
+                                ],
+                              ),
+                            ),
+                            Text(s.tr('continueReading'),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: c.green)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (pages.isEmpty && ayahs.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(Icons.bookmark_border,
+                                  size: 40, color: c.subtext),
+                              const SizedBox(height: 10),
+                              Text(s.tr('noBookmarks'),
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: c.text)),
+                              const SizedBox(height: 4),
+                              Text(s.tr('noBookmarksDesc'),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 12, color: c.subtext)),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Flexible(
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: [
+                            if (pages.isNotEmpty) ...[
+                              _bmSectionHeader(s.tr('bookmarkPages')),
+                              ...pages.map((p) => _bmTile(
+                                    icon: Icons.menu_book_outlined,
+                                    label: _pageLabel(p),
+                                    onTap: () => _jumpToPage(sheetCtx, p),
+                                    onDelete: () => plan.removePageBookmark(p),
+                                  )),
+                            ],
+                            if (ayahs.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              _bmSectionHeader(s.tr('bookmarkAyahs')),
+                              ...ayahs.map((k) {
+                                final parts = k.split(':');
+                                final ch = int.tryParse(parts[0]) ?? 1;
+                                final v = int.tryParse(parts[1]) ?? 1;
+                                final name =
+                                    s.surahNamesL10n[(ch - 1).clamp(0, 113)];
+                                return _bmTile(
+                                  icon: Icons.bookmark_outline,
+                                  label: s.pick('$name, $v-аят', '$name, аят $v',
+                                      '$name, ayah $v'),
+                                  onTap: () => _jumpToAyah(sheetCtx, ch, v),
+                                  onDelete: () => plan.removeAyahBookmark(k),
+                                );
+                              }),
+                            ],
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _loadSurahAyahs() async {
@@ -1398,7 +1612,7 @@ class _LearningScreenState extends State<LearningScreen>
                   itemBuilder: (_, i) {
                     final n = i + 1;
                     final active = plan.readPageNumber == n;
-                    final isBookmark = _bookmarkPage == n;
+                    final isBookmark = plan.pageBookmarks.contains(n);
                     return GestureDetector(
                       onTap: () async {
                         await plan.setReadPageNumber(n);
@@ -2005,7 +2219,7 @@ class _LearningScreenState extends State<LearningScreen>
               // Bookmark button (Бет mode only)
               if (_readUnit == 'page')
                 Builder(builder: (_) {
-                  final marked = _bookmarkPage == plan.readPageNumber;
+                  final marked = plan.pageBookmarks.contains(plan.readPageNumber);
                   return GestureDetector(
                     onTap: _togglePageBookmark,
                     child: Container(
@@ -2024,6 +2238,21 @@ class _LearningScreenState extends State<LearningScreen>
                     ),
                   );
                 }),
+              const SizedBox(width: 8),
+              // Bookmarks list button
+              GestureDetector(
+                onTap: _showBookmarksSheet,
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: _c.card,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _c.border),
+                  ),
+                  child: Icon(Icons.bookmarks_outlined,
+                      size: 16, color: _c.subtext),
+                ),
+              ),
               const SizedBox(width: 8),
               // Settings button
               GestureDetector(
@@ -2220,8 +2449,8 @@ class _LearningScreenState extends State<LearningScreen>
                           onTap: () => _toggleAyahBookmark(
                               a['chapter'] as int, verseNum),
                           child: Builder(builder: (_) {
-                            final marked =
-                                _bookmarkAyah == '${a['chapter']}:$verseNum';
+                            final marked = plan.ayahBookmarks
+                                .contains('${a['chapter']}:$verseNum');
                             return Icon(
                               marked
                                   ? Icons.bookmark

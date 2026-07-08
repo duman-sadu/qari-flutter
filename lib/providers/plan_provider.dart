@@ -465,6 +465,12 @@ class PlanProvider extends ChangeNotifier {
   // ignore: prefer_final_fields
   Set<String> _readPageDateMarks = {};
 
+  /// Saved page bookmarks (page numbers 1–604). Local-only.
+  Set<int> pageBookmarks = {};
+
+  /// Saved ayah bookmarks as "chapter:verse". Local-only.
+  Set<String> ayahBookmarks = {};
+
   /// Number of unique pages read today.
   int get readPagesToday {
     final today = DateTime.now().toString().substring(0, 10);
@@ -561,6 +567,27 @@ class PlanProvider extends ChangeNotifier {
     if (pageMarksJson != null) {
       _readPageDateMarks = Set<String>.from(jsonDecode(pageMarksJson));
     }
+
+    // Bookmarks (+ migration from the old single-bookmark format)
+    final pageBmJson = prefs.getString('pageBookmarks');
+    if (pageBmJson != null) {
+      pageBookmarks = Set<int>.from(jsonDecode(pageBmJson));
+    }
+    final ayahBmJson = prefs.getString('ayahBookmarks');
+    if (ayahBmJson != null) {
+      ayahBookmarks = Set<String>.from(jsonDecode(ayahBmJson));
+    }
+    final legacyPage = prefs.getInt('bookmarkPage');
+    final legacyAyah = prefs.getString('bookmarkAyah');
+    if (legacyPage != null) {
+      pageBookmarks.add(legacyPage);
+      await prefs.remove('bookmarkPage');
+    }
+    if (legacyAyah != null) {
+      ayahBookmarks.add(legacyAyah);
+      await prefs.remove('bookmarkAyah');
+    }
+    if (legacyPage != null || legacyAyah != null) await _saveBookmarks();
 
     // Clamp indices so they're always valid after loading
     if (selectedSurahs.isNotEmpty) {
@@ -857,6 +884,73 @@ class PlanProvider extends ChangeNotifier {
     await prefs.setInt('readAyah', readAyah);
     await prefs.setInt('readPageNumber', readPageNumber);
     await prefs.setInt('readJuzNumber', readJuzNumber);
+  }
+
+  // ── Bookmarks ──────────────────────────────────────────────────────────────
+
+  Future<void> _saveBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pageBookmarks', jsonEncode(pageBookmarks.toList()));
+    await prefs.setString('ayahBookmarks', jsonEncode(ayahBookmarks.toList()));
+  }
+
+  /// Toggles a page bookmark. Returns true if the page is now bookmarked.
+  Future<bool> togglePageBookmark(int page) async {
+    final added = !pageBookmarks.remove(page);
+    if (added) pageBookmarks.add(page);
+    notifyListeners();
+    await _saveBookmarks();
+    return added;
+  }
+
+  Future<void> removePageBookmark(int page) async {
+    pageBookmarks.remove(page);
+    notifyListeners();
+    await _saveBookmarks();
+  }
+
+  /// Toggles an ayah bookmark ("chapter:verse"). Returns true if now bookmarked.
+  Future<bool> toggleAyahBookmark(String key) async {
+    final added = !ayahBookmarks.remove(key);
+    if (added) ayahBookmarks.add(key);
+    notifyListeners();
+    await _saveBookmarks();
+    return added;
+  }
+
+  Future<void> removeAyahBookmark(String key) async {
+    ayahBookmarks.remove(key);
+    notifyListeners();
+    await _saveBookmarks();
+  }
+
+  /// Global ayah index (1-based) of a chapter:verse position.
+  int _globalAyahOf(int chapter, int verse) {
+    var g = verse;
+    for (var i = 0; i < chapter - 1; i++) {
+      g += ayahCounts[i];
+    }
+    return g;
+  }
+
+  /// Positions the reader at [chapter]:[verse] in read mode. If the chapter is
+  /// in the selected-surahs list, uses it; otherwise switches to global reading.
+  Future<void> jumpToReadAyah(int chapter, int verse) async {
+    final idx = selectedReadSurahs.indexOf(chapter - 1);
+    if (idx >= 0) {
+      readSurahIndex = idx;
+      readSurahVerse = verse;
+    } else {
+      selectedReadSurahs = [];
+      readAyah = _globalAyahOf(chapter, verse);
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedReadSurahs', jsonEncode(selectedReadSurahs));
+    await prefs.setInt('readSurahIndex', readSurahIndex);
+    await prefs.setInt('readSurahVerse', readSurahVerse);
+    await prefs.setInt('readAyah', readAyah);
+    notifyListeners();
+    _scheduleSyncToFirestore();
   }
 
   Future<void> nextReadPage() async {

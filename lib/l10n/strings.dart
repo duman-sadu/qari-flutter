@@ -180,6 +180,15 @@ const Map<String, Map<String, String>> appStrings = {
                       'ru': 'Аят приходит в уведомлениях 3 раза в день',
                       'en': 'Your ayah arrives in notifications 3 times a day'},
   'loading':         {'kz': 'Жүктелуде...',      'ru': 'Загрузка...', 'en': 'Loading...'},
+  'bookmarksTitle':  {'kz': 'Белгілер',          'ru': 'Отметки',     'en': 'Bookmarks'},
+  'lastPosition':    {'kz': 'Соңғы оқыған',       'ru': 'Где остановился', 'en': 'Where you stopped'},
+  'continueReading': {'kz': 'Жалғастыру',        'ru': 'Продолжить',  'en': 'Continue'},
+  'bookmarkPages':   {'kz': 'Беттер',             'ru': 'Страницы',    'en': 'Pages'},
+  'bookmarkAyahs':   {'kz': 'Аяттар',             'ru': 'Аяты',        'en': 'Ayahs'},
+  'noBookmarks':     {'kz': 'Белгілер жоқ',       'ru': 'Нет отметок', 'en': 'No bookmarks yet'},
+  'noBookmarksDesc': {'kz': 'Оқып жатқанда бетті немесе аятты белгілеңіз',
+                      'ru': 'Отмечайте страницы или аяты во время чтения',
+                      'en': 'Bookmark pages or ayahs while reading'},
   'pronunciationLabel':{'kz': 'ОҚЫЛУЫ',         'ru': 'ПРОИЗНОШЕНИЕ', 'en': 'PRONUNCIATION'},
 
   // ── PROFILE ───────────────────────────────────────────────────────────────
