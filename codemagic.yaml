@@ -30,7 +30,10 @@ workflows:
 
       - name: Flutter build IPA
         script: |
+          # Номер сборки — авто-инкремент Codemagic ($BUILD_NUMBER растёт с
+          # каждой сборкой), иначе TestFlight отклоняет дубликат версии.
           flutter build ipa --release \
+            --build-number=${BUILD_NUMBER:-36} \
             --export-options-plist=ios/ExportOptions.plist
 
       - name: Upload to TestFlight
